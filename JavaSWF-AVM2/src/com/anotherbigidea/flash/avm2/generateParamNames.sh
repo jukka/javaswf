@@ -1,0 +1,1 @@
+apt -cp EpistemCommon/eclipse-build:javaswf/eclipse-build -factory org.epistem.util.InterfaceParamNameExtractor -Aiface=com.anotherbigidea.flash.avm2.ABC javaswf/src-core/com/anotherbigidea/flash/avm2/ABC.java
