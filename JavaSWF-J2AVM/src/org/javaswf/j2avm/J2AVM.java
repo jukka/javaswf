@@ -44,9 +44,8 @@ public class J2AVM {
      */
     public void translate() throws IOException {
 
-        AVM2ABCFile abcFile = new AVM2ABCFile( targetFile.getName(),
-                ABC.MAJOR_VERSION_46,
-                ABC.MINOR_VERSION_16 );
+        AVM2ABCFile abcFile = new AVM2ABCFile( ABC.MAJOR_VERSION_46,
+                                               ABC.MINOR_VERSION_16 );
 
         context = new TranslationContext( abcFile );
 
@@ -64,7 +63,7 @@ public class J2AVM {
             OutStream out       = new OutStream( fileOut );
             ABCWriter abcWriter = new ABCWriter( out );
             
-            abcFile.writeStandalone( abcWriter );
+            abcFile.write( abcWriter );
         } finally {
             fileOut.close();
         }
