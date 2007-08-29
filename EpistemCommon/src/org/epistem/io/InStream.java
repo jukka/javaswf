@@ -40,8 +40,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.Vector;
 import java.util.zip.InflaterInputStream;
 
 /**
@@ -102,32 +100,19 @@ public class InStream
 	/**
 	 * Read a string from the input stream
 	 */
-	public byte[] readStringBytes() throws IOException 
-	{
+	public byte[] readStringBytes() throws IOException {
 		synchBits();
         
-		Vector chars = new Vector();
+		ByteArrayOutputStream chars = new ByteArrayOutputStream();
 		byte[] aChar = new byte[1];
-		int num = 0;
-        
-		while( ( num = in.read( aChar )) == 1 )
-		{
+		while( in.read( aChar ) == 1 ) {
 			bytesRead++;
             
-			if( aChar[0] == 0 ) //end of string
-			{
-				byte[] string = new byte[chars.size()];
-                
-				int i = 0;
-				for( Enumeration e = chars.elements(); e.hasMoreElements(); )
-				{
-					string[i++] = ((Byte)e.nextElement()).byteValue();
-				}
-                
-				return string;
+			if( aChar[0] == 0 ) { //string terminator
+				return chars.toByteArray();
 			}
             
-			chars.addElement( new Byte(aChar[0]) );
+			chars.write( aChar );
 		}
         
 		throw new EOFException( "Unterminated string - reached end of input before null char" );
