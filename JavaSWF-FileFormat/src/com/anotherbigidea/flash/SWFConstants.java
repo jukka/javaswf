@@ -112,7 +112,7 @@ public interface SWFConstants
     //??? 79
     //??? 80
     //??? 81
-    public static final int TAG_DOABC2               = 82;
+    public static final int TAG_DOABC                = 82;
     
     //--Fill Types
     public static final int FILL_SOLID           = 0x00;
@@ -255,4 +255,7 @@ public interface SWFConstants
     public static final int FILE_ATTRIBUTES_HAS_METADATA = 0x10;
     public static final int FILE_ATTRIBUTES_ALLOW_AS3    = 0x08;
     public static final int FILE_ATTRIBUTES_USE_NETWORK  = 0x01;
+    
+    //--Flags for the DoABC tag
+    public static final int DO_ABC_LAZY_INITIALIZE_FLAG = 0x01; //set to cause the ABC file to be initialized lazily
 }

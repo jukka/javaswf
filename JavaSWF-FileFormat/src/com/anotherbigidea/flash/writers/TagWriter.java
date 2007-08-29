@@ -1801,11 +1801,14 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
         completeTag();
     }
 
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC2() */
-    public ABC tagDoABC2() throws IOException {
-        startTag( TAG_DOABC2, true );        
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC(int, java.lang.String) */
+    public ABC tagDoABC(int flags, String filename) throws IOException {
+        startTag( TAG_DOABC, true );
+        out.writeUI32( flags );
+        out.writeString( filename, "UTF-8" );
         return new ABCWriter( out ) {
             public void done() {
+                super.done();
                 try {
                     completeTag();
                 } catch( IOException ioe ) {

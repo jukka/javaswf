@@ -164,8 +164,13 @@ public class SWFTagDumper
         println( dashes );
     }
 
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC2() */
-    public ABC tagDoABC2() throws IOException {
+    
+    
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC(int, java.lang.String) */
+    public ABC tagDoABC(int flags, String filename) throws IOException {
+
+        println( "ABC File '" + filename + "' " + (flags != 0 ? "lazy-initialization" : "" ));
+        
         IndentingPrintWriter ipw = new IndentingPrintWriter( this.writer );
         ipw.setIndentLevel( indent.length() / 4 );
         ipw.setIndent( "  " );

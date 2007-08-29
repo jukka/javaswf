@@ -201,7 +201,7 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
 			case TAG_VIDEOFRAME       : parseVideoFrame( in, length ); break;
 			
             case TAG_SYMBOLCLASS : mTagtypes.tagSymbolClass( (int) in.readUI32(), in.readString( "UTF-8" ) ); break;
-            case TAG_DOABC2      : parseDoABC2( in ); break;
+            case TAG_DOABC       : parseDoABC( in ); break;
             
             case TAG_FILE_ATTRIBUTES: mTagtypes.tagFileAttributes( (int) in.readUI32() ); break;
             
@@ -211,20 +211,16 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
         }                
     }
 
-    protected void parseDoABC2( InStream in ) throws IOException {        
-        ABC abc = mTagtypes.tagDoABC2();
+    protected void parseDoABC( InStream in ) throws IOException {      
+        
+        int    flags = (int) in.readUI32();
+        String name  = in.readString( "UTF-8" );
+
+        ABC abc = mTagtypes.tagDoABC( flags, name );
         if( abc == null ) return;
-        
-        int count = (int) in.readUI32();
-        ABC.ABCFiles files = abc.abcFiles( count );
-        if( files == null ) return;
-        
-        for( int i = 0; i < count; i++ ) {
-            ABCParser parser = new ABCParser( files, in );
-            parser.parse();
-        }
-        files.done();
-        abc.done();
+                
+        ABCParser parser = new ABCParser( abc, in );
+        parser.parse();
     }
     
 	protected void parseVideoFrame( InStream in, int length ) throws IOException {

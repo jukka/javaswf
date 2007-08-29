@@ -92,9 +92,12 @@ public interface SWFSpriteTagTypes extends SWFTags
     
     /**
      * The AVM2 ABC tag
+     * 
+     * @param flags combination of the DO_ABC_* flags
+     * @param filename the filename of the ABC file
      * @return interface to receive one or more ABC data files - null to skip
      */
-    public ABC tagDoABC2() throws IOException;
+    public ABC tagDoABC( int flags, String filename ) throws IOException;
     
     /**
      * Remove a symbol definition from the dictionary

@@ -479,10 +479,10 @@ public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature
             throws IOException {
         if( mTagtypes != null ) mTagtypes.tagVideoFrame( streamId, seqNum, frameType, codec, videoPacket );
     }
-
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC2() */
-    public ABC tagDoABC2() throws IOException {
-        if( mTagtypes != null ) return mTagtypes.tagDoABC2();
+    
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagDoABC(int, java.lang.String) */
+    public ABC tagDoABC(int flags, String filename) throws IOException {
+        if( mTagtypes != null ) return mTagtypes.tagDoABC( flags, filename );
         return null;
     }
 
