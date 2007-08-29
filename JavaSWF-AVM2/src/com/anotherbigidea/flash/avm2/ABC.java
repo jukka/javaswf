@@ -3,8 +3,24 @@ package com.anotherbigidea.flash.avm2;
 import org.epistem.io.PipelineInterface;
 
 /**
- * Interface for passing the contents of an ABC file or tag (Actionscript
+ * Interface for passing the contents of an ABC file or tag (ActionScript 3
  * Bytecode - as used by the AVM2)
+ * 
+ * The method call order must be:
+ *   version
+ *   intPool
+ *   uintPool
+ *   doublePool
+ *   stringPool
+ *   namespacePool
+ *   namespaceSetPool
+ *   namePool
+ *   methods
+ *   metadata
+ *   classes
+ *   scripts
+ *   methodBodies
+ *   done
  *   
  * @author nickmain
  */
@@ -14,7 +30,100 @@ public interface ABC extends PipelineInterface {
     public static final int MINOR_VERSION_16 = 16;
     /** Current major version */
     public static final int MAJOR_VERSION_46 = 46;
-            
+       
+    /**
+     * Pass the version info
+     */
+    public void version( int majorVersion, int minorVersion );
+    
+    /**
+     * Pass the int pool
+     */
+    public void intPool( int[] ints );
+
+    /**
+     * Pass the uint pool
+     */
+    public void uintPool( long[] uints );
+
+    /**
+     * Pass the double pool
+     */
+    public void doublePool( double[] doubles );
+
+    /**
+     * Pass the String pool
+     */
+    public void stringPool( String[] strings );
+
+    /**
+     * Pass the namespace pool 
+     * 
+     * @param count the number of namespaces (index zero is counted but not passed)
+     * @return interface to receive the namespaces, null to skip
+     */
+    public Namespaces namespacePool( int count );
+
+    /**
+     * Pass the namespace set pool 
+     * 
+     * @param count the number of namespace sets (index zero is counted but not passed)
+     * @return interface to receive the sets, null to skip
+     */
+    public NamespaceSets namespaceSetPool( int count );
+    
+    /**
+     * Pass the name pool 
+     * 
+     * @param count the number of names (index zero is counted but not passed)
+     * @return interface to receive the names, null to skip
+     */
+    public Names namePool( int count );
+        
+    /**
+     * Pass the method information
+     * 
+     * @param count the number of methodInfo items
+     * @return interface to receive the method infos, null to skip
+     */
+    public MethodInfos methods( int count );
+    
+    /**
+     * Pass the metadata definitions
+     * 
+     * @param count the number of metadata definitions
+     * @return interface to receive the metadata info, null to skip
+     */
+    public Metadata metadata( int count );
+        
+    /**
+     * Pass the instanceInfo and classInfo 
+     * 
+     * @param count the number of classes
+     * @return interface to receive the class details, null to skip
+     */
+    public ClassInfos classes( int count );
+    
+    /**
+     * Pass the script information
+     * 
+     * @param count the number of scripts
+     * @return interface to receive the scripts, null to skip
+     */
+    public Scripts scripts( int count );
+
+    /**
+     * Pass the method body information
+     * 
+     * @param count the number of method bodies
+     * @return interface to receive the method bodies, null to skip
+     */
+    public MethodBodies methodBodies( int count );
+    
+    //========================================================================
+    //========================================================================
+    //========================================================================
+    
     /**
      * Interface for passing exception handler info
      */
@@ -482,134 +591,5 @@ public interface ABC extends PipelineInterface {
                           int nameIndex, 
                           int namespaceIndex, 
                           int namespaceSetIndex );
-    }
-    
-    /**
-     * Interface to pass ABC files.
-     */
-    public interface ABCFiles extends PipelineInterface {
-        
-        /**
-         * Pass an ABC file
-         * 
-         * @param name the file name or the name in the SWF tag
-         * @param majorVersion the file major version
-         * @param minorVersion the file minor version
-         */
-        public ABCFile abcFile( String name, int majorVersion, int minorVersion );
-    
-    }
-
-    /**
-     * Interface for passing the contents of an ABC file.
-     * 
-     * The method call order must be:
-     *   intPool
-     *   uintPool
-     *   doublePool
-     *   stringPool
-     *   namespacePool
-     *   namespaceSetPool
-     *   namePool
-     *   methods
-     *   metadata
-     *   classes
-     *   scripts
-     *   methodBodies
-     *   done
-     */
-    public interface ABCFile extends PipelineInterface {
-        
-        /**
-         * Pass the int pool
-         */
-        public void intPool( int[] ints );
-    
-        /**
-         * Pass the uint pool
-         */
-        public void uintPool( long[] uints );
-    
-        /**
-         * Pass the double pool
-         */
-        public void doublePool( double[] doubles );
-    
-        /**
-         * Pass the String pool
-         */
-        public void stringPool( String[] strings );
-    
-        /**
-         * Pass the namespace pool 
-         * 
-         * @param count the number of namespaces (index zero is counted but not passed)
-         * @return interface to receive the namespaces, null to skip
-         */
-        public Namespaces namespacePool( int count );
-    
-        /**
-         * Pass the namespace set pool 
-         * 
-         * @param count the number of namespace sets (index zero is counted but not passed)
-         * @return interface to receive the sets, null to skip
-         */
-        public NamespaceSets namespaceSetPool( int count );
-        
-        /**
-         * Pass the name pool 
-         * 
-         * @param count the number of names (index zero is counted but not passed)
-         * @return interface to receive the names, null to skip
-         */
-        public Names namePool( int count );
-            
-        /**
-         * Pass the method information
-         * 
-         * @param count the number of methodInfo items
-         * @return interface to receive the method infos, null to skip
-         */
-        public MethodInfos methods( int count );
-        
-        /**
-         * Pass the metadata definitions
-         * 
-         * @param count the number of metadata definitions
-         * @return interface to receive the metadata info, null to skip
-         */
-        public Metadata metadata( int count );
-            
-        /**
-         * Pass the instanceInfo and classInfo 
-         * 
-         * @param count the number of classes
-         * @return interface to receive the class details, null to skip
-         */
-        public ClassInfos classes( int count );
-        
-        /**
-         * Pass the script information
-         * 
-         * @param count the number of scripts
-         * @return interface to receive the scripts, null to skip
-         */
-        public Scripts scripts( int count );
-    
-        /**
-         * Pass the method body information
-         * 
-         * @param count the number of method bodies
-         * @return interface to receive the method bodies, null to skip
-         */
-        public MethodBodies methodBodies( int count );
-    }
-    
-    /**
-     * Pass a number of ABC files 
-     * 
-     * @param count the count of the number of ABC file structures to be passed.
-     * @return interface to receive the ABC files, null to skip
-     */
-    public ABCFiles abcFiles( int count );    
+    }   
 }

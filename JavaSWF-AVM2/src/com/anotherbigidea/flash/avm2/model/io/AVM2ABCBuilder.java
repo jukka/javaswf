@@ -44,356 +44,297 @@ import com.anotherbigidea.flash.avm2.model.AVM2Traits;
  */
 public class AVM2ABCBuilder implements ABC {
 
-    /** The objects that are built */
-    public final List<AVM2ABCFile> files;
+    /** The object that is built */
+    public AVM2ABCFile file;
 
-    /**
-     * Creates a new list
-     */
-    public AVM2ABCBuilder() {
-        this( new ArrayList<AVM2ABCFile>() );
+    
+    final ConstantPool pool = new ConstantPool();
+    
+    final List<AVM2Method>   methods  = new ArrayList<AVM2Method>();
+    final List<AVM2Metadata> metadata = new ArrayList<AVM2Metadata>();
+    
+    /** @see com.anotherbigidea.flash.avm2.ABC#version(int, int) */
+    public void version(int majorVersion, int minorVersion) {
+        file = new AVM2ABCFile( majorVersion, minorVersion );        
     }
 
-    /**
-     * Use an existing list.
-     * @param files the list to add to.
-     */
-    public AVM2ABCBuilder( List<AVM2ABCFile> files ) {
-        this.files = files;
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#classes(int) */
+    public ClassInfos classes(int count) {
+        return new ABC.ClassInfos() {
+            int classIndex = 0;
+            
+            /** @see com.anotherbigidea.flash.avm2.ABC.ClassInfos#classInfo(int, int) */
+            public Traits classInfo(int constructorIndex, int traitCount) {
+                
+                AVM2Class clazz = null;
+                for( AVM2Class c : file.classes.values() ) {
+                    if( c.index == classIndex ) {
+                        clazz = c;
+                        break;
+                    }
+                }
+                classIndex++;
+                
+                clazz.staticInitializer = methods.get( constructorIndex );
+                
+                return new TraitsImpl( clazz.staticTraits );
+            }
+
+            /** @see com.anotherbigidea.flash.avm2.ABC.ClassInfos#instanceInfo(int, int, int, int, int[], int, int) */
+            public Traits instanceInfo(int nameIndex, int superIndex, int flags, int protectedNS, int[] interfaces, int constructorIndex, int traitCount) {
+                
+                boolean isSealed    = InstanceInfoFlags.Sealed.isSet( flags );
+                boolean isInterface = InstanceInfoFlags.Interface.isSet( flags );
+                boolean isFinal     = InstanceInfoFlags.Final.isSet( flags );
+                
+                AVM2QName     name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
+                AVM2Name      superclass = AVM2Name.atIndex( pool, superIndex );                    
+                AVM2Namespace protectedNamespace = AVM2Namespace.atIndex( pool, protectedNS );
+                
+                AVM2Class clazz = file.addClass(name, superclass, isSealed, isFinal, isInterface, protectedNamespace);
+                clazz.constructor = methods.get( constructorIndex );
+                
+                for( int i : interfaces ) {
+                    clazz.addInterface( AVM2Name.atIndex( pool, i ));
+                }
+                
+                return new TraitsImpl( clazz.traits );
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+        };
     }
-    
-    /**
-     * Write all the files
-     */
-    public final void write( ABC abc ) {
-        ABC.ABCFiles abcFiles = abc.abcFiles( files.size() );
-        for( AVM2ABCFile f : files ) {
-            f.write( abcFiles );
-        }
-        abcFiles.done();
-        abc.done();
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#doublePool(double[]) */
+    public void doublePool(double[] doubles) {
+        pool.initDoublePool( doubles );
+        
     }
-    
-    /** @see com.anotherbigidea.flash.avm2.ABC#abcFiles(int) */
-    public ABCFiles abcFiles(int count) {
-        return new ABCFilesImpl();
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#intPool(int[]) */
+    public void intPool(int[] ints) {
+        pool.initIntPool( ints );            
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#metadata(int) */
+    public Metadata metadata(int count) {
+        return new ABC.Metadata() {
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+
+            /** @see com.anotherbigidea.flash.avm2.ABC.Metadata#metadata(int, int[], int[]) */
+            public void metadata(int nameIndex, int[] keys, int[] values) {
+                AVM2Metadata md = new AVM2Metadata( pool.stringAt( nameIndex ));
+                metadata.add( md );
+                
+                for (int i = 0; i < values.length; i++) {
+                    String key = (keys[i] != 0) ? pool.stringAt( keys[i] ) : null;
+                    String val = pool.stringAt( values[i] );                        
+                    md.addValue( key, val );
+                }
+            }                
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methodBodies(int) */
+    public MethodBodies methodBodies(int count) {
+        return new ABC.MethodBodies() {
+            /** @see com.anotherbigidea.flash.avm2.ABC.MethodBodies#methodBody(int, int, int, int, int) */
+            public MethodBody methodBody(int methodInfo, int maxStack, int maxRegs, int scopeDepth, int maxScope) {
+                
+                final AVM2MethodBody body = methods.get( methodInfo ).methodBody;
+                body.maxStack     = maxStack;
+                body.maxRegisters = maxRegs;
+                body.scopeDepth   = scopeDepth;
+                body.maxScope     = maxScope;
+                
+                return new ABC.MethodBody() {
+
+                    final RawBytecodeImpl bytecodeImpl = new RawBytecodeImpl( body );
+                    
+                    /** @see org.epistem.io.PipelineInterface#done() */
+                    public void done() {
+                        bytecodeImpl.processInstructions();
+                    }
+
+                    /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#exceptionHandlers(int) */
+                    public ExceptionHandlers exceptionHandlers(int handlerCount) {
+                        return new ABC.ExceptionHandlers() {
+                            /** @see com.anotherbigidea.flash.avm2.ABC.ExceptionHandlers#exceptionHandler(int, int, int, int, int) */
+                            public void exceptionHandler(int start, int end, int target, int typeIndex, int nameIndex) {
+                                
+                                body.exceptionHandlers.add( 
+                                    new AVM2ExceptionHandler(
+                                        start, end, target,
+                                        AVM2Name.atIndex( pool, typeIndex ),
+                                        (nameIndex > 0) ? AVM2Name.atIndex( pool, nameIndex ) : null
+                                    ));
+                            }
+
+                            /** @see org.epistem.io.PipelineInterface#done() */
+                            public void done() {
+                                // nada                                    
+                            }
+                        };
+                    }
+
+                    /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#instructions(int) */
+                    public Instructions instructions(int codeSize) {                            
+                        return bytecodeImpl;
+                    }
+
+                    /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#traits(int) */
+                    public Traits traits(int traitCount) {
+                        return new TraitsImpl( body.activationTraits );
+                    }
+                };
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methods(int) */
+    public MethodInfos methods(int count) {
+        return new ABC.MethodInfos() {
+            /** @see com.anotherbigidea.flash.avm2.ABC.MethodInfos#methodInfo(int, int, int, int[], int[], int[], int[]) */
+            public void methodInfo(int nameIndex, int flags, int returnType, int[] paramTypes, int[] optValues, int[] optValKinds, int[] paramNames) {
+                
+                AVM2Name retType = AVM2Name.atIndex( pool, returnType );                    
+                AVM2Method m = new AVM2Method( retType, MethodInfoFlags.decode( flags ) );
+                methods.add( m );
+                
+                if( nameIndex > 0 ) m.name = pool.stringAt( nameIndex );
+                
+                for( int i = 0; i < paramTypes.length; i++ ) {
+                    AVM2Name type = AVM2Name.atIndex( pool, paramTypes[i] );
+                    String   name = null;
+                    if( paramNames != null && i < paramNames.length ) {
+                        name = pool.stringAt( paramNames[i] );
+                    }
+                    
+                    AVM2DefaultValue value = null;                        
+                    if( optValKinds != null 
+                     && i >= (paramTypes.length - optValKinds.length) ) {
+                        int idx = i - (paramTypes.length - optValKinds.length);
+                        
+                        if( optValKinds[ idx ] == 0 ) {
+                            //System.err.println( "value index ---> " + optValues[ idx ] );
+                        }
+                        else {
+                            ValueKind kind = ValueKind.fromValue( optValKinds[ idx ] );
+                            Object    val  = kind.getPoolValue( pool, optValues[ idx ] );
+                            value = new AVM2DefaultValue( kind, val );
+                        }
+                    }
+                    
+                    m.addParameter( name, type, value );
+                }
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namePool(int) */
+    public Names namePool(int count) {
+        return new ABC.Names() {
+            /** @see com.anotherbigidea.flash.avm2.ABC.Names#name(com.anotherbigidea.flash.avm2.MultiNameKind, int, int, int) */
+            public void name(MultiNameKind kind, int nameIndex, int namespaceIndex, int namespaceSetIndex) {
+                pool.addName( kind, nameIndex, namespaceIndex, namespaceSetIndex );                    
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // done                    
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespacePool(int) */
+    public Namespaces namespacePool(int count) {
+        return new ABC.Namespaces() {
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+
+            /** @see com.anotherbigidea.flash.avm2.ABC.Namespaces#namespace(com.anotherbigidea.flash.avm2.NamespaceKind, int) */
+            public void namespace(NamespaceKind kind, int index) {
+                pool.addNamespace( kind, index );
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespaceSetPool(int) */
+    public NamespaceSets namespaceSetPool(int count) {
+        return new ABC.NamespaceSets() {
+            /** @see com.anotherbigidea.flash.avm2.ABC.NamespaceSets#namespaceSet(int[]) */
+            public void namespaceSet(int[] namespaces) {
+                pool.addNamespaceSet( namespaces );
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#scripts(int) */
+    public Scripts scripts(int count) {
+        return new ABC.Scripts() {
+            /** @see com.anotherbigidea.flash.avm2.ABC.Scripts#script(int, int) */
+            public Traits script(int initializerIndex, int traitCount) {                    
+                AVM2Script script = file.addScript( methods.get( initializerIndex ));
+                return new TraitsImpl( script.traits );
+            }
+
+            /** @see org.epistem.io.PipelineInterface#done() */
+            public void done() {
+                // nada
+            }
+        };
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#stringPool(java.lang.String[]) */
+    public void stringPool(String[] strings) {
+        pool.initStringPool( strings );
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#uintPool(long[]) */
+    public void uintPool(long[] uints) {
+        pool.initUIntPool( uints );            
     }
 
     /** @see org.epistem.io.PipelineInterface#done() */
     public void done() {
-        // nada        
-    }
-    
-    public class ABCFilesImpl implements ABCFiles {
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFiles#abcFile(java.lang.String, int, int) */
-        public ABCFile abcFile(String name, int majorVersion, int minorVersion) {
-            return new ABCFileImpl( name, majorVersion, minorVersion );
-        }
-
-        /** @see org.epistem.io.PipelineInterface#done() */
-        public void done() {
-            // nada            
-        }        
-    }
-
-    public class ABCFileImpl implements ABCFile {
-
-        final ConstantPool pool = new ConstantPool();
-        
-        final AVM2ABCFile file;        
-        final List<AVM2Method>   methods  = new ArrayList<AVM2Method>();
-        final List<AVM2Metadata> metadata = new ArrayList<AVM2Metadata>();
-        
-        ABCFileImpl( String filename, int majorVersion, int minorVersion ) {
-            file = new AVM2ABCFile( filename, majorVersion, minorVersion );
-            files.add( file );
-        }
-        
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#classes(int) */
-        public ClassInfos classes(int count) {
-            return new ABC.ClassInfos() {
-                int classIndex = 0;
-                
-                /** @see com.anotherbigidea.flash.avm2.ABC.ClassInfos#classInfo(int, int) */
-                public Traits classInfo(int constructorIndex, int traitCount) {
-                    
-                    AVM2Class clazz = null;
-                    for( AVM2Class c : file.classes.values() ) {
-                        if( c.index == classIndex ) {
-                            clazz = c;
-                            break;
-                        }
-                    }
-                    classIndex++;
-                    
-                    clazz.staticInitializer = methods.get( constructorIndex );
-                    
-                    return new TraitsImpl( clazz.staticTraits, ABCFileImpl.this );
-                }
-
-                /** @see com.anotherbigidea.flash.avm2.ABC.ClassInfos#instanceInfo(int, int, int, int, int[], int, int) */
-                public Traits instanceInfo(int nameIndex, int superIndex, int flags, int protectedNS, int[] interfaces, int constructorIndex, int traitCount) {
-                    
-                    boolean isSealed    = InstanceInfoFlags.Sealed.isSet( flags );
-                    boolean isInterface = InstanceInfoFlags.Interface.isSet( flags );
-                    boolean isFinal     = InstanceInfoFlags.Final.isSet( flags );
-                    
-                    AVM2QName     name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
-                    AVM2Name      superclass = AVM2Name.atIndex( pool, superIndex );                    
-                    AVM2Namespace protectedNamespace = AVM2Namespace.atIndex( pool, protectedNS );
-                    
-                    AVM2Class clazz = file.addClass(name, superclass, isSealed, isFinal, isInterface, protectedNamespace);
-                    clazz.constructor = methods.get( constructorIndex );
-                    
-                    for( int i : interfaces ) {
-                        clazz.addInterface( AVM2Name.atIndex( pool, i ));
-                    }
-                    
-                    return new TraitsImpl( clazz.traits, ABCFileImpl.this );
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#doublePool(double[]) */
-        public void doublePool(double[] doubles) {
-            pool.initDoublePool( doubles );
-            
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#intPool(int[]) */
-        public void intPool(int[] ints) {
-            pool.initIntPool( ints );            
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#metadata(int) */
-        public Metadata metadata(int count) {
-            return new ABC.Metadata() {
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-
-                /** @see com.anotherbigidea.flash.avm2.ABC.Metadata#metadata(int, int[], int[]) */
-                public void metadata(int nameIndex, int[] keys, int[] values) {
-                    AVM2Metadata md = new AVM2Metadata( pool.stringAt( nameIndex ));
-                    metadata.add( md );
-                    
-                    for (int i = 0; i < values.length; i++) {
-                        String key = (keys[i] != 0) ? pool.stringAt( keys[i] ) : null;
-                        String val = pool.stringAt( values[i] );                        
-                        md.addValue( key, val );
-                    }
-                }                
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methodBodies(int) */
-        public MethodBodies methodBodies(int count) {
-            return new ABC.MethodBodies() {
-                /** @see com.anotherbigidea.flash.avm2.ABC.MethodBodies#methodBody(int, int, int, int, int) */
-                public MethodBody methodBody(int methodInfo, int maxStack, int maxRegs, int scopeDepth, int maxScope) {
-                    
-                    final AVM2MethodBody body = methods.get( methodInfo ).methodBody;
-                    body.maxStack     = maxStack;
-                    body.maxRegisters = maxRegs;
-                    body.scopeDepth   = scopeDepth;
-                    body.maxScope     = maxScope;
-                    
-                    return new ABC.MethodBody() {
-
-                        final RawBytecodeImpl bytecodeImpl = new RawBytecodeImpl( ABCFileImpl.this, body );
-                        
-                        /** @see org.epistem.io.PipelineInterface#done() */
-                        public void done() {
-                            bytecodeImpl.processInstructions();
-                        }
-
-                        /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#exceptionHandlers(int) */
-                        public ExceptionHandlers exceptionHandlers(int handlerCount) {
-                            return new ABC.ExceptionHandlers() {
-                                /** @see com.anotherbigidea.flash.avm2.ABC.ExceptionHandlers#exceptionHandler(int, int, int, int, int) */
-                                public void exceptionHandler(int start, int end, int target, int typeIndex, int nameIndex) {
-                                    
-                                    body.exceptionHandlers.add( 
-                                        new AVM2ExceptionHandler(
-                                            start, end, target,
-                                            AVM2Name.atIndex( pool, typeIndex ),
-                                            (nameIndex > 0) ? AVM2Name.atIndex( pool, nameIndex ) : null
-                                        ));
-                                }
-
-                                /** @see org.epistem.io.PipelineInterface#done() */
-                                public void done() {
-                                    // nada                                    
-                                }
-                            };
-                        }
-
-                        /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#instructions(int) */
-                        public Instructions instructions(int codeSize) {                            
-                            return bytecodeImpl;
-                        }
-
-                        /** @see com.anotherbigidea.flash.avm2.ABC.MethodBody#traits(int) */
-                        public Traits traits(int traitCount) {
-                            return new TraitsImpl( body.activationTraits, ABCFileImpl.this );
-                        }
-                    };
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methods(int) */
-        public MethodInfos methods(int count) {
-            return new ABC.MethodInfos() {
-                /** @see com.anotherbigidea.flash.avm2.ABC.MethodInfos#methodInfo(int, int, int, int[], int[], int[], int[]) */
-                public void methodInfo(int nameIndex, int flags, int returnType, int[] paramTypes, int[] optValues, int[] optValKinds, int[] paramNames) {
-                    
-                    AVM2Name retType = AVM2Name.atIndex( pool, returnType );                    
-                    AVM2Method m = new AVM2Method( retType, MethodInfoFlags.decode( flags ) );
-                    methods.add( m );
-                    
-                    if( nameIndex > 0 ) m.name = pool.stringAt( nameIndex );
-                    
-                    for( int i = 0; i < paramTypes.length; i++ ) {
-                        AVM2Name type = AVM2Name.atIndex( pool, paramTypes[i] );
-                        String   name = null;
-                        if( paramNames != null && i < paramNames.length ) {
-                            name = pool.stringAt( paramNames[i] );
-                        }
-                        
-                        AVM2DefaultValue value = null;                        
-                        if( optValKinds != null 
-                         && i >= (paramTypes.length - optValKinds.length) ) {
-                            int idx = i - (paramTypes.length - optValKinds.length);
-                            
-                            if( optValKinds[ idx ] == 0 ) {
-                                //System.err.println( "value index ---> " + optValues[ idx ] );
-                            }
-                            else {
-                                ValueKind kind = ValueKind.fromValue( optValKinds[ idx ] );
-                                Object    val  = kind.getPoolValue( pool, optValues[ idx ] );
-                                value = new AVM2DefaultValue( kind, val );
-                            }
-                        }
-                        
-                        m.addParameter( name, type, value );
-                    }
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namePool(int) */
-        public Names namePool(int count) {
-            return new ABC.Names() {
-                /** @see com.anotherbigidea.flash.avm2.ABC.Names#name(com.anotherbigidea.flash.avm2.MultiNameKind, int, int, int) */
-                public void name(MultiNameKind kind, int nameIndex, int namespaceIndex, int namespaceSetIndex) {
-                    pool.addName( kind, nameIndex, namespaceIndex, namespaceSetIndex );                    
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // done                    
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespacePool(int) */
-        public Namespaces namespacePool(int count) {
-            return new ABC.Namespaces() {
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-
-                /** @see com.anotherbigidea.flash.avm2.ABC.Namespaces#namespace(com.anotherbigidea.flash.avm2.NamespaceKind, int) */
-                public void namespace(NamespaceKind kind, int index) {
-                    pool.addNamespace( kind, index );
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespaceSetPool(int) */
-        public NamespaceSets namespaceSetPool(int count) {
-            return new ABC.NamespaceSets() {
-                /** @see com.anotherbigidea.flash.avm2.ABC.NamespaceSets#namespaceSet(int[]) */
-                public void namespaceSet(int[] namespaces) {
-                    pool.addNamespaceSet( namespaces );
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#scripts(int) */
-        public Scripts scripts(int count) {
-            return new ABC.Scripts() {
-                /** @see com.anotherbigidea.flash.avm2.ABC.Scripts#script(int, int) */
-                public Traits script(int initializerIndex, int traitCount) {                    
-                    AVM2Script script = file.addScript( methods.get( initializerIndex ));
-                    return new TraitsImpl( script.traits, ABCFileImpl.this );
-                }
-
-                /** @see org.epistem.io.PipelineInterface#done() */
-                public void done() {
-                    // nada
-                }
-            };
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#stringPool(java.lang.String[]) */
-        public void stringPool(String[] strings) {
-            pool.initStringPool( strings );
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#uintPool(long[]) */
-        public void uintPool(long[] uints) {
-            pool.initUIntPool( uints );            
-        }
-
-        /** @see org.epistem.io.PipelineInterface#done() */
-        public void done() {
-            // nada            
-        }        
-    }
-
-    
+        // nada            
+    }        
+ 
+   
     public class TraitsImpl implements ABC.Traits {
 
         final AVM2Traits traits;
-        final ConstantPool pool;
-        final AVM2ABCFile file;
-        final ABCFileImpl fileImpl;
         
-        TraitsImpl( AVM2Traits traits, ABCFileImpl fileImpl ) {
+        TraitsImpl( AVM2Traits traits ) {
             this.traits   = traits;
-            this.pool     = fileImpl.pool;
-            this.file     = fileImpl.file;
-            this.fileImpl = fileImpl;
         }
 
         private void initMetadata( int[] metadataIndices, AVM2Trait trait ) {
             for( int i : metadataIndices ) {
-                trait.metadata.add( fileImpl.metadata.get( i ));
+                trait.metadata.add( metadata.get( i ));
             }
         }
         
@@ -435,7 +376,7 @@ public class AVM2ABCBuilder implements ABC {
         /** @see com.anotherbigidea.flash.avm2.ABC.Traits#function(int, int, int, int[]) */
         public void function(int nameIndex, int slotId, int methIndex, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
-            AVM2Method method = fileImpl.methods.get( methIndex );
+            AVM2Method method = methods.get( methIndex );
             
             AVM2FunctionSlot slot = traits.addFunction( name, method );
             slot.indexId = slotId - 1;
@@ -445,7 +386,7 @@ public class AVM2ABCBuilder implements ABC {
         /** @see com.anotherbigidea.flash.avm2.ABC.Traits#getter(int, int, int, boolean, boolean, int[]) */
         public void getter(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
-            AVM2Method method = fileImpl.methods.get( methIndex );
+            AVM2Method method = methods.get( methIndex );
             
             AVM2Getter slot = traits.addGetter( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
@@ -455,7 +396,7 @@ public class AVM2ABCBuilder implements ABC {
         /** @see com.anotherbigidea.flash.avm2.ABC.Traits#method(int, int, int, boolean, boolean, int[]) */
         public void method(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
-            AVM2Method method = fileImpl.methods.get( methIndex );
+            AVM2Method method = methods.get( methIndex );
             
             AVM2MethodSlot slot = traits.addMethod( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
@@ -465,7 +406,7 @@ public class AVM2ABCBuilder implements ABC {
         /** @see com.anotherbigidea.flash.avm2.ABC.Traits#setter(int, int, int, boolean, boolean, int[]) */
         public void setter(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
-            AVM2Method method = fileImpl.methods.get( methIndex );
+            AVM2Method method = methods.get( methIndex );
             
             AVM2Setter slot = traits.addSetter( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
@@ -498,18 +439,12 @@ public class AVM2ABCBuilder implements ABC {
 
     public class RawBytecodeImpl extends InstructionsImpl implements ABC.RawBytecode {
 
-        final ConstantPool pool;
-        final AVM2ABCFile file;
-        final ABCFileImpl fileImpl;
         final AVM2MethodBody body;
         
         final List<Instruction> instructionList = new ArrayList<Instruction>();
         final Set<Integer>      targetAddresses = new HashSet<Integer>();
         
-        RawBytecodeImpl( ABCFileImpl fileImpl, AVM2MethodBody body ) {
-            this.pool     = fileImpl.pool;
-            this.file     = fileImpl.file;
-            this.fileImpl = fileImpl;
+        RawBytecodeImpl( AVM2MethodBody body ) {
             this.body     = body;
         }
         

@@ -12,7 +12,6 @@ import org.epistem.io.IndentingPrintWriter;
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.MethodInfoFlags;
 import com.anotherbigidea.flash.avm2.model.io.ConstantPool;
-import com.anotherbigidea.flash.writers.ABCWriter;
 
 /**
  * An AVM2 ABC "file"
@@ -21,9 +20,6 @@ import com.anotherbigidea.flash.writers.ABCWriter;
  */
 public class AVM2ABCFile {
 
-    /** The filename */
-    public final String name;
-    
     public final int majorVersion;    
     public final int minorVersion;
     
@@ -40,12 +36,10 @@ public class AVM2ABCFile {
     { scripts = Collections.unmodifiableList( scripts_internal ); }
 
     /**
-     * @param filename the name of the file
      * @param majorVersion the abc major version
      * @param minorVersion the abc minor version
      */
-    public AVM2ABCFile( String filename, int majorVersion, int minorVersion ) {
-        this.name = filename;
+    public AVM2ABCFile( int majorVersion, int minorVersion ) {
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
     }
@@ -136,7 +130,7 @@ public class AVM2ABCFile {
     
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
-        out.println( "abc-file " + name + " {" );
+        out.println( "abc-file {" );
         out.indent();
         
         for( AVM2Class c : classes.values() ) {
@@ -164,22 +158,11 @@ public class AVM2ABCFile {
     }
 
     /**
-     * Write the file as a stand-alone abc file
+     * Write the file
      */
-    public void writeStandalone( ABCWriter abcWriter ) {        
-        ABC.ABCFile file = abcWriter.singleFile( majorVersion, minorVersion );
-        write( file );
-    }
-    
-    /**
-     * Write the file as part of a SWF tag
-     */
-    public void write( ABC.ABCFiles abcFiles ) {
-        ABC.ABCFile file = abcFiles.abcFile( name, majorVersion, minorVersion );
-        write( file );
-    }
-    
-    private void write( ABC.ABCFile file ) {
+    public void write( ABC file ) {
+        
+        file.version( majorVersion, minorVersion );
         
         WriteContext context = new WriteContext();
         

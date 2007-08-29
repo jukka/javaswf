@@ -441,7 +441,7 @@ public final class ConstantPool {
     /**
      * Write the pool
      */
-    public void write( ABC.ABCFile file ) {
+    public void write( ABC file ) {
         
         int[] ints = new int[ intPool.size() ];
         for( int i = 0; i < ints.length; i++ ) {

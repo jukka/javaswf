@@ -26,45 +26,25 @@ import com.anotherbigidea.flash.avm2.instruction.Instruction;
  */
 public class ABCParser {
 
-    private final ABC.ABCFiles abcFiles; //the target to pass parsed contents to
-    private ABC.ABCFile abc;
+    private final ABC abcFile; //the target to pass parsed contents to
     private final InStream in;
-    private final String   name;
    
     /**
-     * Read the name from the stream first.
-     * 
-     * @param abcFiles the target
+     * @param abcFile the target 
      * @param in the source
      */
-    public ABCParser( ABC.ABCFiles abcFiles, InStream in ) throws IOException {
-        this.abcFiles = abcFiles;
-        this.in       = in;
-        
-        name = in.readString( "UTF-8" );
+    public ABCParser( ABC abcFile, InStream in ) {
+        this.abcFile = abcFile;
+        this.in      = in;
     }
-
-    /**
-     * Name not in stream.
-     * 
-     * @param abc the target 
-     * @param in the source
-     */
-    public ABCParser( ABC.ABCFiles abcFiles, InStream in, String name ) {
-        this.abcFiles = abcFiles;
-        this.in       = in;
-        this.name     = name;
-    }
-
     
     /**
      * Parse the contents of the file - calling endABC at the end
      */
     public void parse() throws IOException {
         int minor = in.readUI16();
-        int major = in.readUI16();        
-        
-        abc = (abcFiles != null) ? abcFiles.abcFile( name, major, minor ) : null;
+        int major = in.readUI16();                
+        abcFile.version( major, minor );
         
         readIntPool();
         readUIntPool();
@@ -77,7 +57,7 @@ public class ABCParser {
         readMetadata();
         
         int count = in.readVU30();        
-        ABC.ClassInfos classInfos = (abc != null) ? abc.classes( count ) : null;
+        ABC.ClassInfos classInfos = abcFile.classes( count );
         readInstanceInfos( classInfos, count );
         readClassInfos   ( classInfos, count );
         if( classInfos != null ) classInfos.done();
@@ -85,13 +65,13 @@ public class ABCParser {
         readScripts();        
         readMethodBodies();
         
-        if( abc != null ) abc.done();
+        abcFile.done();
     }
 
     private void readMethodBodies() throws IOException {
         int count = in.readVU30();
         
-        ABC.MethodBodies bodies = (abc != null) ? abc.methodBodies( count ) : null;
+        ABC.MethodBodies bodies = abcFile.methodBodies( count );
         
         for( int i = 0; i < count; i++ ) {
             int methodInfo = in.readVU30();
@@ -187,7 +167,7 @@ public class ABCParser {
     private void readScripts() throws IOException {
         int count = in.readVU30();
         
-        ABC.Scripts scripts = (abc != null) ? abc.scripts( count ) : null;
+        ABC.Scripts scripts = abcFile.scripts( count );
         
         for( int i = 0; i < count; i++ ) {
             int initializerIndex = in.readVU30();            
@@ -342,7 +322,7 @@ public class ABCParser {
     private void readMetadata() throws IOException {
         int count = in.readVU30();
         
-        ABC.Metadata meta = (abc != null) ? abc.metadata( count ) : null;
+        ABC.Metadata meta = abcFile.metadata( count );
 
         for( int i = 0; i < count; i++ ) {
             int nameIndex = in.readVU30();
@@ -364,7 +344,7 @@ public class ABCParser {
     private void readMethodInfos() throws IOException {
         int count = in.readVU30();
         
-        ABC.MethodInfos infos = (abc != null) ? abc.methods( count ) : null;
+        ABC.MethodInfos infos = abcFile.methods( count );
         
         for( int i = 0; i < count; i++ ) {
             int paramCount = in.readVU30();
@@ -410,7 +390,7 @@ public class ABCParser {
     private void readNamePool() throws IOException {
         int count = in.readVU30();
         
-        ABC.Names names = (abc != null) ? abc.namePool( count ) : null;        
+        ABC.Names names = abcFile.namePool( count );        
         for( int i = 1; i < count; i++ ) {
             readName( names );
         } 
@@ -420,7 +400,7 @@ public class ABCParser {
     private void readNSSetPool() throws IOException {
         int count = in.readVU30();
         
-        ABC.NamespaceSets sets = (abc != null) ? abc.namespaceSetPool( count ) : null;
+        ABC.NamespaceSets sets = abcFile.namespaceSetPool( count );
 
         for( int i = 1; i < count; i++ ) {
             int cnt2 = in.readVU30();
@@ -438,7 +418,7 @@ public class ABCParser {
     private void readNamespacePool() throws IOException {
         int count = in.readVU30();
         
-        ABC.Namespaces namespaces = (abc != null) ? abc.namespacePool( count ) : null;
+        ABC.Namespaces namespaces = abcFile.namespacePool( count );
 
         for( int i = 1; i < count; i++ ) {
             NamespaceKind kind  = NamespaceKind.parse(in);
@@ -456,7 +436,7 @@ public class ABCParser {
         for( int i = 0; i < strings.length; i++ ) {            
             strings[i] = in.readVU30String();
         }
-        abc.stringPool( strings );
+        abcFile.stringPool( strings );
     }
     
     private void readDoublePool() throws IOException {
@@ -466,7 +446,7 @@ public class ABCParser {
         for( int i = 0; i < doubles.length; i++ ) {
             doubles[i] = in.readDoubleLE();
         }
-        abc.doublePool( doubles );
+        abcFile.doublePool( doubles );
     }
     
     private void readIntPool() throws IOException {
@@ -476,7 +456,7 @@ public class ABCParser {
         for( int i = 0; i < ints.length; i++ ) {
             ints[i] = in.readVS32();
         }
-        abc.intPool( ints );
+        abcFile.intPool( ints );
     }
     
     private void readUIntPool() throws IOException {
@@ -486,7 +466,7 @@ public class ABCParser {
         for( int i = 0; i < uints.length; i++ ) {
             uints[i] = in.readVU32();
         }
-        abc.uintPool( uints );
+        abcFile.uintPool( uints );
     }
     
     private void readName( ABC.Names names ) throws IOException {        

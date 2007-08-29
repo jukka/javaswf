@@ -35,40 +35,98 @@ public class ABCWriter implements ABC {
     public ABCWriter( OutStream out ) {
         this.out = new OutStreamWrapper( out );
     }
-        
-    /** Write a single file */
-    public ABCFile singleFile( int majorVersion, int minorVersion ) {
-
+     
+    /** @see com.anotherbigidea.flash.avm2.ABC#version(int, int) */
+    public void version( int majorVersion, int minorVersion ) {
         out.writeUI16( minorVersion );
         out.writeUI16( majorVersion );
-        
-        return new ABCFileWriter();
     }
     
-    /** @see com.anotherbigidea.flash.avm2.ABC#abcFiles(int) */
-    public ABCFiles abcFiles(int count) {
-
-        out.writeUI32( count );
-        
-        return new ABCFiles() {
-            /** @see com.anotherbigidea.flash.avm2.ABC.ABCFiles#abcFile(java.lang.String, int, int) */
-            public ABCFile abcFile(String name, int majorVersion, int minorVersion) {                
-                out.writeString( name, "UTF-8" );                
-                return singleFile( majorVersion, minorVersion );
-            }
-
-            /** @see org.epistem.io.PipelineInterface#done() */
-            public void done() {
-                // nada                
-            }
-        };
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#classes(int) */
+    public ClassInfos classes(int count) {
+        out.writeVU30( count );
+        return new ClassInfosWriter();
     }
-    
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#doublePool(double[]) */
+    public void doublePool(double[] doubles) {
+        out.writeVU30( doubles.length > 0 ? doubles.length + 1 : 0 );
+        for (double d : doubles) {
+            out.writeDoubleLE( d );
+        }            
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#intPool(int[]) */
+    public void intPool(int[] ints) {
+        out.writeVU30( ints.length > 0 ? ints.length + 1 : 0 );
+        for (int i : ints) {
+            out.writeVS32( i );
+        }
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#metadata(int) */
+    public Metadata metadata(int count) {
+        out.writeVU30( count );
+        return new MetadataWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methodBodies(int) */
+    public MethodBodies methodBodies(int count) {
+        out.writeVU30( count );
+        return new MethodBodiesWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methods(int) */
+    public MethodInfos methods(int count) {
+        out.writeVU30( count );
+        return new MethodInfosWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namePool(int) */
+    public Names namePool(int count) {
+        out.writeVU30( count );
+        return new NamesWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespacePool(int) */
+    public Namespaces namespacePool(int count) {
+        out.writeVU30( count );
+        return new NamespacesWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespaceSetPool(int) */
+    public NamespaceSets namespaceSetPool(int count) {
+        out.writeVU30( count );
+        return new NamespaceSetsWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#scripts(int) */
+    public Scripts scripts(int count) {
+        out.writeVU30( count );
+        return new ScriptsWriter();
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#stringPool(java.lang.String[]) */
+    public void stringPool(String[] strings) {
+        out.writeVU30( strings.length > 0 ? strings.length + 1 : 0 );
+        for (String s : strings) {
+            out.writeVU30String( s );
+        }
+    }
+
+    /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#uintPool(long[]) */
+    public void uintPool(long[] uints) {
+        out.writeVU30( uints.length > 0 ? uints.length + 1 : 0 );
+        for (long i : uints) {
+            out.writeVU32( i );
+        } 
+    }
+
     /** @see com.anotherbigidea.flash.avm2.ABC#done() */
     public void done()  {
         out.flush();
     }
-
+ 
     public class ClassInfosWriter implements ABC.ClassInfos {
 
         /** @see com.anotherbigidea.flash.avm2.ABC.ClassInfos#classInfo(int, int) */
@@ -448,94 +506,6 @@ public class ABCWriter implements ABC {
             out.writeVU30( traitCount );
             
             return new TraitWriter();
-        }
-
-        /** @see org.epistem.io.PipelineInterface#done() */
-        public void done() {
-            // nada            
-        }
-    }
-    
-    public class ABCFileWriter implements ABC.ABCFile {
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#classes(int) */
-        public ClassInfos classes(int count) {
-            out.writeVU30( count );
-            return new ClassInfosWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#doublePool(double[]) */
-        public void doublePool(double[] doubles) {
-            out.writeVU30( doubles.length > 0 ? doubles.length + 1 : 0 );
-            for (double d : doubles) {
-                out.writeDoubleLE( d );
-            }            
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#intPool(int[]) */
-        public void intPool(int[] ints) {
-            out.writeVU30( ints.length > 0 ? ints.length + 1 : 0 );
-            for (int i : ints) {
-                out.writeVS32( i );
-            }
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#metadata(int) */
-        public Metadata metadata(int count) {
-            out.writeVU30( count );
-            return new MetadataWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methodBodies(int) */
-        public MethodBodies methodBodies(int count) {
-            out.writeVU30( count );
-            return new MethodBodiesWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methods(int) */
-        public MethodInfos methods(int count) {
-            out.writeVU30( count );
-            return new MethodInfosWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namePool(int) */
-        public Names namePool(int count) {
-            out.writeVU30( count );
-            return new NamesWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespacePool(int) */
-        public Namespaces namespacePool(int count) {
-            out.writeVU30( count );
-            return new NamespacesWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#namespaceSetPool(int) */
-        public NamespaceSets namespaceSetPool(int count) {
-            out.writeVU30( count );
-            return new NamespaceSetsWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#scripts(int) */
-        public Scripts scripts(int count) {
-            out.writeVU30( count );
-            return new ScriptsWriter();
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#stringPool(java.lang.String[]) */
-        public void stringPool(String[] strings) {
-            out.writeVU30( strings.length > 0 ? strings.length + 1 : 0 );
-            for (String s : strings) {
-                out.writeVU30String( s );
-            }
-        }
-
-        /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#uintPool(long[]) */
-        public void uintPool(long[] uints) {
-            out.writeVU30( uints.length > 0 ? uints.length + 1 : 0 );
-            for (long i : uints) {
-                out.writeVU32( i );
-            } 
         }
 
         /** @see org.epistem.io.PipelineInterface#done() */
