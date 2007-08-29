@@ -9,7 +9,6 @@ import org.epistem.io.IndentingPrintWriter;
 import org.epistem.io.OutStream;
 
 import com.anotherbigidea.flash.avm2.ABC;
-import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 import com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder;
 import com.anotherbigidea.flash.interfaces.SWFTagTypes;
 import com.anotherbigidea.flash.interfaces.SWFTags;
@@ -43,14 +42,14 @@ public class Test {
         args = new String[] { "/Users/nickmain/Desktop/as3temp/untitled-1.swf" };
         
         SWFTagTypes tags = new SWFTagTypesImpl() {
-            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC2() */
+            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC(int, java.lang.String) */
             @Override
-            public ABC tagDoABC2() throws IOException {
+            public ABC tagDoABC( int flags, String fileName ) throws IOException {
                 return new AVM2ABCBuilder() {
                     /** @see com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder#done() */
                     @Override
                     public void done() {
-                        this.files.get( 0 ).dump( IndentingPrintWriter.SYSOUT );
+                        file.dump( IndentingPrintWriter.SYSOUT );
                         IndentingPrintWriter.SYSOUT.flush();
                     }
                 };
@@ -74,9 +73,9 @@ public class Test {
         final AVM2ABCBuilder builder = new AVM2ABCBuilder();
         
         SWFTagTypes tags = new SWFTagTypesImpl( null ) {
-            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC2() */
+            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC() */
             @Override
-            public ABC tagDoABC2() throws IOException {                
+            public ABC tagDoABC( int flags, String name ) throws IOException {                
                 return builder;
             }
         };
@@ -88,9 +87,8 @@ public class Test {
         
         FileWriter fw1 = new FileWriter( "/Users/nickmain/Desktop/as3temp/tempdump1.txt" );
         IndentingPrintWriter ipw1 = new IndentingPrintWriter( fw1 );
-        for( AVM2ABCFile f : builder.files ) {
-            f.dump( ipw1 );
-        }
+        builder.file.dump( ipw1 );
+
         ipw1.flush();
         fw1.close();
         
@@ -99,19 +97,16 @@ public class Test {
         ABCWriter writer = new ABCWriter( os );
         
         //write the file
-        ABC.ABCFiles files = writer.abcFiles( 1 );        
-        builder.files.get( 0 ).write( files );
+        builder.file.write( writer );
         
         InStream is = new InStream( bout.toByteArray() );
         AVM2ABCBuilder builder2 = new AVM2ABCBuilder();
-        ABCParser parser = new ABCParser( builder2.abcFiles( (int) is.readUI32() ), is );
+        ABCParser parser = new ABCParser( builder, is );
         parser.parse();
         
         FileWriter fw2 = new FileWriter( "/Users/nickmain/Desktop/as3temp/tempdump2.txt" );
         IndentingPrintWriter ipw2 = new IndentingPrintWriter( fw2 );
-        for( AVM2ABCFile f : builder2.files ) {
-            f.dump( ipw2 );
-        }
+        builder2.file.dump( ipw2 );
         ipw2.flush();
         fw2.close();
     }
@@ -128,16 +123,16 @@ public class Test {
         TagWriter tagwriter = new TagWriter( writer );
         
         SWFTagTypes tags = new SWFTagTypesImpl( tagwriter ) {
-            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC2() */
+            /** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoABC() */
             @Override
-            public ABC tagDoABC2() throws IOException {
+            public ABC tagDoABC( final int flags, final String name ) throws IOException {
                 return new AVM2ABCBuilder() {
                     /** @see com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder#done() */
                     @Override
                     public void done() {
                         try {
-                            ABC abc = mTagtypes.tagDoABC2();
-                            write( abc );
+                            ABC abc = mTagtypes.tagDoABC( flags, name );
+                            file.write( abc );
                         } catch( IOException ioe ) {
                             throw new RuntimeException( ioe );
                         }
