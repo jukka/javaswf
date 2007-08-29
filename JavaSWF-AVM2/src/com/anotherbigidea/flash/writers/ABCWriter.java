@@ -36,6 +36,15 @@ public class ABCWriter implements ABC {
         this.out = new OutStreamWrapper( out );
     }
         
+    /** Write a single file */
+    public ABCFile singleFile( int majorVersion, int minorVersion ) {
+
+        out.writeUI16( minorVersion );
+        out.writeUI16( majorVersion );
+        
+        return new ABCFileWriter();
+    }
+    
     /** @see com.anotherbigidea.flash.avm2.ABC#abcFiles(int) */
     public ABCFiles abcFiles(int count) {
 
@@ -43,13 +52,9 @@ public class ABCWriter implements ABC {
         
         return new ABCFiles() {
             /** @see com.anotherbigidea.flash.avm2.ABC.ABCFiles#abcFile(java.lang.String, int, int) */
-            public ABCFile abcFile(String name, int majorVersion, int minorVersion) {
-                
-                out.writeString( name, "UTF-8" );
-                out.writeUI16( minorVersion );
-                out.writeUI16( majorVersion );
-                
-                return new ABCFileWriter();
+            public ABCFile abcFile(String name, int majorVersion, int minorVersion) {                
+                out.writeString( name, "UTF-8" );                
+                return singleFile( majorVersion, minorVersion );
             }
 
             /** @see org.epistem.io.PipelineInterface#done() */
@@ -58,10 +63,10 @@ public class ABCWriter implements ABC {
             }
         };
     }
-
+    
     /** @see com.anotherbigidea.flash.avm2.ABC#done() */
     public void done()  {
-        // nada        
+        out.flush();
     }
 
     public class ClassInfosWriter implements ABC.ClassInfos {

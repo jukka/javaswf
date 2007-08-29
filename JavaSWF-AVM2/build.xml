@@ -1,0 +1,20 @@
+<project name="Code Generation Targets" default="all" basedir=".">
+
+	<path id="classpath">
+		<pathelement location="../EpistemCommon/lib/freemarker.jar"/>
+		<pathelement location="../EpistemCommon/eclipse-build"/>
+		<pathelement location="eclipse-build"/>
+	</path>
+	
+	<target name="all">
+	</target>
+	
+	<target name="generate-instructions" >
+		<java classpathref="classpath" 
+			  classname="org.javaswf.tools.generate.intructions.AVM2InstructionGenerator">
+			<arg value="generated"/>
+		</java>
+		
+	</target>
+	
+</project>

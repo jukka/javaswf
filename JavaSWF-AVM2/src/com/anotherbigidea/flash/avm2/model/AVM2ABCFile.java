@@ -12,6 +12,7 @@ import org.epistem.io.IndentingPrintWriter;
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.MethodInfoFlags;
 import com.anotherbigidea.flash.avm2.model.io.ConstantPool;
+import com.anotherbigidea.flash.writers.ABCWriter;
 
 /**
  * An AVM2 ABC "file"
@@ -161,12 +162,24 @@ public class AVM2ABCFile {
         
         public AVM2ABCFile getFile() { return AVM2ABCFile.this; }
     }
+
+    /**
+     * Write the file as a stand-alone abc file
+     */
+    public void writeStandalone( ABCWriter abcWriter ) {        
+        ABC.ABCFile file = abcWriter.singleFile( majorVersion, minorVersion );
+        write( file );
+    }
     
     /**
-     * Write the file
+     * Write the file as part of a SWF tag
      */
     public void write( ABC.ABCFiles abcFiles ) {
         ABC.ABCFile file = abcFiles.abcFile( name, majorVersion, minorVersion );
+        write( file );
+    }
+    
+    private void write( ABC.ABCFile file ) {
         
         WriteContext context = new WriteContext();
         
