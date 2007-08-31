@@ -30,6 +30,11 @@ public class J2AVM {
         this.targetFile = targetFile;
 
         pipeline.addStep( new AVM2ClassEmitter() );        
+
+        AVM2ABCFile abcFile = new AVM2ABCFile( ABC.MAJOR_VERSION_46,
+                                               ABC.MINOR_VERSION_16 );
+
+        context = new TranslationContext( abcFile );
     }
     
     /**
@@ -43,11 +48,6 @@ public class J2AVM {
      * Perform the translation process.
      */
     public void translate() throws IOException {
-
-        AVM2ABCFile abcFile = new AVM2ABCFile( ABC.MAJOR_VERSION_46,
-                                               ABC.MINOR_VERSION_16 );
-
-        context = new TranslationContext( abcFile );
 
         //TODO: set up ABC file
         
@@ -63,7 +63,7 @@ public class J2AVM {
             OutStream out       = new OutStream( fileOut );
             ABCWriter abcWriter = new ABCWriter( out );
             
-            abcFile.write( abcWriter );
+            context.getAbcFile().write( abcWriter );
         } finally {
             fileOut.close();
         }

@@ -11,6 +11,7 @@ import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.EmptyVisitor;
 
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 
@@ -99,8 +100,23 @@ class EmitterClassVisitor extends ClassAdapter {
      */
     public MethodVisitor visitMethod( int access, String name, String desc,
                                       String signature, String[] exceptions ) {
+        
+        System.out.println( "Visiting method " + name + " (" + signature + "): " + desc );
+        
         //TODO:
-        return null;
+        return new EmptyVisitor() {
+
+            /** @see org.objectweb.asm.commons.EmptyVisitor#visitCode() */
+            @Override
+            public void visitCode() {
+                // TODO Auto-generated method stub
+                super.visitCode();
+            }
+
+          
+            
+            
+        };
     }
 
     /**
