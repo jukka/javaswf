@@ -33,10 +33,13 @@
  ****************************************************************/
 package com.anotherbigidea.flash.interfaces;
 
-import java.io.*;
+import java.io.IOException;
+import java.util.Map;
 
 import com.anotherbigidea.flash.avm2.ABC;
-import com.anotherbigidea.flash.structs.*;
+import com.anotherbigidea.flash.structs.AlphaTransform;
+import com.anotherbigidea.flash.structs.Matrix;
+import com.anotherbigidea.flash.structs.SoundInfo;
 
 /**
  * Interface for passing SWF tag types that can be used in a movie or a sprite
@@ -82,13 +85,12 @@ public interface SWFSpriteTagTypes extends SWFTags
 	public SWFActions tagDoInitAction( int spriteId ) throws IOException;
 
     /**
-     * Associate an AS3 class with a sprite, or the main timeline
+     * Associate AS3 classes with sprites, or the main timeline.
      * 
-     * @param symbolId the sprite - one for the main timeline
-     * @param className the fully qualified class name
+     * @param classes map of symbol id to class name (id zero is main timeline)
      * @since Flash 9
      */
-    public void tagSymbolClass( int symbolId, String className ) throws IOException;
+    public void tagSymbolClass( Map<Integer, String> classes ) throws IOException;
     
     /**
      * The AVM2 ABC tag

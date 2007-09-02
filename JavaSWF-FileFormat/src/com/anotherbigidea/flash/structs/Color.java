@@ -64,6 +64,15 @@ public class Color
     public void setGreen( int green ) { this.green = green; }
     public void setBlue ( int blue  ) { this.blue  = blue; }
     
+    /**
+     * @param rgb the color in the form 0x00rrggbb
+     */
+    public Color( int rgb ) {
+        this( (rgb >> 16) & 0xff, 
+              (rgb >> 8 ) & 0xff,
+              rgb         & 0xff );
+    }
+    
     public Color( int red, int green, int blue )
     {
         this.red   = red;

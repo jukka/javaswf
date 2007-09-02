@@ -34,19 +34,23 @@
 package com.anotherbigidea.flash.writers;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.epistem.io.InStream;
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.io.InterfaceCallDumper;
+import org.epistem.util.CommandLineArgs;
 import org.epistem.util.Hex;
 
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.avm2.ABC;
+import com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder;
 import com.anotherbigidea.flash.interfaces.SWFActions;
 import com.anotherbigidea.flash.interfaces.SWFFileSignature;
 import com.anotherbigidea.flash.interfaces.SWFShape;
@@ -77,7 +81,7 @@ public class SWFTagDumper
     protected String dashes = "---------------";
     protected boolean dumpHex;
     protected String indent = "";
-    protected boolean decompileActions = false;
+    protected boolean dumpActions = false;
     
     /** 
      * Dump to System.out
@@ -94,20 +98,20 @@ public class SWFTagDumper
      */
     public SWFTagDumper( OutputStream out, 
                          boolean dumpHex, 
-                         boolean decompileActions )
+                         boolean dumpActions )
     {
         writer = new PrintWriter( out );
         this.dumpHex = dumpHex;
-        this.decompileActions = decompileActions;
+        this.dumpActions = dumpActions;
     }
     
     public SWFTagDumper( PrintWriter writer, 
                          boolean dumpHex, 
-                         boolean decompileActions )
+                         boolean dumpActions )
     {
         this.writer = writer;
         this.dumpHex = dumpHex;
-        this.decompileActions = decompileActions;
+        this.dumpActions = dumpActions;
     }
 
 	/**
@@ -171,18 +175,35 @@ public class SWFTagDumper
 
         println( "ABC File '" + filename + "' " + (flags != 0 ? "lazy-initialization" : "" ));
         
-        IndentingPrintWriter ipw = new IndentingPrintWriter( this.writer );
-        ipw.setIndentLevel( indent.length() / 4 );
-        ipw.setIndent( "  " );
+        if( ! dumpActions ) {
+            return null;
+        }
         
-        return new InterfaceCallDumper<ABC>( ABC.class, ipw, true ).getInterface();        
+        return new AVM2ABCBuilder() {
+
+            /** @see com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder#done() */
+            @Override
+            public void done() {
+                super.done();
+
+                IndentingPrintWriter ipw = new IndentingPrintWriter( writer );
+                ipw.setIndentLevel( indent.length() / 4 );
+                ipw.setIndent( "  " );
+                
+                this.file.dump( ipw );
+            }
+        };
     }
 
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(int, java.lang.String) */
-    public void tagSymbolClass(int symbolId, String className) throws IOException {
-        println( "symbol-class id=" + symbolId + " class=" + className );    
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(java.util.Map) */
+    public void tagSymbolClass(Map<Integer, String> classes) throws IOException {
+        println( "symbol classes:" );
+        
+        for( Map.Entry<Integer, String> entry : classes.entrySet() ) {
+            println( "  " + entry.getKey() + " --> " + entry.getValue() );
+        }
     }
-
+    
     /**
      * SWFTagTypes interface
      */
@@ -350,7 +371,12 @@ public class SWFTagDumper
      * SWFTagTypes interface
      */
     public SWFActions tagDoAction() throws IOException    {
-        println( "actions:" );
+        if( ! dumpActions ) {
+            println( "AVM1 actions" );
+            return null;
+        }
+
+        println( "AVM1 actions:" );
         
         ActionTextWriter acts = new ActionTextWriter( writer );
         acts.indent = "    " + indent ;
@@ -362,6 +388,11 @@ public class SWFTagDumper
 	 */
 	public SWFActions tagDoInitAction( int spriteId ) throws IOException
 	{
+        if( ! dumpActions ) {
+            println( "AVM1 init actions" );
+            return null;
+        }
+	    
 		println( "init actions for sprite " + spriteId + ":" );
         
 		ActionTextWriter acts = new ActionTextWriter( writer );
@@ -467,7 +498,7 @@ public class SWFTagDumper
     {
         println( "sprite id=" + id );
         
-        SWFTagDumper dumper = new SWFTagDumper( writer, dumpHex, decompileActions );
+        SWFTagDumper dumper = new SWFTagDumper( writer, dumpHex, dumpActions );
         dumper.indent = indent + "    ";
         return dumper;    }
     
@@ -842,26 +873,43 @@ public class SWFTagDumper
     }
     
     /**
-     * args[0] = name of SWF file to dump to System.out
-     * args[1] = if exists then dump-hex is true (dumps binary as hex - otherwise skips)
-     * args[2] = if exists then decompiles action codes
+     * Command line dumper.
+     * 
+     * The first argument is the name of the file to dump.  Other options (of
+     * the form name=value follow):
+     * 
+     *   hex          - if this appears then binary blobs are hex dumped
+     *   acts         - if this appears then actions are dumped
+     *   out=filename - file to dump to, sysout otherwise
+     * 
      */
-    public static void main( String[] args ) throws IOException
-    {
-        SWFTagDumper dumper = new SWFTagDumper( args.length > 1, args.length > 2 );
+    public static void main( String[] args ) throws IOException {
+
+        Properties options = CommandLineArgs.parse( args );
+
+        String  inFile   = args[0];
+        String  outFile  = options.getProperty( "out" );
+        boolean dumpHex  = options.containsKey( "hex" );
+        boolean dumpActs = options.containsKey( "acts" );
         
-        FileInputStream in  = new FileInputStream( args[0] );
-        SWFTags tagparser = new TagParser( dumper );
-        SWFReader reader = new SWFReader( tagparser, in );
+        OutputStream out = (outFile != null) ?
+                               new FileOutputStream( outFile ) :
+                               null;
         
-        try
-        {
+        SWFTagDumper dumper = (out != null) ? 
+                                  new SWFTagDumper( out, dumpHex, dumpActs ) :
+                                  new SWFTagDumper( dumpHex, dumpActs );
+        
+        FileInputStream in  = new FileInputStream( inFile );
+        SWFTags   tagparser = new TagParser( dumper );
+        SWFReader reader    = new SWFReader( tagparser, in );
+        
+        try {
             reader.readFile();
-        }
-        finally
-        {        
+        } finally {        
             dumper.flush();
             in.close();
+            if( out != null ) out.close();
         }        
     }
     

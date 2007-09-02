@@ -38,7 +38,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.zip.InflaterInputStream;
 
@@ -200,7 +202,7 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
 			case TAG_DEFINEVIDEOSTREAM: parseDefineVideoStream( in ); break;
 			case TAG_VIDEOFRAME       : parseVideoFrame( in, length ); break;
 			
-            case TAG_SYMBOLCLASS : mTagtypes.tagSymbolClass( (int) in.readUI32(), in.readString( "UTF-8" ) ); break;
+            case TAG_SYMBOLCLASS : parseSymbolClass( in ); break;
             case TAG_DOABC       : parseDoABC( in ); break;
             
             case TAG_FILE_ATTRIBUTES: mTagtypes.tagFileAttributes( (int) in.readUI32() ); break;
@@ -211,6 +213,21 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
         }                
     }
 
+    protected void parseSymbolClass( InStream in ) throws IOException {
+        
+        Map<Integer, String> classes = new LinkedHashMap<Integer, String>(); //use LHM to preserve order
+        
+        int count = in.readUI16();
+        for( int i = 0; i < count; i++ ) {
+            int symbolId     = in.readUI16();
+            String className = in.readString( "UTF-8" );
+            
+            classes.put( symbolId, className );
+        }
+        
+        mTagtypes.tagSymbolClass( classes );
+    }
+    
     protected void parseDoABC( InStream in ) throws IOException {      
         
         int    flags = (int) in.readUI32();

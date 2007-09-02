@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Vector;
 import java.util.zip.DeflaterOutputStream;
 
@@ -1817,13 +1818,16 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
             }
         };
     }
-
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(int, java.lang.String) */
-    public void tagSymbolClass(int symbolId, String className) throws IOException {
+    
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(java.util.Map) */
+    public void tagSymbolClass(Map<Integer, String> classes) throws IOException {
         startTag( TAG_SYMBOLCLASS, false );
-        
-        out.writeUI32( symbolId );
-        out.writeString( className, "UTF-8" );
+
+        out.writeUI16( classes.size() );
+        for( Map.Entry<Integer, String> entry : classes.entrySet() ) {
+            out.writeUI16  ( entry.getKey() );
+            out.writeString( entry.getValue(), "UTF-8" );
+        }
 
         completeTag();
     }

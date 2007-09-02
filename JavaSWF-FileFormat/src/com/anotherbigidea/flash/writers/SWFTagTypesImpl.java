@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Vector;
 
 import com.anotherbigidea.flash.avm2.ABC;
@@ -486,9 +487,9 @@ public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature
         return null;
     }
 
-    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(int, java.lang.String) */
-    public void tagSymbolClass(int symbolId, String className) throws IOException {
-        if( mTagtypes != null ) mTagtypes.tagSymbolClass( symbolId, className );
+    /** @see com.anotherbigidea.flash.interfaces.SWFSpriteTagTypes#tagSymbolClass(java.util.Map) */
+    public void tagSymbolClass(Map<Integer, String> classes) throws IOException {
+        if( mTagtypes != null ) mTagtypes.tagSymbolClass( classes );
     }
     
     /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagFileAttributes(int) */
