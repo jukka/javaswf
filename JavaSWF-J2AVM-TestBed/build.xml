@@ -1,0 +1,66 @@
+<project name="Test J2AVM" default="all" basedir="." >
+	
+	<path id="javaswf">
+		<pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
+        <pathelement location="../EpistemCommon/eclipse-build"/>
+        <pathelement location="../JavaSWF-AVM2/eclipse-build"/>
+	</path>
+
+    <path id="j2avm" >
+    	<path refid="javaswf" />
+        <pathelement location="../JavaSWF-J2AVM/eclipse-build"/>
+        <pathelement location="../JavaSWF-J2AVM/lib/asm-all-3.0.jar" />
+    </path>
+
+	<path id="flash-runtime" path="../JavaSWF-FlashRuntime/eclipse-build" />
+	
+    <path id="classesToTranslate">
+    	<path refid="flash-runtime"/>
+        <pathelement location="eclipse-build"/>
+    </path>
+	
+	
+	<taskdef name="j2avm"
+		     classname="org.javaswf.j2avm.ant.J2AVMAntTask"
+             classpathref="j2avm" />
+	
+	<target name="all" >
+	</target>
+	
+	
+    <!-- The J2AVM sanity test -->
+    <target name="sanity-test" >
+    	<j2avm swf         ="generated/test.swf"
+    		   classpathref="classesToTranslate"
+    		   mainclass   ="test.Test"
+    		   bgcolor     ="#ffffcc"
+    		   width       ="600"
+    		   height      ="600"
+    		   verbose     ="yes"
+    		   debugverbose="yes"
+    		/>
+    </target>
+
+    <!-- Dump the Flex compiled test.swf -->
+    <target name="dump-generated-swf">
+        <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+              classpathref="javaswf" >
+            <arg value="generated/test.swf"/>
+            <arg value="out=generated/test.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+        </java>
+    </target>
+
+    <!-- Dump the Flex compiled test.swf -->
+	<target name="dump-flex-test-swf">
+		<java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+			  classpathref="javaswf" >
+            <arg value="as/Test.swf"/>
+            <arg value="out=as/Test.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+		</java>
+	</target>
+	
+</project>
