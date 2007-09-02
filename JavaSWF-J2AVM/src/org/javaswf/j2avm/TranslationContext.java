@@ -2,6 +2,7 @@ package org.javaswf.j2avm;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 
@@ -26,10 +27,17 @@ public class TranslationContext {
     private final Set<Class<?>> translatedClasses = new HashSet<Class<?>>();
 
     /**
+     * True if debug messages should be generated
+     */
+    public final boolean debug;
+    
+    /**
      * @param abcFile the abc file to generate
      */
     /*pkg*/ TranslationContext( AVM2ABCFile abcFile ) {
         this.abcFile = abcFile;
+        
+        debug = J2AVM.log.isLoggable( Level.FINEST );
     }
     
     /**
@@ -81,5 +89,12 @@ public class TranslationContext {
         classBeingTranslated = clazz;
         
         return clazz;
+    }
+    
+    /**
+     * Log a debug message
+     */
+    public void debug( String message ) {
+        if( debug ) J2AVM.log.finest( message );
     }
 }
