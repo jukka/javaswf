@@ -1,7 +1,5 @@
 package org.javaswf.j2avm;
 
-import org.objectweb.asm.ClassVisitor;
-
 /**
  * Implemented by steps in the translation pipeline.
  *
@@ -10,17 +8,14 @@ import org.objectweb.asm.ClassVisitor;
 public interface TranslationStep {
     
     /**
-     * Prepare for the translation of a class.
+     * Process a class
      * 
-     * Returns the ClassVisitor that corresponds to this translation step.
-     * 
-     * This method is called multiple times - once for each class that is
-     * passed through the translation pipeline.
-     * 
-     * @param context the context for the translation
-     * @param downstreamVisitor the next visitor in the pipeline
-     * @return the visitor implementation for this step
+     * @param javaClass the class to be processed - this will be passed to
+     *                  subsequent steps in the pipeline so alterations will
+     *                  persist
+     * @param context the translation context
+     * @return false to halt processing of the given class
      */
-    public ClassVisitor prepare( TranslationContext context,
-                                 ClassVisitor downstreamVisitor );
+    public boolean process( JavaClass javaClass, TranslationContext context );
+    
 }

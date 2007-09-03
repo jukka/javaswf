@@ -3,15 +3,12 @@ package org.javaswf.j2avm;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.commons.EmptyVisitor;
-
 /**
- * The manager of the pipeline of translation steps.
+ * A pipeline of translation steps.
  *
  * @author nickmain
  */
-public final class TranslationPipeline {
+public final class TranslationPipeline implements TranslationStep {
 
     private final List<TranslationStep> steps = new ArrayList<TranslationStep>();
     
@@ -26,22 +23,12 @@ public final class TranslationPipeline {
         return this;
     }
     
-    /**
-     * Prepare the pipeline for translating a class.
-     * 
-     * @param context the translation context to use
-     * @return the visitor for receiving the class file
-     */
-    public ClassVisitor prepare( TranslationContext context ) {
-        
-        ClassVisitor visitor = new EmptyVisitor();
-        
-        //prepare all the steps from end to start
-        for( int i = steps.size() - 1; i >= 0; i-- ) {
-            TranslationStep step = steps.get( i );
-            visitor = step.prepare( context, visitor );
+    /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.JavaClass, org.javaswf.j2avm.TranslationContext) */
+    public boolean process( JavaClass javaClass, TranslationContext context) {
+        for( TranslationStep step : steps ) {
+            if( ! step.process( javaClass, context )) return false;
         }
         
-        return visitor;
+        return true;
     }
 }

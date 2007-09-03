@@ -15,16 +15,16 @@ import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 public class TranslationContext {
 
     //The class currently being translated
-    private Class<?> classBeingTranslated;
+    private JavaClass classBeingTranslated;
     
     //The ABC file being written to
     private final AVM2ABCFile abcFile;
 
     //The set of classes to be translated
-    private final Set<Class<?>> classesToBeTranslated = new HashSet<Class<?>>();
+    private final Set<JavaClass> classesToBeTranslated = new HashSet<JavaClass>();
 
     //The set of classes that have been translated
-    private final Set<Class<?>> translatedClasses = new HashSet<Class<?>>();
+    private final Set<JavaClass> translatedClasses = new HashSet<JavaClass>();
 
     /**
      * True if debug messages should be generated
@@ -58,7 +58,7 @@ public class TranslationContext {
     public void translateClass( String name ) throws ClassNotFoundException {
         name = name.replace( '/', '.' );
         
-        ClassLoader loader = classBeingTranslated.getClassLoader();
+        ClassLoader loader = classBeingTranslated.clazz.getClassLoader();
         Class<?> clazz = loader.loadClass( name );
         addClass( clazz );
     }
@@ -68,7 +68,7 @@ public class TranslationContext {
      */
     /*pkg*/ void addClass( Class<?> clazz ) {
         if( ! translatedClasses.contains( clazz ) ) {
-            classesToBeTranslated.add( clazz );
+            classesToBeTranslated.add( new JavaClass( clazz ));
         }        
     }
     
@@ -77,13 +77,13 @@ public class TranslationContext {
      * 
      * @return null if there are no more classes pending.
      */
-    /*pkg*/ Class<?> classToBeTranslated() {
+    /*pkg*/ JavaClass classToBeTranslated() {
         if( classesToBeTranslated.isEmpty() ) {
             classBeingTranslated = null;
             return null;
         }
         
-        Class<?> clazz = classesToBeTranslated.iterator().next();
+        JavaClass clazz = classesToBeTranslated.iterator().next();
         classesToBeTranslated.remove( clazz );
         translatedClasses    .add( clazz );
         classBeingTranslated = clazz;

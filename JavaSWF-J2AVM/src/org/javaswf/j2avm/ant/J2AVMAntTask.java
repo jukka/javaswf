@@ -1,17 +1,12 @@
 package org.javaswf.j2avm.ant;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.LogLevel;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.util.ClasspathUtils;
 import org.javaswf.j2avm.J2AVM;
 
 /**
@@ -19,7 +14,7 @@ import org.javaswf.j2avm.J2AVM;
  *
  * @author nickmain
  */
-public class J2AVMAntTask extends Task {
+public class J2AVMAntTask extends TaskWithAClass {
 
     private File targetSWFFile;
   
@@ -31,8 +26,7 @@ public class J2AVMAntTask extends Task {
     private boolean verbose      = false;
     private boolean debugVerbose = false;
     
-    private ClassLoader loader;
-    private String      className;
+
     
     /**
      * Set the verbose flag
@@ -89,39 +83,6 @@ public class J2AVMAntTask extends Task {
         }
         
         this.bgColor = Integer.parseInt( bgColor, 16 );
-    }
-
-    /*pkg*/ Class<?> loadClass() throws BuildException {
-        if( loader    == null ) throw new BuildException( "Classpath not set or referenced" );
-        if( className == null ) throw new BuildException( "Class name is missing" );
-        
-        try {
-            return loader.loadClass( className );
-        } catch( ClassNotFoundException ex ) {
-            throw new BuildException( "Could not load class " + className );
-        }
-    }
-    
-    /**
-     * Set the classpath (inline)
-     */
-    public void setClasspath( Path path ) {
-        this.loader = ClasspathUtils.getClassLoaderForPath( getProject(), path, "" );
-    }
-    
-    /**
-     * Set the classpath via an id reference
-     */
-    public void setClasspathRef( String id ) {
-        Reference ref = new Reference( getProject(), id );
-        this.loader = ClasspathUtils.getClassLoaderForPath( getProject(), ref );
-    }
-    
-    /**
-     * Set the main class name
-     */
-    public void setMainClass( String className ) {
-        this.className = className;
     }
     
     @Override

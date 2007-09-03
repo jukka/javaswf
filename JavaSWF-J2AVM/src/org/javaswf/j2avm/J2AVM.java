@@ -2,13 +2,10 @@ package org.javaswf.j2avm;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 import org.javaswf.j2avm.emitter.AVM2ClassEmitter;
 import org.javaswf.j2avm.swf.TargetSWF;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
@@ -60,12 +57,12 @@ public class J2AVM {
      */
     public void translate() throws IOException {
 
-        ClassVisitor visitor = pipeline.prepare( context );
-        Class<?> clazz;
+        JavaClass javaClass;
         
-        while((clazz = context.classToBeTranslated()) != null ) {
-            log.fine( "..translating class " + clazz.getName() );       
-            visitClass( clazz, visitor );
+        while((javaClass = context.classToBeTranslated()) != null ) {
+            log.fine( "..translating " + javaClass );       
+
+            pipeline.process( javaClass, context );
         }
 
         targetSWF.addABC( context.getAbcFile(), "J2AVM", true );
@@ -73,18 +70,5 @@ public class J2AVM {
         log.info( "writing target SWF" );       
         targetSWFFile.getParentFile().mkdirs(); //ensure dir structure exists
         targetSWF.write( targetSWFFile );
-    }
-    
-    /**
-     * Parse the given class and visit it
-     */
-    private void visitClass( Class<?> clazz, ClassVisitor visitor ) throws IOException {
-
-        String fileName = clazz.getName().replace( '.', '/' ) + ".class";
-        
-        InputStream in = clazz.getClassLoader().getResourceAsStream( fileName ); 
-        ClassReader reader = new ClassReader( in );
-        
-        reader.accept( visitor, 0 );
     }
 }
