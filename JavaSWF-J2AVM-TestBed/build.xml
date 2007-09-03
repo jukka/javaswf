@@ -23,16 +23,27 @@
 	<taskdef name="j2avm"
 		     classname="org.javaswf.j2avm.ant.J2AVMAntTask"
              classpathref="j2avm" />
+
+    <taskdef name="dumpclass"
+             classname="org.javaswf.j2avm.ant.JavaClassDumperTask"
+             classpathref="j2avm" />
 	
 	<target name="all" >
 	</target>
 	
+    <!-- Dump the test Java class -->
+    <target name="dump-test-java-class" >
+        <dumpclass classpathref="classesToTranslate"
+                   class       ="test.Test"
+                   file        ="generated/test.asm.txt"
+        />
+    </target>
 	
     <!-- The J2AVM sanity test -->
     <target name="sanity-test" >
     	<j2avm swf         ="generated/test.swf"
     		   classpathref="classesToTranslate"
-    		   mainclass   ="test.Test"
+    		   class       ="test.Test"
     		   bgcolor     ="#ffffcc"
     		   width       ="600"
     		   height      ="600"
