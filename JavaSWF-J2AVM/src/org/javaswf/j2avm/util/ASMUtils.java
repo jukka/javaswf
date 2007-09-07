@@ -30,4 +30,11 @@ public class ASMUtils {
         return (flags & Opcodes.ACC_INTERFACE) != 0; 
     }
 
+    /**
+     * Whether the static flag is set
+     */
+    public static boolean isStatic( int flags ) {
+        return (flags & Opcodes.ACC_STATIC) != 0; 
+    }
+
 }

@@ -100,11 +100,11 @@ public class J2AVMAntTask extends TaskWithAClass {
         if( debugVerbose ) J2AVM.log.setLevel( Level.ALL );        
         else if( verbose ) J2AVM.log.setLevel( Level.FINE );
         else               J2AVM.log.setLevel( Level.INFO );        
-        
-        J2AVM j2avm = new J2AVM( targetSWFFile, mainClass, 
-                                 width, height, frameRate, bgColor );
-        
+
         try {
+            J2AVM j2avm = new J2AVM( targetSWFFile, mainClass, 
+                                     width, height, frameRate, bgColor );
+        
             j2avm.translate();
         } catch( Exception ex ) {
             ex.printStackTrace();
