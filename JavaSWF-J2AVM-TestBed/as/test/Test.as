@@ -1,4 +1,4 @@
-package {
+package test {
 
     import flash.display.*;
     import flash.errors.*;
@@ -9,7 +9,7 @@ package {
             drawTest();
         }
         
-        public function drawTest():void {
+        public function drawTest():uint {
             var g:Graphics = graphics;
             g.beginFill( 0xffff00 );
             g.lineStyle( 2, 0 );
@@ -19,6 +19,8 @@ package {
             g.lineTo( 10, 90 );
             g.lineTo( 10, 10 );
             g.endFill();
+            
+            return 1;
         }
     }    
 }

@@ -1,7 +1,7 @@
 signature: CWS
-header: version=9 length=1034 width=10000 height=7500 rate=24 frame-count=1
+header: version=9 length=1062 width=10000 height=7500 rate=24 frame-count=1
 file-attributes has-metadata allow-as3 use-network
-Tag 77 length=459
+Tag 77 length=458
     00000000 3c 72 64 66 3a 52 44 46 20 78 6d 6c 6e 73 3a 72 <rdf:RDF xmlns:r
     00000010 64 66 3d 27 68 74 74 70 3a 2f 2f 77 77 77 2e 77 df='http://www.w
     00000020 33 2e 6f 72 67 2f 31 39 39 39 2f 30 32 2f 32 32 3.org/1999/02/22
@@ -27,23 +27,23 @@ Tag 77 length=459
     00000160 6b 6e 6f 77 6e 3c 2f 64 63 3a 63 72 65 61 74 6f known</dc:creato
     00000170 72 3e 3c 64 63 3a 6c 61 6e 67 75 61 67 65 3e 45 r><dc:language>E
     00000180 4e 3c 2f 64 63 3a 6c 61 6e 67 75 61 67 65 3e 3c N</dc:language><
-    00000190 64 63 3a 64 61 74 65 3e 41 75 67 20 33 30 2c 20 dc:date>Aug 30, 
-    000001a0 32 30 30 37 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 2007</dc:date></
-    000001b0 72 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e rdf:Description>
-    000001c0 3c 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- </rdf:RDF>.     
+    00000190 64 63 3a 64 61 74 65 3e 53 65 70 20 35 2c 20 32 dc:date>Sep 5, 2
+    000001a0 30 30 37 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 72 007</dc:date></r
+    000001b0 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e 3c df:Description><
+    000001c0 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- -- /rdf:RDF>.      
 ---------------
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(134,156,167)
 serial number:
   00000000 01 00 00 00 00 00 00 00 02 00 45 a1 02 00 00 00 ..........E.....
-  00000010 00 00 43 3f 22 b8 14 01 00 00 -- -- -- -- -- -- ..C?".....      
+  00000010 00 00 a5 ce 18 d7 14 01 00 00 -- -- -- -- -- -- ..........      
 
-frame-label Test
+frame-label test_Test
 ABC File 'frame1' lazy-initialization
 abc-file {
-  [0] sealed class .Test {
+  [0] sealed class test.Test {
     extends Qname:PackageNamespace(flash.display)::MovieClip
-    protected-namespace ProtectedNamespace(Test)
+    protected-namespace ProtectedNamespace(test:Test)
 
     constructor: method  {
       flags:
@@ -87,7 +87,7 @@ abc-file {
 
     Qname:PackageNamespace()::drawTest [?] method  {
       flags:
-      return-type: Qname:PackageNamespace()::void
+      return-type: Qname:PackageNamespace()::uint
       parameters (
       )
       body {
@@ -130,14 +130,15 @@ abc-file {
               callpropvoid Qname:PackageNamespace()::lineTo 2
               getlocal1
               callpropvoid Qname:PackageNamespace()::endFill 0
-              returnvoid
+              pushbyte 1
+              returnvalue
 
       }
     }
   }
 
    script {
-    Qname:PackageNamespace()::Test [0] class = Qname:PackageNamespace()::Test
+    Qname:PackageNamespace(test)::Test [0] class = Qname:PackageNamespace(test)::Test
 
     script method  {
       flags:
@@ -168,7 +169,7 @@ abc-file {
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
-              newclass Qname:PackageNamespace()::Test
+              newclass Qname:PackageNamespace(test)::Test
               popscope
               popscope
               popscope
@@ -176,7 +177,7 @@ abc-file {
               popscope
               popscope
               popscope
-              initproperty Qname:PackageNamespace()::Test
+              initproperty Qname:PackageNamespace(test)::Test
               returnvoid
 
       }
@@ -185,7 +186,7 @@ abc-file {
 
 }
 symbol classes:
-  0 --> Test
+  0 --> test.Test
 ---------- frame ----------
 end
 ---------------

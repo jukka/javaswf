@@ -1,10 +1,152 @@
 signature: CWS
-header: version=9 length=90 width=12000 height=12000 rate=12 frame-count=1
+header: version=9 length=556 width=12000 height=12000 rate=12 frame-count=1
 file-attributes allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,204)
 ABC File 'J2AVM' lazy-initialization
 abc-file {
+  [0] sealed class test.Test {
+    extends Qname:PackageNamespace(flash.display)::MovieClip
+    protected-namespace ProtectedNamespace(test:Test)
+
+    constructor: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              getlocal0
+              callmethod 1 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 9
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:PackageNamespace()::drawTest [1] method  {
+      flags:
+      return-type: Qname:PackageNamespace()::void
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlex Qname:PackageNamespace()::graphics
+              coerce Qname:PackageNamespace(flash.display)::Graphics
+              setlocal1
+              getlocal1
+              pushint 16746751
+              callpropvoid Qname:PackageNamespace()::beginFill 1
+              getlocal1
+              pushbyte 2
+              pushbyte 0
+              callpropvoid Qname:PackageNamespace()::lineStyle 2
+              getlocal1
+              pushbyte 10
+              dup
+              callpropvoid Qname:PackageNamespace()::moveTo 2
+              getlocal1
+              pushbyte 90
+              pushbyte 10
+              callpropvoid Qname:PackageNamespace()::lineTo 2
+              getlocal1
+              pushbyte 90
+              pushbyte 90
+              callpropvoid Qname:PackageNamespace()::lineTo 2
+              getlocal1
+              pushbyte 10
+              pushbyte 90
+              callpropvoid Qname:PackageNamespace()::lineTo 2
+              getlocal1
+              pushbyte 10
+              pushbyte 10
+              callpropvoid Qname:PackageNamespace()::lineTo 2
+              getlocal1
+              callpropvoid Qname:PackageNamespace()::endFill 0
+              returnvoid
+
+      }
+    }
+  }
+
+   script {
+    Qname:PackageNamespace(test)::Test [0] class = Qname:PackageNamespace(test)::Test
+
+    script method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 9
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Qname:PackageNamespace()::Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              newclass Qname:PackageNamespace(test)::Test
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(test)::Test
+              returnvoid
+
+      }
+    }
+  }
+
 }
 symbol classes:
   0 --> test.Test
