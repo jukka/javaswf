@@ -1,6 +1,7 @@
 package org.javaswf.j2avm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,13 +14,13 @@ public final class TranslationPipeline implements TranslationStep {
     private final List<TranslationStep> steps = new ArrayList<TranslationStep>();
     
     /**
-     * Append a step to the pipeline.
+     * Append one or more steps to the pipeline.
      * 
      * @param step the step to append
      * @return this
      */
-    public TranslationPipeline addStep( TranslationStep step ) {
-        steps.add( step );
+    public TranslationPipeline addSteps( TranslationStep... step ) {
+        steps.addAll( Arrays.asList( step ));
         return this;
     }
     

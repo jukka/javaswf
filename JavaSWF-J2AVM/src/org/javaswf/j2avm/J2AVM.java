@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.javaswf.j2avm.emitter.AVM2ClassEmitter;
+import org.javaswf.j2avm.steps.AVMGetterSetterRewriter;
+import org.javaswf.j2avm.steps.CallAndAccessRewriteStep;
 import org.javaswf.j2avm.swf.TargetSWF;
 
 import com.anotherbigidea.flash.avm2.ABC;
@@ -41,7 +43,12 @@ public class J2AVM {
         this.targetSWFFile = targetSWFFile;
         this.targetSWF     = new TargetSWF( width, height, frameRate, backgroundColor );
         
-        pipeline.addStep( new AVM2ClassEmitter() );        
+        pipeline.addSteps(
+            new CallAndAccessRewriteStep(
+                new AVMGetterSetterRewriter()
+            ),
+            new AVM2ClassEmitter()
+        );        
 
         AVM2ABCFile abcFile = new AVM2ABCFile( ABC.MAJOR_VERSION_46,
                                                ABC.MINOR_VERSION_16 );

@@ -10,6 +10,7 @@ import static org.javaswf.j2avm.emitter.EmitterUtils.isOverride;
 import static org.javaswf.j2avm.emitter.EmitterUtils.qnameForJavaType;
 import static org.javaswf.j2avm.util.ASMUtils.isFinal;
 import static org.javaswf.j2avm.util.ASMUtils.isInterface;
+import static org.javaswf.j2avm.util.ASMUtils.isPrivate;
 import static org.javaswf.j2avm.util.ASMUtils.isStatic;
 
 import java.util.EnumSet;
@@ -38,6 +39,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2Name;
 import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
 import com.anotherbigidea.flash.avm2.model.AVM2Script;
+import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
 
 /**
  * The final JVM to AVM2 bytecode translator.
@@ -225,8 +227,8 @@ public class AVM2ClassEmitter implements TranslationStep {
             translateStaticInit( method );
         }
         else {
-//            translateMemberMethod( method );
-            translateMethod();
+            translateMemberMethod( method );
+//            translateMethod();
         }
         
         //TODO: ???
@@ -261,12 +263,22 @@ public class AVM2ClassEmitter implements TranslationStep {
      */
     private void translateMemberMethod( MethodNode methodNode ) {
         
-        
         Set<MethodInfoFlags> flags = EnumSet.noneOf( MethodInfoFlags.class );
 
-        AVM2QName  name       = new AVM2QName( EmptyPackage.namespace, methodNode.name );                
+        //determine the method visibility and get the corresponding namespace
+        AVM2Namespace methodNamespace = isPrivate( methodNode.access ) ?
+                                            AVM2Namespace.privateNamespace :
+                                            AVM2StandardNamespace.EmptyPackage.namespace;
+        
+        AVM2QName  name       = new AVM2QName( methodNamespace, methodNode.name );                
         AVM2QName  returnType = qnameForJavaType( Type.getReturnType( methodNode.desc ) );
         AVM2Method method     = new AVM2Method( returnType, flags );
+        
+        //add the parameters
+        Type[] paramTypes = Type.getArgumentTypes( methodNode.desc );
+        for( Type paramType : paramTypes ) {            
+            method.addParameter( "", new AVM2QName( paramType.getClassName()), null );
+        }
         
         AVM2MethodSlot ms = info.avm2class.traits.addMethod( 
                name, 
@@ -275,14 +287,11 @@ public class AVM2ClassEmitter implements TranslationStep {
                isOverride( javaClass, methodNode ) );
         
         AVM2MethodBody body = method.methodBody;
-        //body.maxStack     = tbd;
-        //body.maxRegisters = tbd;
-        //body.maxScope     = tbd;
         body.scopeDepth = javaClass.info.classScopeDepth;
         
         //instance methods have a larger scope depth due to the instance object
         if( ! isStatic( methodNode.access )) body.scopeDepth++;
-        
+
         translateCode( methodNode, body );
         
         //TODO: ???
@@ -296,6 +305,8 @@ public class AVM2ClassEmitter implements TranslationStep {
         //TODO: handle abstract methods
         
         AVM2Code code = new AVM2Code( body.instructions );
+        code.setupInitialScope();
+        
         ASMInstructionVisitor visitor = 
             new ASMInstructionVisitor( javaClass, methodNode, code );
         
@@ -305,7 +316,10 @@ public class AVM2ClassEmitter implements TranslationStep {
             throw new RuntimeException( aex );
         }
                 
-        //TODO: fix the max stack locals and scope
+        //TODO: these values need further thought..
+        body.maxRegisters = methodNode.maxLocals;
+        body.maxStack     = methodNode.maxStack;
+        body.maxScope     = body.scopeDepth + 1;        
     }
     
     //TODO: FOR DEBUG ONLY - REMOVE THIS
