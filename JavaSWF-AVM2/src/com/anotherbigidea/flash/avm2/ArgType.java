@@ -215,20 +215,20 @@ public enum ArgType {
                 return context.getFile().classes.get( className ).index;
             }
             case INT_INDEX: {
-                return pool.intIndex((Integer) value );
+                return pool.intIndex( ((Number) value).intValue() );
             }
             case UINT_INDEX: {
-                return pool.uintIndex( (Long) value );
+                return pool.uintIndex( ((Number) value).longValue() );
             }
             case NAMESPACE_INDEX: {
                 AVM2Namespace ns = (AVM2Namespace) value;
                 return pool.namespaceIndex( ns.kind, ns.name );
             }
             case STRING_INDEX: {
-                return pool.stringIndex( (String) value );
+                return pool.stringIndex( value.toString() );
             }
             case DOUBLE_INDEX: {
-                return pool.doubleIndex( (Double) value );
+                return pool.doubleIndex( ((Number) value).doubleValue() );
             }
             case NAME_INDEX: {
                 return ((AVM2Name) value).indexIn( pool );
