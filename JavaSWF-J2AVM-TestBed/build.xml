@@ -1,26 +1,27 @@
-<project name="Test J2AVM" default="all" basedir="." >
+<project name="Test J2AVM" default="sanity-test" basedir="." >
 	
 	<path id="javaswf">
 		<pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
         <pathelement location="../EpistemCommon/eclipse-build"/>
         <pathelement location="../JavaSWF-AVM2/eclipse-build"/>
 	</path>
-
+	
     <path id="j2avm" >
-    	<path refid="javaswf" />
-        <pathelement location="../JavaSWF-J2AVM/eclipse-build"/>
+        <path refid="javaswf" />
+        <path refid="j2avm-classes" />
         <pathelement location="../JavaSWF-J2AVM/lib/asm-all-3.0.jar" />
     </path>
 
 	<path id="flash-runtime" path="../JavaSWF-FlashRuntime/eclipse-build" />
+    <path id="j2avm-classes" path="../JavaSWF-J2AVM/eclipse-build" />
 	
     <path id="classesToTranslate">
     	<path refid="flash-runtime"/>
+        <path refid="j2avm-classes" />
         <pathelement location="eclipse-build"/>
     </path>
 	
-	
-	<taskdef name="j2avm"
+	<taskdef name="j2avm" 
 		     classname="org.javaswf.j2avm.ant.J2AVMAntTask"
              classpathref="j2avm" />
 
@@ -28,8 +29,10 @@
              classname="org.javaswf.j2avm.ant.JavaClassDumperTask"
              classpathref="j2avm" />
 	
-	<target name="all" >
-	</target>
+	
+    <!-- Targets for Tech Summit demo -->
+	<target name="all-4-demo" 
+		    depends="sanity-test,dump-test-java-class,dump-generated-swf" />
 	
     <!-- Dump the test Java class -->
     <target name="dump-test-java-class" >
