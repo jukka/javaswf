@@ -1,7 +1,7 @@
 package org.javaswf.j2avm.steps;
 
-import static org.javaswf.j2avm.util.ASMUtils.externalName;
-import static org.javaswf.j2avm.util.ASMUtils.getMethod;
+import static org.javaswf.j2avm.asm.ASMUtils.externalName;
+import static org.javaswf.j2avm.asm.ASMUtils.getMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

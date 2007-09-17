@@ -1,62 +1,58 @@
 package org.javaswf.j2avm;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.javaswf.j2avm.abc.TranslatedABC;
 import org.javaswf.j2avm.emitter.AVM2ClassEmitter;
+import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.steps.AVMGetterSetterRewriter;
 import org.javaswf.j2avm.steps.CallAndAccessRewriteStep;
-import org.javaswf.j2avm.swf.TargetSWF;
-
-import com.anotherbigidea.flash.avm2.ABC;
-import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 
 /**
  * The main J2AVM entry point.
  *
  * @author nickmain
  */
-public class J2AVM {
+public final class J2AVM {
 
-    private final TranslationPipeline pipeline = new TranslationPipeline();
-    private TranslationContext context;
-    private final File targetSWFFile;
-    private final TargetSWF targetSWF;
-    
     public static final Logger log = Logger.getLogger( J2AVM.class.getName() );
+
+    /**
+     * @param loader the loader for class data
+     * @param target the output target
+     */
+    public J2AVM( ClassLoader loader, TranslationTarget target ) {
+        this.target  = target;
+        this.context = new TranslationContext( loader );
+        addDefaultSteps();
+    }
     
     /**
-     * @param targetSWFFile the swf file to create
-     * @param mainClass the main class for the swf
-     * @param width the stage width in pixels
-     * @param height the stage height in pixels
-     * @param frameRate the frames-per-second
-     * @param backgroundColor the RGB background color
+     * Add a class to be translated.  Any referenced classes will also be
+     * translated.
+     * 
+     * @param className the fully qualified class name
      */
-    public J2AVM( File targetSWFFile, Class<?> mainClass,
-                  int width, int height, int frameRate, int backgroundColor ) {
-        
-        log.info( "target SWF = " + targetSWFFile.getAbsolutePath() );
-        log.info( "main class = " + mainClass.getName() );       
-        
-        this.targetSWFFile = targetSWFFile;
-        this.targetSWF     = new TargetSWF( width, height, frameRate, backgroundColor );
-        
-        pipeline.addSteps(
-            new CallAndAccessRewriteStep(
-                new AVMGetterSetterRewriter()
-            ),
-            new AVM2ClassEmitter()
-        );        
-
-        AVM2ABCFile abcFile = new AVM2ABCFile( ABC.MAJOR_VERSION_46,
-                                               ABC.MINOR_VERSION_16 );
-
-        targetSWF.addSymbolClass( 0, mainClass.getName() );
-        
-        context = new TranslationContext( abcFile );
-        context.addClass( mainClass );
+    public void addClassToBeTranslated( String className ) {
+        context.addClass( className );
+    }
+    
+    /**
+     * Set the name of the main class for the target.
+     * @param className the fully qualified class name
+     */
+    public void setMainClass( String className ) {
+        this.mainClassName = className;
+        addClassToBeTranslated( className );
+    }
+    
+    /**
+     * Add translation steps to the front of the translation pipeline
+     * @param steps the new steps to add
+     */
+    public void addTranslationSteps( TranslationStep...steps ) {
+        pipeline.prependSteps( steps );
     }
     
     /**
@@ -64,18 +60,36 @@ public class J2AVM {
      */
     public void translate() throws IOException {
 
-        JavaClass javaClass;
+        log.info( "Starting translation..." );       
         
-        while((javaClass = context.classToBeTranslated()) != null ) {
-            log.fine( "..translating " + javaClass );       
-
-            pipeline.process( javaClass, context );
+        ClassModel classModel;
+        while(( classModel = context.nextClassToBeTranslated()) != null ) {
+            pipeline.process( classModel, context );            
         }
 
-        targetSWF.addABC( context.getAbcFile(), "J2AVM", true );
-        
-        log.info( "writing target SWF" );       
-        targetSWFFile.getParentFile().mkdirs(); //ensure dir structure exists
-        targetSWF.write( targetSWFFile );
+        log.info( "  finished translating" );       
+
+        log.info( "  writing target " + target );
+        abc.writeToTarget( target );
+        abc.forJavaClass( mainClassName ).setAsMainClass( target );        
+        target.finish();
+        log.info( "...done" );
     }
+    
+    private void addDefaultSteps() {
+        pipeline.addSteps(
+                new CallAndAccessRewriteStep(
+                    new AVMGetterSetterRewriter()
+                ),
+                new AVM2ClassEmitter( abc )
+            ); 
+    }
+    
+    private final TranslatedABC       abc      = new TranslatedABC();
+    private final TranslationPipeline pipeline = new TranslationPipeline();
+    
+    private final TranslationContext context;
+    private final TranslationTarget  target;
+    
+    private String mainClassName;
 }

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import org.javaswf.j2avm.JavaClass;
 import org.javaswf.j2avm.TranslationContext;
-import org.javaswf.j2avm.util.ASMUtils;
+import org.javaswf.j2avm.asm.ASMUtils;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnList;

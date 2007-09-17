@@ -20,7 +20,7 @@ import org.objectweb.asm.tree.analysis.Frame;
 import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
 
-import static org.javaswf.j2avm.util.ASMUtils.*;
+import static org.javaswf.j2avm.asm.ASMUtils.*;
 import static org.javaswf.j2avm.emitter.EmitterUtils.*;
 
 /**
@@ -89,9 +89,25 @@ public class ASMInstructionVisitor extends EmptyVisitor {
         
         lastWasAbrupt = abrupt;
         abrupt = false;
-        instruction.accept( this );
+        
+        if( instruction.getOpcode() >= 256 ) {
+            visitSpecial();
+        } else {
+            instruction.accept( this );
+        }
     }
 
+    /**
+     * Visit a special instruction (a non-JVM instruction) that was inserted
+     * by a previous translation step in order to express some custom
+     * emitter behavior.
+     * 
+     * @param opcode the non-JVM opcode (>= 256)
+     */
+    public void visitSpecial() {
+        //TODO:
+    }
+    
     /**
      * @see org.objectweb.asm.commons.EmptyVisitor#visitCode()
      */
@@ -196,6 +212,10 @@ public class ASMInstructionVisitor extends EmptyVisitor {
             case Opcodes.DCONST_1: avm2Code.append( Operation.OP_pushdouble, 1.0 ); return;
                 
             //TODO: array operations
+            case Opcodes.ARRAYLENGTH:
+                avm2Code.append( Operation.OP_getproperty, nameForField( "length" )); 
+                return;
+
             case Opcodes.IALOAD:
             case Opcodes.LALOAD:
             case Opcodes.FALOAD:
@@ -236,13 +256,29 @@ public class ASMInstructionVisitor extends EmptyVisitor {
                 
             case Opcodes.I2D: avm2Code.append( Operation.OP_convert_d ); return;
                 
-            case Opcodes.F2D:
+            case Opcodes.F2D: //fall-thru
             case Opcodes.L2D:
                 //floats and longs are already doubles - do nothing
                 return;
             
             case Opcodes.IADD: avm2Code.append( Operation.OP_add_i ); return;
             case Opcodes.IMUL: avm2Code.append( Operation.OP_multiply_i ); return;
+            
+            case Opcodes.I2L: avm2Code.append( Operation.OP_convert_d ); return; //longs are represented by doubles
+            
+            case Opcodes.D2L: //TODO: how to truncate a double ? 
+            case Opcodes.F2L: //TODO: 
+
+            case Opcodes.I2F:
+            case Opcodes.L2I:
+            case Opcodes.L2F:
+            case Opcodes.F2I:
+            case Opcodes.D2I:
+            case Opcodes.D2F:
+            case Opcodes.I2B:
+            case Opcodes.I2C:
+            case Opcodes.I2S:
+            
             
             case Opcodes.LADD:
             case Opcodes.FADD:
@@ -278,25 +314,12 @@ public class ASMInstructionVisitor extends EmptyVisitor {
             case Opcodes.LOR:
             case Opcodes.IXOR:
             case Opcodes.LXOR:
-            case Opcodes.I2L:
-            case Opcodes.I2F:
-            case Opcodes.L2I:
-            case Opcodes.L2F:
-            case Opcodes.F2I:
-            case Opcodes.F2L:
-            case Opcodes.D2I:
-            case Opcodes.D2L:
-            case Opcodes.D2F:
-            case Opcodes.I2B:
-            case Opcodes.I2C:
-            case Opcodes.I2S:
             case Opcodes.LCMP:
             case Opcodes.FCMPL:
             case Opcodes.FCMPG:
             case Opcodes.DCMPL:
             case Opcodes.DCMPG:
                             
-            case Opcodes.ARRAYLENGTH:
             case Opcodes.ATHROW:    //TODO; abrupt = true;
             case Opcodes.MONITORENTER:
             case Opcodes.MONITOREXIT:        
@@ -330,6 +353,25 @@ public class ASMInstructionVisitor extends EmptyVisitor {
      */
     @Override
     public void visitJumpInsn(int opcode, Label label) {
+
+        //handle compare-to-zero and compare-to-null preparation
+        switch( opcode ) {
+            case Opcodes.IFEQ: //fall-thru
+            case Opcodes.IFNE: //fall-thru
+            case Opcodes.IFLT: //fall-thru
+            case Opcodes.IFGE: //fall-thru
+            case Opcodes.IFGT: //fall-thru
+            case Opcodes.IFLE: //fall-thru
+                avm2Code.append( Operation.OP_pushint, 0 );
+                
+            case Opcodes.IFNULL:
+            case Opcodes.IFNONNULL:
+                avm2Code.append( Operation.OP_pushnull );
+        
+            default: break;
+        }        
+
+        Operation operation;
         
         switch( opcode ) {
 
@@ -341,29 +383,35 @@ public class ASMInstructionVisitor extends EmptyVisitor {
                 abrupt = true;
                 return;
 
-            case Opcodes.IF_ICMPEQ: avm2Code.append( Operation.OP_ifeq, label.hashCode() ); return;
-            case Opcodes.IF_ICMPNE: avm2Code.append( Operation.OP_ifne, label.hashCode() ); return;
-            case Opcodes.IF_ICMPLT: avm2Code.append( Operation.OP_iflt, label.hashCode() ); return;
-            case Opcodes.IF_ICMPGE: avm2Code.append( Operation.OP_ifge, label.hashCode() ); return;
-            case Opcodes.IF_ICMPGT: avm2Code.append( Operation.OP_ifgt, label.hashCode() ); return;
-            case Opcodes.IF_ICMPLE: avm2Code.append( Operation.OP_ifle, label.hashCode() ); return;
-            case Opcodes.IF_ACMPEQ: avm2Code.append( Operation.OP_ifstricteq, label.hashCode() ); return;
-            case Opcodes.IF_ACMPNE: avm2Code.append( Operation.OP_ifstrictne, label.hashCode() ); return;
+            case Opcodes.IFEQ: //fall-thru    
+            case Opcodes.IF_ICMPEQ: operation = Operation.OP_ifeq; break;
 
-                
-        //TODO:
-       
-            case Opcodes.IFEQ:
-            case Opcodes.IFNE:
-            case Opcodes.IFLT:
-            case Opcodes.IFGE:
-            case Opcodes.IFGT:
-            case Opcodes.IFLE:
-            case Opcodes.IFNULL:
-            case Opcodes.IFNONNULL:
+            case Opcodes.IFNE: //fall-thru
+            case Opcodes.IF_ICMPNE: operation = Operation.OP_ifne; break;
+
+            case Opcodes.IFLT: //fall-thru
+            case Opcodes.IF_ICMPLT: operation = Operation.OP_iflt; break;
+
+            case Opcodes.IFGE: //fall-thru
+            case Opcodes.IF_ICMPGE: operation = Operation.OP_ifge; break;
+
+            case Opcodes.IFGT: //fall-thru
+            case Opcodes.IF_ICMPGT: operation = Operation.OP_ifgt; break;
+
+            case Opcodes.IFLE: //fall-thru
+            case Opcodes.IF_ICMPLE: operation = Operation.OP_ifle; break;
+
+            case Opcodes.IFNULL: //fall-thru
+            case Opcodes.IF_ACMPEQ: operation = Operation.OP_ifstricteq; break;
+            
+            case Opcodes.IFNONNULL: //fall-thru
+            case Opcodes.IF_ACMPNE: operation = Operation.OP_ifstrictne; break;
+            
         
             default: throw new RuntimeException( "Unhandled opcode " + opcode );
         }        
+        
+        avm2Code.append( operation, label.hashCode() );
     }
 
     /**
@@ -551,18 +599,18 @@ public class ASMInstructionVisitor extends EmptyVisitor {
             case Opcodes.RET:
                 throw new RuntimeException( "RET instruction is not permitted - please compile for Java 5+" );
 
-            case Opcodes.ILOAD: 
-            case Opcodes.LLOAD: 
-            case Opcodes.FLOAD: 
-            case Opcodes.DLOAD: 
-            case Opcodes.ALOAD: 
+            case Opcodes.ILOAD: //fall-thru 
+            case Opcodes.LLOAD: //fall-thru
+            case Opcodes.FLOAD: //fall-thru
+            case Opcodes.DLOAD: //fall-thru
+            case Opcodes.ALOAD:
                 avm2Code.loadLocalVar( var );
                 return;
 
-            case Opcodes.LSTORE: 
-            case Opcodes.FSTORE: 
-            case Opcodes.DSTORE: 
-            case Opcodes.ISTORE: 
+            case Opcodes.LSTORE: //fall-thru
+            case Opcodes.FSTORE: //fall-thru
+            case Opcodes.DSTORE: //fall-thru
+            case Opcodes.ISTORE: //fall-thru
             case Opcodes.ASTORE:
                 avm2Code.storeLocalVar( var );
                 return;

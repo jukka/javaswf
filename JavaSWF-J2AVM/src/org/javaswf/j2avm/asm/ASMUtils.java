@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.util;
+package org.javaswf.j2avm.asm;
 
 import java.lang.reflect.Method;
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.javaswf.j2avm.model.ClassModel;
+
 /**
  * A pipeline of translation steps.
  *
@@ -14,20 +16,27 @@ public final class TranslationPipeline implements TranslationStep {
     private final List<TranslationStep> steps = new ArrayList<TranslationStep>();
     
     /**
-     * Append one or more steps to the pipeline.
+     * Append one or more steps to the end of the pipeline.
      * 
-     * @param step the step to append
-     * @return this
+     * @param stepsToAdd the steps to append
      */
-    public TranslationPipeline addSteps( TranslationStep... step ) {
-        steps.addAll( Arrays.asList( step ));
-        return this;
+    public void addSteps( TranslationStep... stepsToAdd ) {
+        steps.addAll( Arrays.asList( stepsToAdd ));
+    }
+
+    /**
+     * Add one or more steps to the start of the pipeline
+     * 
+     * @param stepsToAdd the steps to add
+     */
+    public void prependSteps( TranslationStep... stepsToAdd ) {
+        steps.addAll( 0, Arrays.asList( stepsToAdd ));
     }
     
-    /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.JavaClass, org.javaswf.j2avm.TranslationContext) */
-    public boolean process( JavaClass javaClass, TranslationContext context) {
+    /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.model.ClassModel, org.javaswf.j2avm.TranslationContext) */
+    public boolean process(ClassModel classModel, TranslationContext context) {
         for( TranslationStep step : steps ) {
-            if( ! step.process( javaClass, context )) return false;
+            if( ! step.process( classModel, context )) return false;
         }
         
         return true;

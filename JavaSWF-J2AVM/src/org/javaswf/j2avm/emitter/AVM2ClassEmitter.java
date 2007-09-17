@@ -6,21 +6,21 @@ package org.javaswf.j2avm.emitter;
 import static com.anotherbigidea.flash.avm2.Operation.*;
 import static com.anotherbigidea.flash.avm2.model.AVM2StandardName.TypeVoid;
 import static com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace.EmptyPackage;
-import static org.javaswf.j2avm.emitter.EmitterUtils.isOverride;
+import static org.javaswf.j2avm.asm.ASMUtils.isFinal;
+import static org.javaswf.j2avm.asm.ASMUtils.isInterface;
+import static org.javaswf.j2avm.asm.ASMUtils.isPrivate;
+import static org.javaswf.j2avm.asm.ASMUtils.isStatic;
 import static org.javaswf.j2avm.emitter.EmitterUtils.qnameForJavaType;
-import static org.javaswf.j2avm.util.ASMUtils.isFinal;
-import static org.javaswf.j2avm.util.ASMUtils.isInterface;
-import static org.javaswf.j2avm.util.ASMUtils.isPrivate;
-import static org.javaswf.j2avm.util.ASMUtils.isStatic;
 
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.javaswf.j2avm.JavaClass;
 import org.javaswf.j2avm.TranslationContext;
 import org.javaswf.j2avm.TranslationStep;
+import org.javaswf.j2avm.abc.TranslatedABC;
+import org.javaswf.j2avm.model.ClassModel;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -40,6 +40,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
 import com.anotherbigidea.flash.avm2.model.AVM2Script;
 import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
+import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 
 /**
  * The final JVM to AVM2 bytecode translator.
@@ -53,15 +54,16 @@ import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
  * @author nickmain
  */
 public class AVM2ClassEmitter implements TranslationStep {
+        
+    /**
+     * @param abc the target ABC file data
+     */
+    public AVM2ClassEmitter( TranslatedABC abc ) {
+        this.abc = abc;
+    }
     
-    private JavaClass javaClass;
-    private ClassNode classNode;
-    private TranslationContext context;
-    private AVM2ABCFile abcFile;
-    private TranslationInfo info;
-    
-    /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.JavaClass, org.javaswf.j2avm.TranslationContext) */
-    public boolean process( JavaClass javaClass, TranslationContext context ) {
+    /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.model.ClassModel, org.javaswf.j2avm.TranslationContext) */
+    public boolean process( ClassModel classModel, TranslationContext context ) {
         
         this.context   = context;
         this.javaClass = javaClass;
@@ -114,6 +116,15 @@ public class AVM2ClassEmitter implements TranslationStep {
         
         return true;
     }
+    
+    private final TranslatedABC abc;
+    
+    private JavaClass javaClass;
+    private ClassNode classNode;
+    private TranslationContext context;
+    private AVM2ABCFile abcFile;
+    private TranslationInfo info;
+
     
     /**
      * Emit the class initialization script and determine the scope depth.
