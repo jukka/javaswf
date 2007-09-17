@@ -36,6 +36,13 @@ public class AVM2ABCFile {
     { scripts = Collections.unmodifiableList( scripts_internal ); }
 
     /**
+     * Use the default (most current) major and minor versions
+     */
+    public AVM2ABCFile() {
+        this( ABC.MAJOR_VERSION_46, ABC.MINOR_VERSION_16 );
+    }
+    
+    /**
      * @param majorVersion the abc major version
      * @param minorVersion the abc minor version
      */
