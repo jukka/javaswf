@@ -1,12 +1,10 @@
 package org.javaswf.j2avm.model.attributes;
 
-import static org.epistem.jclass.JAttribute.Name.*;
-
 import java.io.DataInput;
 import java.io.IOException;
 
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 
 /**
  * Runtime visible annotations
@@ -15,12 +13,18 @@ import org.epistem.jclass.io.internal.ConstantPool;
  */
 public class RuntimeVisibleAnnotationsAttribute extends Annotations {
     public RuntimeVisibleAnnotationsAttribute() {
-        super( RuntimeVisibleAnnotations, true );
+        super( AttributeModel.Name.RuntimeVisibleAnnotations, true );
     }
     
-    public static RuntimeVisibleAnnotationsAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    public static RuntimeVisibleAnnotationsAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
         RuntimeVisibleAnnotationsAttribute attr = new RuntimeVisibleAnnotationsAttribute();
-        attr.parseAnnotations( pool, loader, in );
+        attr.parseAnnotations( pool, in );
         return attr;
+    }
+
+    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
+    @Override
+    public void accept(AttributeVisitor visitor) {
+        visitor.attrRuntimeVisibleAnnotations( annotations );
     }
 }

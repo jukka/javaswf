@@ -1,9 +1,11 @@
 package org.javaswf.j2avm.model.attributes;
 
+import java.util.Collection;
+
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.flags.ClassFlag;
-import org.epistem.jclass.flags.MemberFlag;
-import org.epistem.jclass.reference.JClassReference;
+import org.epistem.util.Flag;
+import org.epistem.util.FlagParser;
+import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
  * Information about an inner class
@@ -17,40 +19,22 @@ public class InnerClass {
      */
     public static enum InnerClassFlag {
         
-        InnerClassIsPublic    ( MemberFlag.MemberIsPublic.flag ),
-        InnerClassIsPrivate   ( MemberFlag.MemberIsPrivate.flag ),
-        InnerClassIsProtected ( MemberFlag.MemberIsProtected.flag ),
-        InnerClassIsStatic    ( MemberFlag.MemberIsStatic.flag ),
-        InnerClassIsFinal     ( MemberFlag.MemberIsFinal.flag ),
-        InnerClassIsInterface ( ClassFlag.IsInterface.flag ),
-        InnerClassIsAbstract  ( ClassFlag.IsAbstract.flag ),
-        InnerClassIsAnnotation( ClassFlag.IsAnnotation.flag ),
-        InnerClassIsEnum      ( ClassFlag.IsEnum.flag ),
-        InnerClassIsSynthetic ( ClassFlag.IsSynthetic.flag );
+        @Flag( 0x0001 ) InnerClassIsPublic    ,
+        @Flag( 0x0002 ) InnerClassIsPrivate   ,
+        @Flag( 0x0004 ) InnerClassIsProtected ,
+        @Flag( 0x0008 ) InnerClassIsStatic    ,
+        @Flag( 0x0010 ) InnerClassIsFinal     ,
+        @Flag( 0x0200 ) InnerClassIsInterface ,
+        @Flag( 0x0400 ) InnerClassIsAbstract  ,
+        @Flag( 0x2000 ) InnerClassIsAnnotation,
+        @Flag( 0x4000 ) InnerClassIsEnum      ,
+        @Flag( 0x1000 ) InnerClassIsSynthetic ;
 
-        /** The flag value */
-        public final int flag;
-
-        /** Test whether this flag is set */
-        public boolean isSet( int flags ) {
-            return ( flag & flags) != 0;
-        }
-        
-        /** Set this flag */
-        public int set( int flags ) {
-            return flags |= flag;
-        }
-        
-        /** Set all the given flags */
-        public static int set( InnerClassFlag...flags ) {
-            int f = 0;
-            for (InnerClassFlag flag : flags) {
-                f = flag.set( f );
-            }
-            return f;
-        }
-        
-        private InnerClassFlag( int flag ) { this.flag = flag; }
+        /**
+         * Parser for the flags
+         */
+        public static final FlagParser<InnerClassFlag> parser = 
+            new FlagParser<InnerClassFlag>( InnerClassFlag.class );
     }
     
     /**
@@ -62,17 +46,17 @@ public class InnerClass {
     /**
      * The inner class flags
      */
-    public final int flags;
+    public final Collection<InnerClassFlag> flags;
     
     /**
      * The outer (containing) class - null if the inner class is not a member.
      */
-    public final JClassReference outerClass;
+    public final ObjectType outerClass;
     
     /**
      * The inner class
      */
-    public final JClassReference innerClass;
+    public final ObjectType innerClass;
     
     /**
      * @param simpleName null if the class is anonymous
@@ -80,8 +64,9 @@ public class InnerClass {
      * @param outerClass null if the inner class is not a member
      * @param innerClass the inner class
      */
-    public InnerClass( String simpleName, int flags, 
-                       JClassReference outerClass, JClassReference innerClass ) {
+    public InnerClass( String simpleName, 
+                       ObjectType outerClass, ObjectType innerClass,
+                       Collection<InnerClassFlag> flags ) {
         this.outerClass = outerClass;
         this.innerClass = innerClass;
         this.simpleName = simpleName;
@@ -112,10 +97,7 @@ public class InnerClass {
         out.println( "simple name: " + simpleName );
         out.println( "inner class: " + innerClass );
         out.println( "outer class: " + outerClass );
-        out.print  ( "inner flags:" );
-        for( InnerClassFlag flag : InnerClassFlag.values() ) {
-            if( flag.isSet( flags ) ) out.print( " " + flag.name());
-        }
+        out.print  ( "inner flags: " + flags );
         out.println();
         
         out.unindent();

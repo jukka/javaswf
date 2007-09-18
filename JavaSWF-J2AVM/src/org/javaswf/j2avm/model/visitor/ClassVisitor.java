@@ -48,7 +48,8 @@ public interface ClassVisitor {
      * @param flags the field flags
      * @return interface to receive the attributes, null to skip
      */
-    public JAttributeVisitor classField( String name, ValueType type, Collection<FieldFlag> flags );
+    public FieldAttributeVisitor classField( String name, ValueType type, 
+                                             Collection<FieldFlag> flags );
 
     /**
      * Pass a method.
@@ -59,16 +60,16 @@ public interface ClassVisitor {
      * @param parameterTypes the parameter types
      * @return interface to receive the attributes, null to skip
      */
-    public JAttributeVisitor classMethod( String name, JavaType returnType,
-    		                              Collection<MethodFlag> flags,
-    		                              ValueType...parameterTypes );
+    public MethodAttributeVisitor classMethod( String name, JavaType returnType,
+    		                                   Collection<MethodFlag> flags,
+    		                                   ValueType...parameterTypes );
     
     /**
      * Pass the class attributes.
      * 
      * @return object to receive the attributes, null to skip
      */
-    public JAttributeVisitor classAttributes();
+    public ClassAttributeVisitor classAttributes();
     
     /**
      * Called at the end of the class contents.

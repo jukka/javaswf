@@ -24,8 +24,8 @@ public abstract class Annotations extends AnnotationAttribute {
     }
     
     /** Parse the annotations */
-    protected void parseAnnotations( ConstantPool pool, ClassLoader loader, DataInput in ) throws IOException {
-        parseAnnotations( annotations, pool, loader, in );
+    protected void parseAnnotations( ConstantPool pool, DataInput in ) throws IOException {
+        parseAnnotations( annotations, pool, in );
     }
     
     /**

@@ -1,13 +1,14 @@
 package org.javaswf.j2avm.model.attributes;
 
 import org.epistem.io.IndentingPrintWriter;
+import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 
 /**
  * Base for class, field, method and code attributes
  *
  * @author nickmain
  */
-public class AttributeModel {
+public abstract class AttributeModel {
 
     /** The standard attribute names */
     public static enum Name {
@@ -38,7 +39,7 @@ public class AttributeModel {
     }
     
     /** The attribute name */
-    private final String name;
+    public final String name;
     
     /**
      * @param name the attribute name
@@ -49,7 +50,7 @@ public class AttributeModel {
 
     /** @see java.lang.Object#equals(java.lang.Object) */
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if( obj == null ) return false;
         if( !( obj instanceof AttributeModel )) return false;
         return ((AttributeModel) obj).name.equals( name );
@@ -57,7 +58,7 @@ public class AttributeModel {
 
     /** @see java.lang.Object#hashCode() */
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return name.hashCode();
     }
     
@@ -65,4 +66,10 @@ public class AttributeModel {
     public void dump( IndentingPrintWriter out ) {
         out.println( name );
     }
+    
+    
+    /**
+     * Accept a visitor.
+     */
+    public abstract void accept( AttributeVisitor visitor );
 }

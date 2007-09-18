@@ -4,11 +4,9 @@ import java.io.DataInput;
 import java.io.IOException;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
-
-import static org.epistem.jclass.JAttribute.Name.*;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.visitor.AttributeVisitor;
+import org.javaswf.j2avm.model.visitor.FieldAttributeVisitor;
 
 /**
  * A constant field value
@@ -24,19 +22,19 @@ public class ConstantValueAttribute extends AttributeModel {
     public final Object value;
     
     public ConstantValueAttribute( Number value ) {
-        super( ConstantValue.name() );
+        super( AttributeModel.Name.ConstantValue.name() );
         this.value = value;
     }
 
     public ConstantValueAttribute( String value ) {
-        super( ConstantValue.name() );
+        super( AttributeModel.Name.ConstantValue.name() );
         this.value = value;
     }
     
-    public static ConstantValueAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    public static ConstantValueAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
         int index = in.readUnsignedShort();
         
-        Object value = pool.getConstant( loader, index );
+        Object value = pool.getConstant( index );
         
         if( value instanceof Number ) return new ConstantValueAttribute( (Number) value );
         if( value instanceof String ) return new ConstantValueAttribute( (String) value );
@@ -55,6 +53,14 @@ public class ConstantValueAttribute extends AttributeModel {
             out.println();
         } else {
             out.println( name + " = " + value );            
+        }        
+    }
+
+    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
+    @Override
+    public void accept(AttributeVisitor visitor) {
+        if( visitor instanceof FieldAttributeVisitor ) {
+            ((FieldAttributeVisitor) visitor).attrConstantValue( value );
         }        
     }
 }

@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
+import org.javaswf.j2avm.model.parser.ConstantPool;
 
 /**
  * Base for parameter annotations
@@ -27,13 +25,13 @@ public abstract class ParameterAnnotationAttribute extends AnnotationAttribute {
     }
     
     /** Parse the parameter annotations */
-    protected void parseAnnotations( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    protected void parseAnnotations( ConstantPool pool, DataInput in ) throws IOException {
         
         int paramCount = in.readUnsignedByte();
         
         for (int i = 0; i < paramCount; i++) {
             Map<String,AnnotationModel> annotations = new HashMap<String, AnnotationModel>();            
-            parseAnnotations( annotations, pool, loader, in );
+            parseAnnotations( annotations, pool, in );
             parameterAnnotations.add( annotations );
         }
     }
