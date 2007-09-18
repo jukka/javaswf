@@ -40,7 +40,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
 import com.anotherbigidea.flash.avm2.model.AVM2Script;
 import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+
 
 /**
  * The final JVM to AVM2 bytecode translator.

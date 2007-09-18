@@ -142,12 +142,11 @@ public interface Instructions {
     public void newObject( ObjectType type );
 
     /**
-     * Create a new array
+     * Create a new array.  All dimensions are initialized.
      * 
      * @param type the array type to create
-     * @param dimCount the number of dimensions to initialize
      */
-    public void newArray( ArrayType type, int dimCount );
+    public void newArray( ArrayType type );
         
     /**
      * A switch operation

@@ -265,15 +265,12 @@ public abstract class Instruction {
     static class NewArray extends Instruction {
         ArrayType type;
 
-        int dimCount;
-
-        NewArray(ArrayType type, int dimCount) {
+        NewArray( ArrayType type ) {
             this.type = type;
-            this.dimCount = dimCount;
         }
 
         public void accept(Instructions visitor) {
-            visitor.newArray( type, dimCount );
+            visitor.newArray( type );
         }
     }
 

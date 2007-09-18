@@ -18,10 +18,10 @@ public abstract class MemberDescriptor {
     
     /** The field type or method return-type */
     public final JavaType type;
-    
+        
     /*pkg*/ MemberDescriptor( ObjectType owner, String name, JavaType type ) {
-        this.owner = owner;
-        this.name  = name;
-        this.type  = type;
+        this.owner    = owner;
+        this.name     = name;
+        this.type     = type;
     }
 }

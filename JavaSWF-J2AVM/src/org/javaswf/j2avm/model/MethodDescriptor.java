@@ -20,7 +20,7 @@ public final class MethodDescriptor extends MemberDescriptor {
      * @param type the return type
      * @param paramTypes the parameter types
      */
-    public MethodDescriptor( ObjectType owner, String name, JavaType type, 
+    public MethodDescriptor( ObjectType owner, String name, JavaType type,
                              ValueType...paramTypes ) {
         super( owner, name, type );
         this.paramTypes = paramTypes;

@@ -1,5 +1,10 @@
 package org.javaswf.j2avm.model.types;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * A primitive type
@@ -17,7 +22,35 @@ public final class PrimitiveType extends ValueType {
     public static final PrimitiveType LONG    = new PrimitiveType( "long" );
     public static final PrimitiveType DOUBLE  = new PrimitiveType( "double" );
     
+    //map for looking up types by name
+    private static final Map<String, PrimitiveType> types = 
+    	new HashMap<String, PrimitiveType>();
+    
+    static {
+    	for( Field f : PrimitiveType.class.getDeclaredFields() ) {
+    		if( PrimitiveType.class.isAssignableFrom( f.getType() )
+    		 && Modifier.isStatic( f.getModifiers() )) {
+    			
+    			try {
+    				PrimitiveType pt = (PrimitiveType) f.get(null);
+    				types.put( pt.name, pt );
+    				
+    			} catch( Exception ex ) {
+    				throw new RuntimeException( ex );
+    			}
+    		}
+    	}
+    }
+    
     private PrimitiveType( String name ) {
         super( name );
+    }
+    
+    /**
+     * Get a PrimitiveType from its name.
+     * @return null if the name is not a primitive type
+     */
+    public static PrimitiveType fromName( String name ) {
+    	return types.get( name );
     }
 }

@@ -1,7 +1,11 @@
 package org.javaswf.j2avm.model.types;
 
 /**
- * An array type
+ * An array type.
+ * 
+ * An array can have an array element type, but this is only useful when
+ * a NewArray instruction is only initializing the dimensions in the outer
+ * array and not the element array.
  *
  * @author nickmain
  */
@@ -17,18 +21,7 @@ public final class ArrayType extends ObjectOrArrayType {
      * @param type the element type
      * @param dimCount the number of dimensions
      */
-    public ArrayType( PrimitiveType type, int dimCount ) {
-        super( makeName( type.name, dimCount ));
-        
-        elementType    = type;
-        dimensionCount = dimCount;
-    }
-
-    /**
-     * @param type the element type
-     * @param dimCount the number of dimensions
-     */
-    public ArrayType( ObjectType type, int dimCount ) {
+    public ArrayType( ValueType type, int dimCount ) {
         super( makeName( type.name, dimCount ));
         
         elementType    = type;

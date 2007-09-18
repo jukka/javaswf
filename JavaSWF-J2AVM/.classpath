@@ -7,6 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/JavaSWF-FileFormat"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EpistemCommon"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JavaSWF-AVM2"/>
-	<classpathentry kind="lib" path="/Languages/Java/apache-ant-1.7.0/lib/ant.jar"/>
+	<classpathentry kind="lib" path="/Developer/Java/Ant/lib/ant.jar"/>
 	<classpathentry kind="output" path="eclipse-build"/>
 </classpath>

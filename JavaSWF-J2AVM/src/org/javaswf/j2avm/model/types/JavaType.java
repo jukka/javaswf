@@ -29,4 +29,34 @@ public abstract class JavaType {
     public final int hashCode() {
         return name.hashCode();
     }
+    
+    /**
+     * Create a JavaType from a type name 
+     */
+    public static JavaType fromName( String name ) {
+    	
+    	if( name.equals( "void" ) ) return VoidType.VOID;
+    	
+    	JavaType type = PrimitiveType.fromName( name );
+    	if( type != null ) return type;
+    		
+    	int dimCount = 0;
+    	while( name.endsWith( "[]" )) {
+    		dimCount++;
+    		name = name.substring( 0, name.length() - 2 );
+    	}
+    	
+    	if( dimCount > 0 ) {
+    		JavaType elementType = JavaType.fromName( name );
+    		if( elementType instanceof ValueType ) {
+    			type = new ArrayType( ((ValueType) elementType), dimCount );
+    		} else {
+    			throw new IllegalArgumentException( "void array is illegal" );
+    		}
+    	} else {
+    		type = new ObjectType( name );
+    	}
+    	
+        return type;
+    }
 }

@@ -225,11 +225,10 @@ public class InstructionCursor implements Instructions {
     }
 
     /**
-     * @see org.javaswf.j2avm.model.code.Instructions#newArray(org.javaswf.j2avm.model.types.ArrayType,
-     *      int)
+     * @see org.javaswf.j2avm.model.code.Instructions#newArray(ArrayType)
      */
-    public void newArray(ArrayType type, int dimCount) {
-        add( new NewArray( type, dimCount ) );
+    public void newArray(ArrayType type) {
+        add( new NewArray( type ) );
     }
 
     /**
