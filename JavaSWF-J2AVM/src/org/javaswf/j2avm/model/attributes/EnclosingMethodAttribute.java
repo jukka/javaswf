@@ -4,13 +4,12 @@ import java.io.DataInput;
 import java.io.IOException;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
-import org.epistem.jclass.reference.JClassReference;
-import org.epistem.jclass.reference.JMethodReference;
-
-import static org.epistem.jclass.JAttribute.Name.*;
+import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.types.JavaType;
+import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.types.Signature;
+import org.javaswf.j2avm.model.types.ValueType;
 
 /**
  * The synthetic attribute
@@ -20,23 +19,23 @@ import static org.epistem.jclass.JAttribute.Name.*;
 public class EnclosingMethodAttribute extends AttributeModel {
 
     /** The enclosing class */
-    public final JClassReference enclosingClass;
+    public final ObjectType enclosingClass;
     
     /** The enclosing method (may be null) */
-    public final JMethodReference enclosingMethod;
+    public final MethodDescriptor enclosingMethod;
     
-    public EnclosingMethodAttribute( JClassReference enclosingClass, JMethodReference enclosingMethod ) {
-        super( EnclosingMethod.name() );
+    public EnclosingMethodAttribute( ObjectType enclosingClass, MethodDescriptor enclosingMethod ) {
+        super( AttributeName.EnclosingMethod.name() );
         this.enclosingMethod = enclosingMethod;
         this.enclosingClass  = enclosingClass;
     }
     
-    public static EnclosingMethodAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {        
+    public static EnclosingMethodAttribute parse( ConstantPool pool, DataInput in ) throws IOException {        
         int classIndex    = in.readUnsignedShort();
         int nameTypeIndex = in.readUnsignedShort();
         
-        JClassReference    enclosingClass  = new JClassReference( loader, pool.getClassName( classIndex ));
-        JMethodReference enclosingMethod = null;
+        ObjectType       enclosingClass  = new ObjectType( pool.getClassName( classIndex ));
+        MethodDescriptor enclosingMethod = null;
         
         if( nameTypeIndex != 0 ) {
             ConstantPool.NameAndTypeEntry nameType = 
@@ -46,14 +45,15 @@ public class EnclosingMethodAttribute extends AttributeModel {
             String methodName  = pool.getUTF8Value( nameType.nameIndex );
             
             String[] types = ConstantPool.readSignature( methodSig );
-            JClassReference retType = new JClassReference( loader, types[0] );
+            JavaType retType = JavaType.fromName( types[0] );
             
-            JClassReference[] paramTypes = new JClassReference[ types.length - 1 ];
+            ValueType[] paramTypes = new ValueType[ types.length - 1 ];
             for (int i = 0; i < paramTypes.length; i++) {
-                paramTypes[i] = new JClassReference( loader, types[i+1] );
+                paramTypes[i] = ValueType.fromName( types[i+1] );
             }
             
-            enclosingMethod = new JMethodReference( enclosingClass, methodName, retType, paramTypes );
+            Signature sig = new Signature( methodName, paramTypes );
+            enclosingMethod = new MethodDescriptor( enclosingClass, sig, retType );
         }
         
         return new EnclosingMethodAttribute( enclosingClass, enclosingMethod );
@@ -64,7 +64,7 @@ public class EnclosingMethodAttribute extends AttributeModel {
         out.print( name + " = " );
         
         if( enclosingMethod != null ) {
-            enclosingMethod.dump( out );
+            out.print( enclosingMethod );
         } else {
             out.print( enclosingClass );
         }

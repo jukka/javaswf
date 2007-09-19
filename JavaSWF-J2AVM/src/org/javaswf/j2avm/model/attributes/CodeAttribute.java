@@ -1,7 +1,5 @@
 package org.javaswf.j2avm.model.attributes;
 
-import static org.epistem.jclass.JAttribute.Name.Code;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -15,12 +13,10 @@ import java.util.TreeMap;
 
 import org.epistem.io.CountingDataInput;
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.code.Instruction;
-import org.epistem.jclass.io.internal.ConstantPool;
-import org.epistem.jclass.io.parser.ClassFileParser;
-import org.epistem.jclass.reference.JClassReference;
+import org.javaswf.j2avm.model.ClassModel;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.types.ObjectType;
+
 
 /**
  * The Code attribute.
@@ -41,9 +37,9 @@ public class CodeAttribute extends AttributeModel {
         public final int handlerOffset;
         
         /** The type to catch - may be null (means any exception) */
-        public final JClassReference exceptionType;
+        public final ObjectType exceptionType;
         
-        public ExceptionHandler( int startOffset, int endOffset, int handlerOffset, JClassReference exceptionType ) {
+        public ExceptionHandler( int startOffset, int endOffset, int handlerOffset, ObjectType exceptionType ) {
             this.startOffset   = startOffset;
             this.endOffset     = endOffset;
             this.handlerOffset = handlerOffset;
@@ -54,7 +50,7 @@ public class CodeAttribute extends AttributeModel {
          * Dump for debug purposes
          */
         public void dump( IndentingPrintWriter out ) {
-            String type = (exceptionType != null) ? exceptionType.className : "<any>";
+            String type = (exceptionType != null) ? exceptionType.name : "<any>";
             out.println( "try{ " + startOffset + " .. " + endOffset + 
                          " } catch( " + type + " ) --> " + handlerOffset );
         }
@@ -68,7 +64,7 @@ public class CodeAttribute extends AttributeModel {
      * @param name the attribute name
      * @return null if the attribute does not exist
      */
-    public final AttributeModel getAttribute( AttributeModel.Name name ) {
+    public final AttributeModel getAttribute( AttributeName name ) {
         return attributes.get( name.name() );
     }
     
@@ -82,13 +78,13 @@ public class CodeAttribute extends AttributeModel {
     public final SortedMap<Integer, Instruction> instructions = new TreeMap<Integer, Instruction>();
     
     public CodeAttribute( int maxStack, int maxLocals ) {
-        super( Code.name() );
+        super( AttributeName.Code.name() );
         
         this.maxLocals = maxLocals;
         this.maxStack  = maxStack;
     }
     
-    public static CodeAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    public static CodeAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
         int maxStack  = in.readUnsignedShort();
         int maxLocals = in.readUnsignedShort();
         
@@ -116,8 +112,8 @@ public class CodeAttribute extends AttributeModel {
             int handler = in.readUnsignedShort();
             int type    = in.readUnsignedShort();
             
-            JClassReference exType = (type != 0) ? 
-                new JClassReference( loader, pool.getClassName( type ) ) :
+            ObjectType exType = (type != 0) ? 
+                new ObjectType( pool.getClassName( type ) ) :
                 null;
                 
             code.handlers.add( new ExceptionHandler( start, end, handler, exType ));
@@ -126,7 +122,7 @@ public class CodeAttribute extends AttributeModel {
         //attributes
         int attrCount = in.readUnsignedShort();
         for (int i = 0; i < attrCount; i++) {
-            ClassFileParser.parseAttribute( code.attributes, in, loader, pool );            
+            ClassModel.parseAttr( code.attributes, in, pool );            
         }
         
         return code;

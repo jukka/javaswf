@@ -1,5 +1,10 @@
 package org.javaswf.j2avm.model.types;
 
+/**
+ * Base for Java types.  Equality is based on the type name.
+ *  
+ * @author nickmain
+ */
 public abstract class JavaType {
 
     public final String name;
@@ -19,8 +24,6 @@ public abstract class JavaType {
         if( obj == null || !(obj instanceof JavaType)) return false;
         
         JavaType otherType = (JavaType) obj;
-        if( otherType.getClass() != getClass() ) return false;
-        
         return name.equals( otherType.name );
     }
 
@@ -37,26 +40,14 @@ public abstract class JavaType {
     	
     	if( name.equals( "void" ) ) return VoidType.VOID;
     	
-    	JavaType type = PrimitiveType.fromName( name );
-    	if( type != null ) return type;
-    		
-    	int dimCount = 0;
-    	while( name.endsWith( "[]" )) {
-    		dimCount++;
-    		name = name.substring( 0, name.length() - 2 );
+    	if( PrimitiveType.isPrimitiveTypeName( name )) {
+    		return PrimitiveType.fromName( name );
+    	}
+
+    	if( ArrayType.isArrayTypeName( name )) {
+    		return ArrayType.fromName( name );
     	}
     	
-    	if( dimCount > 0 ) {
-    		JavaType elementType = JavaType.fromName( name );
-    		if( elementType instanceof ValueType ) {
-    			type = new ArrayType( ((ValueType) elementType), dimCount );
-    		} else {
-    			throw new IllegalArgumentException( "void array is illegal" );
-    		}
-    	} else {
-    		type = new ObjectType( name );
-    	}
-    	
-        return type;
+    	return new ObjectType( name );
     }
 }

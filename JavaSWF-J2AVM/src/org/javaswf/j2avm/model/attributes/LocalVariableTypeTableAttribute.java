@@ -1,7 +1,5 @@
 package org.javaswf.j2avm.model.attributes;
 
-import static org.epistem.jclass.JAttribute.Name.LocalVariableTypeTable;
-
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.Arrays;
@@ -9,9 +7,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+
 
 /**
  * The local-variable-table attribute
@@ -24,12 +21,12 @@ public class LocalVariableTypeTableAttribute extends AttributeModel {
     public final Collection<LocalVariableTypeInfo> localVariables = new HashSet<LocalVariableTypeInfo>();
      
     public LocalVariableTypeTableAttribute( LocalVariableTypeInfo...localVariableInfos ) {
-        super( LocalVariableTypeTable.name() );
+        super( AttributeName.LocalVariableTypeTable.name() );
         
         localVariables.addAll( Arrays.asList( localVariableInfos ));
     }
     
-    public static LocalVariableTypeTableAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    public static LocalVariableTypeTableAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
         
         int count = in.readUnsignedShort();
         LocalVariableTypeInfo[] infos = new LocalVariableTypeInfo[ count ];

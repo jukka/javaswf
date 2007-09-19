@@ -8,10 +8,16 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public final class FieldDescriptor extends MemberDescriptor {
+public final class FieldDescriptor {
     
     /** The field type */
-    public final ValueType fieldType;
+    public final ValueType type;
+    
+    /** The owning class */
+    public final ObjectType owner;
+    
+    /** The field name */
+    public final String name;
     
     /**
      * @param owner the class that owns the field
@@ -19,7 +25,13 @@ public final class FieldDescriptor extends MemberDescriptor {
      * @param type the field type
      */
     public FieldDescriptor( ObjectType owner, String name, ValueType type ) {
-        super( owner, name, type );
-        this.fieldType = type;
+        this.type  = type;
+        this.owner = owner;
+        this.name  = name;
+    }
+    
+    @Override
+    public String toString() {
+    	return owner.name + "." + name + ":" + type.name;
     }
 }

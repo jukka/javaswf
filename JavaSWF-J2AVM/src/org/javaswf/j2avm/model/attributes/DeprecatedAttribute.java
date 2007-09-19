@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.parser.ConstantPool;
-import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 
 
 /**
@@ -16,7 +15,7 @@ import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 public class DeprecatedAttribute extends AttributeModel {
     
     public DeprecatedAttribute() {
-        super( AttributeModel.Name.Deprecated.name() );
+        super( AttributeName.Deprecated.name() );
     }
     
     public static DeprecatedAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
@@ -26,11 +25,5 @@ public class DeprecatedAttribute extends AttributeModel {
     /** Dump for debug purposes */
     public final void dump( IndentingPrintWriter out ) {
         out.println( name );
-    }
-
-    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
-    @Override
-    public void accept(AttributeVisitor visitor) {
-        visitor.attrDeprecated();        
     }
 }

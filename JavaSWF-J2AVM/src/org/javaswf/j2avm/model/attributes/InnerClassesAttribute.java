@@ -10,8 +10,7 @@ import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.InnerClass.InnerClassFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.ObjectType;
-import org.javaswf.j2avm.model.visitor.AttributeVisitor;
-import org.javaswf.j2avm.model.visitor.ClassAttributeVisitor;
+
 
 
 /**
@@ -27,7 +26,7 @@ public class InnerClassesAttribute extends AttributeModel {
     public final Collection<InnerClass> innerClasses;
     
     public InnerClassesAttribute( InnerClass...innerClasses ) {
-        super( AttributeModel.Name.InnerClasses.name() );
+        super( AttributeName.InnerClasses.name() );
         this.innerClasses = Collections.unmodifiableCollection( Arrays.asList( innerClasses ) );
     }
     
@@ -73,11 +72,4 @@ public class InnerClassesAttribute extends AttributeModel {
         out.println( "}" );
     }
 
-    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
-    @Override
-    public void accept(AttributeVisitor visitor) {
-        if( visitor instanceof ClassAttributeVisitor ) {
-            ((ClassAttributeVisitor) visitor).attrInnerClasses( innerClasses );
-        }        
-    }
 }

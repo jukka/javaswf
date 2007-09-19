@@ -7,7 +7,6 @@ import java.io.OutputStream;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.epistem.util.Hex;
-import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 
 /**
  * An unknown attribute.
@@ -56,11 +55,5 @@ public class UnknownAttribute extends AttributeModel {
         out.print( Hex.dump( data, 0, "" ));        
         out.unindent();
         out.println( "}" );        
-    }
-
-    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
-    @Override
-    public void accept(AttributeVisitor visitor) {
-        visitor.attrUnknown( name, data );
     }
 }

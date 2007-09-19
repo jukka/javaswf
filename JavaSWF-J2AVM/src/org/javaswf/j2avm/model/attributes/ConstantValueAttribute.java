@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.parser.ConstantPool;
-import org.javaswf.j2avm.model.visitor.AttributeVisitor;
-import org.javaswf.j2avm.model.visitor.FieldAttributeVisitor;
 
 /**
  * A constant field value
@@ -22,12 +20,12 @@ public class ConstantValueAttribute extends AttributeModel {
     public final Object value;
     
     public ConstantValueAttribute( Number value ) {
-        super( AttributeModel.Name.ConstantValue.name() );
+        super( AttributeName.ConstantValue.name() );
         this.value = value;
     }
 
     public ConstantValueAttribute( String value ) {
-        super( AttributeModel.Name.ConstantValue.name() );
+        super( AttributeName.ConstantValue.name() );
         this.value = value;
     }
     
@@ -53,14 +51,6 @@ public class ConstantValueAttribute extends AttributeModel {
             out.println();
         } else {
             out.println( name + " = " + value );            
-        }        
-    }
-
-    /** @see org.javaswf.j2avm.model.attributes.AttributeModel#accept(org.javaswf.j2avm.model.visitor.AttributeVisitor) */
-    @Override
-    public void accept(AttributeVisitor visitor) {
-        if( visitor instanceof FieldAttributeVisitor ) {
-            ((FieldAttributeVisitor) visitor).attrConstantValue( value );
         }        
     }
 }

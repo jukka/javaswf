@@ -1,7 +1,7 @@
 package org.javaswf.j2avm.model.attributes;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.reference.JClassReference;
+import org.javaswf.j2avm.model.types.ValueType;
 
 /**
  * Debug info about a local variable
@@ -20,14 +20,14 @@ public class LocalVariableInfo {
     public final String name;
     
     /** The variable type */
-    public final JClassReference type;
+    public final ValueType type;
     
     /** The variable index */
     public final int varIndex;
    
     
     public LocalVariableInfo( int startOffset, int offsetLength, String name,
-                              JClassReference type, int varIndex ) {
+    		                  ValueType type, int varIndex ) {
         
         this.startOffset  = startOffset;
         this.offsetLength = offsetLength;

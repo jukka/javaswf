@@ -5,7 +5,7 @@ package org.javaswf.j2avm.model.types;
  *
  * @author nickmain
  */
-public final class ObjectType extends ObjectOrArrayType {
+public class ObjectType extends ObjectOrArrayType {
 
     public static final ObjectType OBJECT         = new ObjectType( "java.lang.Object" );
     public static final ObjectType STRING         = new ObjectType( "java.lang.String" );

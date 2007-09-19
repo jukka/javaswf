@@ -1,5 +1,6 @@
 package org.javaswf.j2avm.model.parser;
 
+import java.io.DataInput;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -425,6 +426,123 @@ public class ConstantPool {
         if( e instanceof ClassEntry  ) return JavaType.fromName( getClassName( index ));
         
         return null;
+    }
+    
+    /** Empty pool */
+    public ConstantPool() {}
+    
+    /** Parse from class file data */
+    public ConstantPool( DataInput in ) throws IOException {
+        int cpcount = in.readShort();
+        int cpIndex = 1;
+        
+        while( cpIndex < cpcount ) {
+        
+            int tag = in.readUnsignedByte();        
+            ConstantPoolType type = ConstantPoolType.valueToType.get( tag );
+            
+            if( type == null )  {
+                throw new IOException( "Unknown CP tag: " + tag );
+            }
+            
+            switch( type ) {
+                case CPool_Utf8 :
+                    {
+                        int size = in.readShort();
+                        byte[] chars = new byte[size];
+                        in.readFully( chars );
+                        
+                        String utf8 = new String(chars, "UTF-8");
+                        cpIndex++;                        
+                        appendUTF8(utf8);
+                        break;
+                    }
+    
+                case CPool_Integer :
+                    {
+                        int value = in.readInt();
+                        cpIndex++;
+                        appendInt(value);
+                        break;
+                    }
+    
+                case CPool_Float :
+                    {
+                        float value = in.readFloat();
+                        cpIndex++;
+                        appendFloat(value);
+                        break;
+                    }
+    
+                case CPool_Long :
+                    {
+                        long value = in.readLong();
+                        cpIndex += 2;
+                        appendLong(value);
+                        break;
+                    }
+    
+                case CPool_Double :
+                    {
+                        double value = in.readDouble();
+                        cpIndex += 2;
+                        appendDouble(value);
+                        break;
+                    }
+    
+                case CPool_Class :
+                    {
+                        int index = in.readShort();
+                        cpIndex++;
+                        appendClass(index);
+                        break;
+                    }
+    
+                case CPool_String :
+                    {
+                        int index = in.readShort();
+                        cpIndex++;
+                        appendString(index);
+                        break;
+                    }
+    
+                case CPool_Fieldref :
+                    {
+                        int classIndex = in.readShort();
+                        int nameIndex = in.readShort();
+                        cpIndex++;
+                        appendField(classIndex, nameIndex);
+                        break;
+                    }
+    
+                case CPool_Methodref :
+                    {
+                        int classIndex = in.readShort();
+                        int nameIndex = in.readShort();
+                        cpIndex++;
+                        appendMethod(classIndex, nameIndex);
+                        break;
+                    }
+    
+                case CPool_InterfaceMethodref :
+                    {
+                        int classIndex = in.readShort();
+                        int nameIndex = in.readShort();
+                        cpIndex++;
+                        appendInterfaceMethod(classIndex, nameIndex);
+                        break;
+                    }
+    
+                case CPool_NameAndType :
+                    {
+                        int nameIndex = in.readShort();
+                        int typeIndex = in.readShort();
+                        cpIndex++;
+                        appendNameType(nameIndex, typeIndex);
+                        break;
+                    }
+            }
+        }
     }
 }
 

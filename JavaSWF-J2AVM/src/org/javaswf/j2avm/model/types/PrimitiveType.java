@@ -47,10 +47,22 @@ public final class PrimitiveType extends ValueType {
     }
     
     /**
+     * Whether a name is a primitive type name
+     */
+    public static boolean isPrimitiveTypeName( String name ) {
+    	return types.containsKey( name );
+    }
+    
+    /**
      * Get a PrimitiveType from its name.
-     * @return null if the name is not a primitive type
      */
     public static PrimitiveType fromName( String name ) {
-    	return types.get( name );
+    	PrimitiveType type = types.get( name );
+    	
+    	if( type == null ) {
+    		throw new IllegalArgumentException( "Not a primitive type: " + name );
+    	}
+    	
+    	return type;
     }
 }

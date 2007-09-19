@@ -20,7 +20,7 @@ public abstract class ParameterAnnotationAttribute extends AnnotationAttribute {
     /** The list of parameter annotations - each is a map keyed by annotation class name */
     public List<Map<String,AnnotationModel>> parameterAnnotations = new ArrayList<Map<String,AnnotationModel>>();
 
-    protected ParameterAnnotationAttribute( AttributeModel.Name name, boolean isVisible ) {
+    protected ParameterAnnotationAttribute( AttributeName name, boolean isVisible ) {
         super( name, isVisible );
     }
     

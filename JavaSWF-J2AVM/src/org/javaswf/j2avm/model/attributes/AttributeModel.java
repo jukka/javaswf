@@ -1,7 +1,6 @@
 package org.javaswf.j2avm.model.attributes;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.javaswf.j2avm.model.visitor.AttributeVisitor;
 
 /**
  * Base for class, field, method and code attributes
@@ -10,34 +9,6 @@ import org.javaswf.j2avm.model.visitor.AttributeVisitor;
  */
 public abstract class AttributeModel {
 
-    /** The standard attribute names */
-    public static enum Name {
-        Code                                 (CodeAttribute.class),
-        Exceptions                           (ExceptionsAttribute.class),
-        ConstantValue                        (ConstantValueAttribute.class),
-        Deprecated                           (DeprecatedAttribute.class),
-        Synthetic                            (SyntheticAttribute.class),
-        SourceFile                           (SourceFileAttribute.class),
-        LineNumberTable                      (LineNumberTableAttribute.class),
-        LocalVariableTable                   (LocalVariableTableAttribute.class),
-        LocalVariableTypeTable               (LocalVariableTypeTableAttribute.class),
-        AnnotationDefault                    (AnnotationDefaultAttribute.class),
-        EnclosingMethod                      (EnclosingMethodAttribute.class),
-        Signature                            (SignatureAttribute.class), 
-        InnerClasses                         (InnerClassesAttribute.class), 
-        RuntimeVisibleAnnotations            (RuntimeVisibleAnnotationsAttribute.class),
-        RuntimeInvisibleAnnotations          (RuntimeInvisibleAnnotationsAttribute.class),
-        RuntimeVisibleParameterAnnotations   (RuntimeVisibleParameterAnnotationsAttribute.class),
-        RuntimeInvisibleParameterAnnotations (RuntimeInvisibleParameterAnnotationsAttribute.class);
-        
-        /** The class that holds the attribute type */
-        public final Class<? extends AttributeModel> attributeClass;
-        
-        private Name( Class<? extends AttributeModel> attributeClass ) {
-            this.attributeClass = attributeClass;
-        }        
-    }
-    
     /** The attribute name */
     public final String name;
     
@@ -65,11 +36,5 @@ public abstract class AttributeModel {
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
         out.println( name );
-    }
-    
-    
-    /**
-     * Accept a visitor.
-     */
-    public abstract void accept( AttributeVisitor visitor );
+    }    
 }

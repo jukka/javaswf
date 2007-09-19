@@ -18,7 +18,7 @@ public abstract class AnnotationAttribute extends AttributeModel {
     /** Whether the annotation is visible via the reflection API */
     public final boolean isRuntimeVisible;    
     
-    protected AnnotationAttribute( AttributeModel.Name name, boolean isVisible ) {
+    protected AnnotationAttribute( AttributeName name, boolean isVisible ) {
         super( name.name() );
         this.isRuntimeVisible = isVisible;
     }

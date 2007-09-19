@@ -19,7 +19,7 @@ public abstract class Annotations extends AnnotationAttribute {
     /** The annotations - keyed by annotation class name */
     public final Map<String,AnnotationModel> annotations = new HashMap<String,AnnotationModel>();
     
-    protected Annotations( AttributeModel.Name name, boolean isVisible ) {
+    protected Annotations( AttributeName name, boolean isVisible ) {
         super( name, isVisible );
     }
     

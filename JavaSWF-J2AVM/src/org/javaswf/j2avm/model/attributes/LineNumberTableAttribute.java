@@ -4,11 +4,8 @@ import java.io.DataInput;
 import java.io.IOException;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.epistem.jclass.JAttribute;
-import org.epistem.jclass.JClassLoader;
-import org.epistem.jclass.io.internal.ConstantPool;
+import org.javaswf.j2avm.model.parser.ConstantPool;
 
-import static org.epistem.jclass.JAttribute.Name.*;
 
 /**
  * The LineNumberTable attribute
@@ -24,13 +21,13 @@ public class LineNumberTableAttribute extends AttributeModel {
     public final int[] lineNumbers;
     
     public LineNumberTableAttribute( int[] offsets, int[] lineNumbers ) {
-        super( LineNumberTable.name() );
+        super( AttributeName.LineNumberTable.name() );
         
         this.lineNumbers = lineNumbers;
         this.offsets     = offsets;
     }
     
-    public static LineNumberTableAttribute parse( ConstantPool pool, JClassLoader loader, DataInput in ) throws IOException {
+    public static LineNumberTableAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
         
         int count = in.readUnsignedShort();
         int[] offsets     = new int[ count ];
