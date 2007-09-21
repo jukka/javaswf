@@ -74,6 +74,7 @@ public class InstructionCursor implements Instructions {
     private void add(Instruction insn) {
         list.insert( insn, prev, next );
         prev = insn;
+        next = insn.next;
     }
 
     /** @see org.javaswf.j2avm.model.code.Instructions#label(org.javaswf.j2avm.model.code.CodeLabel) */
@@ -311,10 +312,10 @@ public class InstructionCursor implements Instructions {
     }
 
     /**
-     * @see org.javaswf.j2avm.model.code.Instructions#pop()
+     * @see org.javaswf.j2avm.model.code.Instructions#pop(int)
      */
-    public void pop() {
-        add( new Pop() );
+    public void pop( int count ) {
+        add( new Pop( count ) );
     }
 
     /**

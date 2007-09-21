@@ -1,6 +1,9 @@
 package org.javaswf.j2avm.model.code;
 
-public class InstructionList {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class InstructionList implements Iterable<Instruction> {
 
     /**
      * Get the number of instructions in the list
@@ -43,7 +46,39 @@ public class InstructionList {
         return new InstructionCursor( this, last, null );
     }
     
-    private Instruction first;
+    
+    /**
+     * Get an iterator over the instructions
+     */
+    public Iterator<Instruction> iterator() {
+		return new Iterator<Instruction>(){
+			
+			private Instruction next = first;
+			private Instruction curr = null;
+			
+			/** @see java.util.Iterator#hasNext() */
+			public boolean hasNext() {
+				return next != null ;
+			}
+
+			/** @see java.util.Iterator#next() */
+			public Instruction next() {
+				if( next == null ) throw new NoSuchElementException();
+				curr = next;
+				next = curr.next;
+				return curr;
+			}
+
+			/** @see java.util.Iterator#remove() */
+			public void remove() {
+				if( curr == null ) throw new IllegalStateException();
+				curr.remove();
+				curr = null;
+			}
+		};
+	}
+
+	private Instruction first;
     private Instruction last;
     private int count;
     

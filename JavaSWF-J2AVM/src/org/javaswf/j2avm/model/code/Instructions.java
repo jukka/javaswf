@@ -231,7 +231,7 @@ public interface Instructions {
      * This abstracts away longs and doubles and treats them as single-size
      * values.
      */
-    public void pop();
+    public void pop( int count );
 
     /**
      * Swap the top two stack values

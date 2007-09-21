@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.javaswf.j2avm.asm.ASMClassModelFactory;
 import org.javaswf.j2avm.model.ClassModel;
-import org.javaswf.j2avm.model.ClassModelFactory;
 
 /**
  * The context of the translation.  Translation steps should look to
@@ -69,7 +67,7 @@ public final class TranslationContext {
                 throw new RuntimeException( "Could not find class file for " + className );
             }
             
-            model = factory.modelFromStream( className, in );
+            model = new ClassModel( in );
             classModels.put( className, model );
         }
         
@@ -82,9 +80,8 @@ public final class TranslationContext {
     public final boolean debug;
 
     private final Set<String> classesToBeTranslated = new HashSet<String>();
-    
-    private final ClassModelFactory factory = new ASMClassModelFactory();    
-    private final ClassLoader       loader;
+        
+    private final ClassLoader loader;
     
     //java class name to avm2 class name
     private final Map<String, String> translatedClassNames =

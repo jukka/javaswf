@@ -60,7 +60,7 @@ public final class FieldModel {
                 
         int numAttrs = in.readUnsignedShort();       
         for (int i = 0; i < numAttrs; i++) {
-            ClassModel.parseAttr( attributes, in, pool );
+        	AttributeModel.parseAttr( attributes, in, pool );
         }
 	}
 }

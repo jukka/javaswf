@@ -1,8 +1,15 @@
 package org.javaswf.j2avm.model.code;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.epistem.io.CountingDataInput;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.code.Instructions.Case;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.parser.Operation;
+import org.javaswf.j2avm.model.parser.OperationArgument;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -17,17 +24,25 @@ import org.javaswf.j2avm.model.types.ValueType;
  */
 public abstract class Instruction {
 
-    /* pkg */Instruction prev;
+    /*pkg*/ Instruction prev;
+    /*pkg*/ Instruction next;
+    /*pkg*/ InstructionList list;
 
-    /* pkg */Instruction next;
-
-    /* pkg */InstructionList list;
+    /*pkg*/ int offset;
 
     /**
      * Accept the given visitor and call the appropriate instruction method.
      */
     public abstract void accept(Instructions visitor);
 
+    /**
+     * Remove this instruction from the list
+     */
+    public final void remove() {
+    	if( list == null ) return;
+    	list.remove( this );
+    }
+    
     static class Nop extends Instruction {
         Nop() {
         }
@@ -413,11 +428,14 @@ public abstract class Instruction {
     }
 
     static class Pop extends Instruction {
-        Pop() {
+    	int count;
+    	
+        Pop( int count ) {
+        	this.count = count;
         }
 
         public void accept(Instructions visitor) {
-            visitor.pop();
+            visitor.pop( count );
         }
     }
 
@@ -802,4 +820,40 @@ public abstract class Instruction {
         }
     }
 
+    
+    /**
+     * Parse an instruction
+     */
+    public static Instruction parse( ConstantPool cpool, 
+                                     CountingDataInput in ) throws IOException {
+        int offset = in.count;
+        
+        Instruction i = parse( cpool, offset, false, in );
+        i.offset = offset;
+        
+        return i;
+    }
+    
+    /**
+     * Parse an instruction
+     */
+    private static Instruction parse( ConstantPool cpool, int offset, 
+                                      boolean isWide, CountingDataInput in ) throws IOException {
+        
+        int opcode = in.readUnsignedByte();
+        Operation op = Operation.fromOpcode( opcode );
+        if( op == null ) throw new IOException( "Unknown opcode 0x" + Integer.toHexString( opcode ) );
+        
+        //wide instructions
+        if( op == Operation.WIDE ) return parse( cpool, offset, true, in );
+        
+        List<OperationArgument> argTypes = op.arguments;
+        
+        Object[] args = new Object[ argTypes.size() ];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = argTypes.get(i).parse( offset, isWide, cpool, in );
+        }
+        
+        return new Instruction( op, args );
+    }
 }

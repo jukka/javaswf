@@ -1,11 +1,9 @@
 package org.javaswf.j2avm.model;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -15,7 +13,6 @@ import java.util.Set;
 
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
-import org.javaswf.j2avm.model.attributes.UnknownAttribute;
 import org.javaswf.j2avm.model.flags.ClassFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.ObjectType;
@@ -127,7 +124,7 @@ public final class ClassModel {
             //attributes
             int numAttrs = in.readUnsignedShort();            
             for (int i = 0; i < numAttrs; i++) {
-                parseAttr( attributes, in, pool );
+            	AttributeModel.parseAttr( attributes, in, pool );
             }
             
         } catch( IOException ioe ) {
@@ -138,43 +135,6 @@ public final class ClassModel {
             } catch( IOException ioe ) {
                 //nada
         	}
-        }
-    }
-    
-    /**
-     * Parse an attribute and place it in the map
-     */
-    /*pkg*/ static void parseAttr( Map<AttributeName,AttributeModel> attrMap,
-    		                       DataInput in, ConstantPool pool ) 
-    	throws IOException {
-    	
-        int    nameIndex = in.readUnsignedShort();
-        int    dataSize  = in.readInt();
-        String attrName  = pool.getUTF8Value( nameIndex );
-        
-        byte[] data = new byte[ dataSize ];
-        in.readFully( data );        
-        
-        try {
-            AttributeModel attr;
-        	AttributeName name = AttributeName.valueOf( attrName );
-
-        	Class<? extends AttributeModel> attrClass = name.attributeClass;
-            DataInputStream dataIn = new DataInputStream( new ByteArrayInputStream( data ));
-            
-            attr = (AttributeModel) attrClass.getMethod( "parse", ConstantPool.class, DataInput.class )
-                                             .invoke( null, pool, dataIn );
-
-            attrMap.put( name, attr );
-            
-        } catch( InvocationTargetException itex ) {
-            if( itex.getCause() instanceof IOException ) throw (IOException) itex.getCause();            
-            if( itex.getCause() instanceof RuntimeException ) throw (RuntimeException) itex.getCause();            
-            
-            throw new RuntimeException( itex );
-            
-        } catch( Exception ex ) {                   
-            //Unknown attribute - ignore for now            
         }
     }
 }

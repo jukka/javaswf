@@ -14,6 +14,8 @@ import java.util.TreeMap;
 import org.epistem.io.CountingDataInput;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.ClassModel;
+import org.javaswf.j2avm.model.code.Instruction;
+import org.javaswf.j2avm.model.code.InstructionList;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.ObjectType;
 
@@ -57,38 +59,25 @@ public class CodeAttribute extends AttributeModel {
     }
     
     /** Mutable map of attributes by name */
-    public final Map<String,AttributeModel> attributes = new HashMap<String,AttributeModel>();
-    
-    /**
-     * Get a standard attribute
-     * @param name the attribute name
-     * @return null if the attribute does not exist
-     */
-    public final AttributeModel getAttribute( AttributeName name ) {
-        return attributes.get( name.name() );
-    }
-    
-    public final int maxStack;
-    public final int maxLocals;
+    public final Map<AttributeName,AttributeModel> attributes = new HashMap<AttributeName,AttributeModel>();
+        
+    private int maxStack;
+    private int maxLocals;
     
     /** The exception handlers in order of decreasing precedence */
     public final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
     
-    /** The instructions - keyed by offset */
-    public final SortedMap<Integer, Instruction> instructions = new TreeMap<Integer, Instruction>();
+    /** The instructions - may be empty for a native or abstract method */
+    public final InstructionList instructions = new InstructionList();;
     
-    public CodeAttribute( int maxStack, int maxLocals ) {
+    public CodeAttribute() {
         super( AttributeName.Code.name() );
-        
-        this.maxLocals = maxLocals;
-        this.maxStack  = maxStack;
     }
     
-    public static CodeAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
-        int maxStack  = in.readUnsignedShort();
-        int maxLocals = in.readUnsignedShort();
-        
-        CodeAttribute code = new CodeAttribute( maxStack, maxLocals );
+    public CodeAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
+        CodeAttribute code = new CodeAttribute();
+        code.maxStack  = in.readUnsignedShort();
+        code.maxLocals = in.readUnsignedShort();
         
         //parse the bytecode
         int codeSize = in.readInt();
@@ -100,7 +89,7 @@ public class CodeAttribute extends AttributeModel {
                                            new ByteArrayInputStream( bytecode )));
         
         while( dataIn.count < codeSize ) {
-            Instruction instr = Instruction.parse( loader, pool, dataIn );
+            Instruction instr = Instruction.parse( pool, dataIn );
             code.instructions.put( instr.offset, instr );
         }
         
@@ -122,7 +111,7 @@ public class CodeAttribute extends AttributeModel {
         //attributes
         int attrCount = in.readUnsignedShort();
         for (int i = 0; i < attrCount; i++) {
-            ClassModel.parseAttr( code.attributes, in, pool );            
+        	AttributeModel.parseAttr( code.attributes, in, pool );            
         }
         
         return code;
@@ -139,7 +128,7 @@ public class CodeAttribute extends AttributeModel {
         out.println( "max locals: " + maxLocals );
         out.println();
 
-        for( Instruction i : instructions.values() ) {
+        for( Instruction i : instructions ) {
             i.dump( out );
         }
         
