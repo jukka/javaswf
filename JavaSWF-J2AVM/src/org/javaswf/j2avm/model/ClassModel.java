@@ -9,8 +9,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
 import org.javaswf.j2avm.model.flags.ClassFlag;
@@ -99,12 +99,11 @@ public final class ClassModel {
             
             //interfaces
             int ifcount  = in.readUnsignedShort();
-            Set<String> interfaces = new HashSet<String>();
             for (int i = 0; i < ifcount; i++) {
                 int index = in.readShort();                
 
                 String ifaceName = pool.getClassName( index );
-                interfaces.add( ifaceName );
+                interfaces.add( new ObjectType( ifaceName ));
             }
             
             //fields
@@ -136,5 +135,50 @@ public final class ClassModel {
                 //nada
         	}
         }
+    }
+    
+    /**
+     * Dump the model
+     */
+    public void dump( IndentingPrintWriter ipw ) {
+    	ipw.println( "class " + type + " {");
+    	ipw.indent();
+    	
+    	ipw.println( "versn: " + majorVersion + "." + minorVersion );
+    	ipw.println( "flags: " + flags );
+    	
+    	if( superclass != null ) {
+    		ipw.println( "super: " + superclass );
+    	}
+    	
+    	for( ObjectType iface : interfaces ) {
+    		ipw.println( "iface: " + iface );
+    	}
+    	
+    	for( FieldModel f : fields.values() ) {
+    		ipw.println();
+    		f.dump( ipw );
+    	}
+    	
+    	for( MethodModel m : methods.values() ) {
+    		ipw.println();
+    		m.dump( ipw );    		
+    	}
+    	
+    	if( ! attributes.isEmpty() ) {
+    		ipw.println();
+    		ipw.println( "attributes {" );
+    		ipw.indent();
+    		
+	    	for( AttributeModel a : attributes.values() ) {
+	    		a.dump( ipw );    		    		
+	    	}
+	    	
+	    	ipw.unindent();
+	    	ipw.println( "}" );
+    	}
+    	
+    	ipw.unindent();
+    	ipw.println( "}" );
     }
 }

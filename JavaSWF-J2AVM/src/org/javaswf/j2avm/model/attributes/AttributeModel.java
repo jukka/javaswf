@@ -78,7 +78,11 @@ public abstract class AttributeModel {
             
             throw new RuntimeException( itex );
             
-        } catch( Exception ex ) {                   
+        } catch( NoSuchMethodException nsme ) {
+			throw new RuntimeException( nsme );
+        	
+        } catch( Exception ex ) {       
+        	ex.printStackTrace();
             //Unknown attribute - ignore for now            
         }
     }

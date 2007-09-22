@@ -46,6 +46,46 @@ public class InstructionList implements Iterable<Instruction> {
         return new InstructionCursor( this, last, null );
     }
     
+    /**
+     * Get a cursor that is positioned before the given instruction
+     */
+    public InstructionCursor cursorBefore( Instruction insn ) {
+     	if( insn.list != this ) {
+     		throw new IllegalArgumentException( "Instruction is not part of this list" );
+     	}
+    	
+        return new InstructionCursor( this, insn.prev, insn );
+    }
+    
+    /**
+     * Get a cursor that is positioned after the given instruction
+     */
+    public InstructionCursor cursorAfter( Instruction insn ) {
+     	if( insn.list != this ) {
+     		throw new IllegalArgumentException( "Instruction is not part of this list" );
+     	}
+    	
+        return new InstructionCursor( this, insn, insn.next );
+    }
+    
+    /**
+     * Label the given instruction by inserting a CodeLabel before it.
+     * 
+     * @param label the label text - this should be unique within the list
+     * @param insn the instruction to label
+     * @return the new label (or the given instruction if it is a label)
+     */
+    public CodeLabel label( Instruction insn, String label ) {
+     	if( insn.list != this ) {
+     		throw new IllegalArgumentException( "Instruction is not part of this list" );
+     	}
+
+     	if( insn instanceof CodeLabel ) return (CodeLabel) insn;
+     	
+     	CodeLabel cl = new CodeLabel( label );
+    	insert( cl, insn.prev, insn );
+    	return cl;
+    }
     
     /**
      * Get an iterator over the instructions
@@ -78,6 +118,25 @@ public class InstructionList implements Iterable<Instruction> {
 		};
 	}
 
+    /**
+     * Get the first instruction in the list.
+     * 
+     * @return null if the list is empty
+     */
+    public Instruction first() { return first; }
+    
+    /**
+     * Get the last instruction in the list.
+     * 
+     * @return null if the list is empty
+     */
+    public Instruction last() { return last; }
+    
+    /**
+     * Whether this list is empty
+     */
+    public boolean isEmpty() { return count == 0; }
+    
 	private Instruction first;
     private Instruction last;
     private int count;

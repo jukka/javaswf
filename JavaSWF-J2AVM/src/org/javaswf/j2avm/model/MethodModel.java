@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
 import org.javaswf.j2avm.model.flags.MethodFlag;
@@ -77,4 +78,26 @@ public final class MethodModel {
         	AttributeModel.parseAttr( attributes, in, pool );
         }
 	}
+	
+    /**
+     * Dump the model
+     */
+    public void dump( IndentingPrintWriter ipw ) {
+    	ipw.print( "method " + signature + " : " + returnType + " " + flags );
+    	
+    	if( ! attributes.isEmpty()) {
+    		ipw.println( " {" );
+    		ipw.indent();
+
+    		for( AttributeModel a : attributes.values() ) {
+        		ipw.println();
+        		a.dump( ipw );    		    		
+        	}
+    		
+    		ipw.unindent();
+    		ipw.print( "}" );
+    	}
+    	
+    	ipw.println();
+    }
 }

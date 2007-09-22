@@ -1,31 +1,156 @@
 package org.javaswf.j2avm.model.parser;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.epistem.io.CountingDataInput;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.code.BranchType;
+import org.javaswf.j2avm.model.code.CodeLabel;
+import org.javaswf.j2avm.model.code.Instruction;
+import org.javaswf.j2avm.model.code.InstructionList;
 import org.javaswf.j2avm.model.code.Instructions;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
+import org.javaswf.j2avm.model.types.ValueType;
 import org.javaswf.j2avm.model.types.VoidType;
 
 /**
- * Handles conversion from low-level JVM operations to abstracted intructions
+ * Handles conversion from low-level JVM operations to abstracted instructions
  *  
  * @author dmain
  */
 public class OperationConvertor {
 	
+	//map from Operation to the method that handles it
+	private final static Map<Operation, Method> handlers =
+		new EnumMap<Operation, Method>( Operation.class );
+	static {
+		Method[] meths = OperationConvertor.class.getMethods();
+		for( Method m : meths ) {
+			if( m.getName().startsWith( "handle_" ) ) {
+				String opName = m.getName().substring( 7 );
+				Operation op = Operation.valueOf( opName );
+				handlers.put( op, m );
+			}
+		}
+	}
+	
+	public final Map<Integer, Instruction> offsets = new HashMap<Integer, Instruction>();
 	private final Instructions instructions;
+	private final InstructionList list;
+	private final ConstantPool cpool;
+	private final CountingDataInput in; 
+	private final int codeSize;	
+	private int offset;
 	
 	/**
 	 * @param instructions the instructions to write to
 	 */
-	public OperationConvertor( Instructions instructions ) {
-		this.instructions = instructions;
+	public OperationConvertor( InstructionList list, ConstantPool cpool,
+			                   byte[] bytecode ) {
+		this.instructions = list.cursorAtStart();		
+		this.cpool        = cpool;
+		this.codeSize     = bytecode.length;
+		this.list         = list;
+		
+		in = new CountingDataInput( 
+                new DataInputStream( 
+                    new ByteArrayInputStream( bytecode )));
 	}
 	
+	/**
+	 * Perform the conversion
+	 */
+	public void convert() throws IOException {
+        while( in.count < codeSize ) {        	
+            parse();            
+            
+            //associate offset with instruction
+            Instruction insn = list.last();
+            
+            //label already at offset
+            Instruction labelInsn = offsets.get( offset ); 
+            if( labelInsn != null && labelInsn instanceof CodeLabel ) {
+            	CodeLabel label = (CodeLabel) labelInsn;            	
+            	label.labelInstruction( insn );
+            }
+            else {
+                offsets.put( offset, insn );            	
+            }            
+        }
+	}
+	
+    /**
+     * Parse an instruction
+     */
+    private void parse() throws IOException {
+        offset = in.count;        
+        parse( false );
+    }
+    
+    /**
+     * Parse an instruction - recursive for WIDE instructions
+     */
+    private void parse( boolean isWide ) throws IOException {
+        
+        int opcode = in.readUnsignedByte();
+        Operation op = Operation.fromOpcode( opcode );
+        if( op == null ) throw new IOException( "Unknown opcode 0x" + Integer.toHexString( opcode ) );
+        
+        //wide instructions
+        if( op == Operation.WIDE ) {
+        	parse( true );
+        	return;
+        }
+        
+        List<OperationArgument> argTypes = op.arguments;
+        
+        Object[] args = new Object[ argTypes.size() ];
+        for (int i = 0; i < args.length; i++) {
+            args[i] = argTypes.get(i).parse( offset, isWide, cpool, in );
+        }
+
+        Method meth = handlers.get( op );
+        try {
+        	meth.invoke( this, args );
+        } catch( Exception ex ) {
+        	throw new RuntimeException( ex );
+        }
+    }
+	
+    /**
+     * Get the label at the given offset.
+     */
+    public CodeLabel labelAtOffset( int offset ) {
+    	Instruction insn = offsets.get( offset );
+    	
+    	//make a label before the offset has been reached yet
+    	if( insn == null ) {
+    		CodeLabel label = new CodeLabel( "" + offset );
+    		offsets.put( offset, label );
+    		return label;
+    	}
+    	
+    	if( insn instanceof CodeLabel ) return (CodeLabel) insn;
+    	
+    	//label an existing instruction
+    	CodeLabel label = list.label( insn, "" + offset );
+    	if( insn != label ) offsets.put( offset, label );
+    	
+    	return label;
+    }
+    
     public void handle_NOP             ( ) { instructions.nop(); }             
     public void handle_ACONST_NULL     ( ) { instructions.pushNull(); }     
     public void handle_ICONST_M1       ( ) { instructions.pushInt( -1 ); }       
@@ -174,30 +299,30 @@ public class OperationConvertor {
     public void handle_I2B             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.BYTE ); }             
     public void handle_I2C             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.CHAR ); }             
     public void handle_I2S             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.SHORT ); }             
-    public void handle_LCMP            ( ) { /*TODO*/ }            
-    public void handle_FCMPL           ( ) { /*TODO*/ }           
-    public void handle_FCMPG           ( ) { /*TODO*/ }           
-    public void handle_DCMPL           ( ) { /*TODO*/ }           
-    public void handle_DCMPG           ( ) { /*TODO*/ }           
-    public void handle_IFEQ            ( int offset ) { /*TODO*/ }            
-    public void handle_IFNE            ( int offset ) { /*TODO*/ }            
-    public void handle_IFLT            ( int offset ) { /*TODO*/ }            
-    public void handle_IFGE            ( int offset ) { /*TODO*/ }            
-    public void handle_IFGT            ( int offset ) { /*TODO*/ }            
-    public void handle_IFLE            ( int offset ) { /*TODO*/ }            
-    public void handle_IF_ICMPEQ       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ICMPNE       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ICMPLT       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ICMPGE       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ICMPGT       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ICMPLE       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ACMPEQ       ( int offset ) { /*TODO*/ }       
-    public void handle_IF_ACMPNE       ( int offset ) { /*TODO*/ }       
-    public void handle_GOTO            ( int offset ) { /*TODO*/ }            
+    public void handle_LCMP            ( ) { instructions.compareLong(); }            
+    public void handle_FCMPL           ( ) { instructions.compareFloat( false ); }           
+    public void handle_FCMPG           ( ) { instructions.compareFloat( true ); }           
+    public void handle_DCMPL           ( ) { instructions.compareDouble( false ); }           
+    public void handle_DCMPG           ( ) { instructions.compareDouble( true ); }           
+    public void handle_IFEQ            ( int offset ) { instructions.branch( BranchType.IF_EQUAL_TO_ZERO,            labelAtOffset( offset ) ); }            
+    public void handle_IFNE            ( int offset ) { instructions.branch( BranchType.IF_NOT_EQUAL_TO_ZERO,        labelAtOffset( offset ) ); }            
+    public void handle_IFLT            ( int offset ) { instructions.branch( BranchType.IF_LESS_OR_EQUAL_TO_ZERO,    labelAtOffset( offset ) ); }            
+    public void handle_IFGE            ( int offset ) { instructions.branch( BranchType.IF_GREATER_OR_EQUAL_TO_ZERO, labelAtOffset( offset ) ); }            
+    public void handle_IFGT            ( int offset ) { instructions.branch( BranchType.IF_GREATER_THAN_ZERO,        labelAtOffset( offset ) ); }            
+    public void handle_IFLE            ( int offset ) { instructions.branch( BranchType.IF_LESS_OR_EQUAL_TO_ZERO,    labelAtOffset( offset ) ); }            
+    public void handle_IF_ICMPEQ       ( int offset ) { instructions.branch( BranchType.IF_EQUAL,            labelAtOffset( offset ) ); }       
+    public void handle_IF_ICMPNE       ( int offset ) { instructions.branch( BranchType.IF_NOT_EQUAL,        labelAtOffset( offset ) ); }       
+    public void handle_IF_ICMPLT       ( int offset ) { instructions.branch( BranchType.IF_LESS_THAN,        labelAtOffset( offset ) ); }       
+    public void handle_IF_ICMPGE       ( int offset ) { instructions.branch( BranchType.IF_GREATER_OR_EQUAL, labelAtOffset( offset ) ); }       
+    public void handle_IF_ICMPGT       ( int offset ) { instructions.branch( BranchType.IF_GREATER_THAN,     labelAtOffset( offset ) ); }       
+    public void handle_IF_ICMPLE       ( int offset ) { instructions.branch( BranchType.IF_LESS_OR_EQUAL,    labelAtOffset( offset ) ); }       
+    public void handle_IF_ACMPEQ       ( int offset ) { instructions.branch( BranchType.IF_SAME_OBJECT,     labelAtOffset( offset ) ); }       
+    public void handle_IF_ACMPNE       ( int offset ) { instructions.branch( BranchType.IF_NOT_SAME_OBJECT, labelAtOffset( offset ) ); }       
+    public void handle_GOTO            ( int offset ) { instructions.branch( BranchType.UNCONDITIONAL, labelAtOffset( offset ) ); }            
     public void handle_JSR             ( int offset ) { throw new RuntimeException( "Invalid operation - JSR" ); }
-    public void handle_RET             ( int index ) { /*TODO*/ }    
-    public void handle_TABLESWITCH     ( Object dummy, SwitchOffsets offsets ) { /*TODO*/ }     
-    public void handle_LOOKUPSWITCH    ( Object dummy, SwitchOffsets offsets ) { /*TODO*/ }    
+    public void handle_RET             ( int index )  { throw new RuntimeException( "Invalid operation - RET" ); }    
+    public void handle_TABLESWITCH     ( Object dummy, SwitchOffsets offsets ) { handleSwitch( offsets ); }     
+    public void handle_LOOKUPSWITCH    ( Object dummy, SwitchOffsets offsets ) { handleSwitch( offsets ); }    
     public void handle_IRETURN         ( ) { instructions.methodReturn( PrimitiveType.INT ); }         
     public void handle_LRETURN         ( ) { instructions.methodReturn( PrimitiveType.LONG ); }         
     public void handle_FRETURN         ( ) { instructions.methodReturn( PrimitiveType.FLOAT ); }         
@@ -213,8 +338,8 @@ public class OperationConvertor {
     public void handle_INVOKESTATIC    ( MethodDescriptor methodDesc ) { instructions.invokeStatic( methodDesc ); }    
     public void handle_INVOKEINTERFACE ( MethodDescriptor methodDesc, int argCount, Object dummy ) { instructions.invokeVirtual( methodDesc ); }                          
     public void handle_NEW             ( ObjectType type ) { instructions.newObject( type ); }             
-    public void handle_NEWARRAY        ( ArrayType type ) { /*TODO*/ }        
-    public void handle_ANEWARRAY       ( JavaType type ) { /*TODO*/ }       
+    public void handle_NEWARRAY        ( ArrayType type ) { instructions.newArray( type ); }        
+    public void handle_ANEWARRAY       ( ValueType type ) { instructions.newArray( new ArrayType( type, 1 )); }       
     public void handle_ARRAYLENGTH     ( ) { instructions.arrayLength(); }     
     public void handle_ATHROW          ( ) { instructions.throwException(); }          
     public void handle_CHECKCAST       ( ObjectOrArrayType type ) { instructions.checkCast( type ); }       
@@ -222,12 +347,36 @@ public class OperationConvertor {
     public void handle_MONITORENTER    ( ) { instructions.monitorEnter(); }    
     public void handle_MONITOREXIT     ( ) { instructions.monitorExit(); }
     public void handle_WIDE            ( ) { throw new RuntimeException(); }            
-    public void handle_MULTIANEWARRAY  ( JavaType type, int dimCount ) { /*TODO*/ }  
-    public void handle_IFNULL          ( int offset ) { /*TODO*/ }          
-    public void handle_IFNONNULL       ( int offset ) { /*TODO*/ }       
-    public void handle_GOTO_W          ( int offset ) { /*TODO*/ }          
+    public void handle_IFNULL          ( int offset ) { instructions.branch( BranchType.IF_NULL,       labelAtOffset( offset ) ); }          
+    public void handle_IFNONNULL       ( int offset ) { instructions.branch( BranchType.IF_NOT_NULL,   labelAtOffset( offset ) ); }       
+    public void handle_GOTO_W          ( int offset ) { instructions.branch( BranchType.UNCONDITIONAL, labelAtOffset( offset ) ); }          
     public void handle_JSR_W           ( int offset ) { throw new RuntimeException( "Invalid operation - JSR" ); }
-
+    
+    public void handle_MULTIANEWARRAY  ( ArrayType type, int dimCount ) { 
+    	if( type.dimensionCount == dimCount ) {
+    		instructions.newArray( type );
+    		return;
+    	}
+    	
+    	//make an element type that reflects the uninitialized dimensions of
+    	//the array
+    	int uninitializedDimCount = type.dimensionCount - dimCount;    	
+    	ArrayType elementType = new ArrayType( type.elementType, uninitializedDimCount );
+    	
+    	instructions.newArray( new ArrayType( elementType, dimCount ) );
+    }  
+    
+    private void handleSwitch( SwitchOffsets offsets ) {
+    	
+    	Instructions.Case[] cases = new Instructions.Case[ offsets.cases.length ];
+    	for( int i = 0; i < cases.length; i++ ) {    		
+    		cases[i] = new Instructions.Case( offsets.cases[i],
+    	                                      labelAtOffset( offsets.offsets[i] ));
+		}
+    	
+    	instructions.switch_( labelAtOffset( offsets.defaultOffset ), cases );
+    }
+    
     private void pushConst( Object value ) {
     	if( value instanceof Integer ) {
     		instructions.pushInt( ((Integer) value).intValue() );
@@ -248,4 +397,6 @@ public class OperationConvertor {
     		instructions.pushClass( (JavaType) value );
     	}
     }
+    
+    
 }

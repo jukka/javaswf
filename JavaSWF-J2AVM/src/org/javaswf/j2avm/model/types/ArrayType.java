@@ -55,7 +55,7 @@ public final class ArrayType extends ObjectOrArrayType {
     	
     	String elemName = name;
     	int dimCount = 0;
-    	while( name.endsWith( ArrayType.SUFFIX )) {
+    	while( elemName.endsWith( ArrayType.SUFFIX )) {
     		dimCount++;
     		elemName = elemName.substring( 0, elemName.length() - ArrayType.SUFFIX.length() );
     	}
