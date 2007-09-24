@@ -42,6 +42,13 @@ public final class PrimitiveType extends ValueType {
     	}
     }
     
+    /**
+     * Whether this type is a 64 bit type.
+     */
+    public boolean is64Bit() {
+        return this == LONG || this == DOUBLE;
+    }
+    
     private PrimitiveType( String name ) {
         super( name );
     }

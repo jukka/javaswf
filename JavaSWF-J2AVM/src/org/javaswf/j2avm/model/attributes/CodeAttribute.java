@@ -4,13 +4,17 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.code.CodeLabel;
 import org.javaswf.j2avm.model.code.Instruction;
 import org.javaswf.j2avm.model.code.InstructionList;
+import org.javaswf.j2avm.model.code.LabelTargetter;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.parser.OperationConvertor;
 import org.javaswf.j2avm.model.types.ObjectType;
@@ -24,7 +28,7 @@ import org.javaswf.j2avm.model.types.ObjectType;
 public class CodeAttribute extends AttributeModel {
 
     /** An exception handler */
-    public static class ExceptionHandler {
+    public static class ExceptionHandler implements LabelTargetter {
         /** First instruction in the try block */        
         public final CodeLabel start;
         
@@ -46,8 +50,37 @@ public class CodeAttribute extends AttributeModel {
             this.end           = end;
             this.handler       = handler;
             this.exceptionType = exceptionType;
+            
+            start  .targetters.add( this );
+            end    .targetters.add( this );
+            handler.targetters.add( this );
         }
         
+        /**
+         * Remove this handler from the targetted CodeLabels
+         */
+        public void remove() {
+            start  .targetters.remove( this );
+            end    .targetters.remove( this );
+            handler.targetters.remove( this );            
+        }
+        
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
+        public Set<CodeLabel> targets() {
+            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+            targets.add( start );
+            targets.add( end );
+            targets.add( handler );
+            return targets;
+        }
+
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
+        public void release() {
+            start  .targetters.remove( this );
+            end    .targetters.remove( this );
+            handler.targetters.remove( this );            
+        }
+
         /**
          * Dump for debug purposes
          */
@@ -65,13 +98,57 @@ public class CodeAttribute extends AttributeModel {
     private int maxLocals;
     
     /** The exception handlers in order of decreasing precedence */
-    public final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
+    private final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
     
     /** The instructions - may be empty for a native or abstract method */
     public final InstructionList instructions = new InstructionList();;
     
     public CodeAttribute() {
         super( AttributeName.Code.name() );
+    }
+    
+    /**
+     * Append a new exception handler
+     * 
+     * @return the new handler
+     */
+    public final ExceptionHandler addHandler( CodeLabel start, 
+                                              CodeLabel end, 
+                                              CodeLabel handler, 
+                                              ObjectType exceptionType ) {
+        ExceptionHandler eh = 
+            new ExceptionHandler( start, end, handler, exceptionType );
+        
+        handlers.add( eh );
+        return eh;
+    }
+    
+    /**
+     * Get an iterator over the exception handlers in order of decreasing
+     * importance. The remove operation is supported.
+     */
+    public final Iterator<ExceptionHandler> handlers() {
+        return new Iterator<ExceptionHandler>() {            
+            private final Iterator<ExceptionHandler> it = handlers.iterator();
+            private ExceptionHandler handler;            
+            
+            /** @see java.util.Iterator#hasNext() */
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            /** @see java.util.Iterator#next() */
+            public ExceptionHandler next() {
+                handler = it.next();
+                return handler;
+            }
+
+            /** @see java.util.Iterator#remove() */
+            public void remove() {
+                it.remove();
+                handler.release();
+            }
+        };
     }
     
     public static CodeAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
@@ -101,11 +178,10 @@ public class CodeAttribute extends AttributeModel {
                 new ObjectType( pool.getClassName( type ) ) :
                 null;
                 
-            code.handlers.add( 
-            		new ExceptionHandler( convertor.labelAtOffset( start ), 
-            				              convertor.labelAtOffset( end ), 
-            				              convertor.labelAtOffset( handler ), 
-            				              exType ));
+            code.addHandler( convertor.labelAtOffset( start ), 
+				             convertor.labelAtOffset( end ), 
+				             convertor.labelAtOffset( handler ), 
+				             exType );
         }
         
         //attributes
@@ -120,7 +196,7 @@ public class CodeAttribute extends AttributeModel {
     /**
      * Dump for debug purposes
      */
-    public void dump( IndentingPrintWriter out ) {
+    public final void dump( IndentingPrintWriter out ) {
         out.println( name + " {" );
         out.indent();
         

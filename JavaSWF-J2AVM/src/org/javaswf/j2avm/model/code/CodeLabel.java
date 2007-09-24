@@ -1,5 +1,8 @@
 package org.javaswf.j2avm.model.code;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.epistem.io.IndentingPrintWriter;
 
 /**
@@ -9,6 +12,11 @@ import org.epistem.io.IndentingPrintWriter;
  */
 public class CodeLabel extends Instruction {
 
+    /**
+     * Set of things that target this label
+     */
+    public final Set<LabelTargetter> targetters = new HashSet<LabelTargetter>();
+    
 	/**
 	 * The string form of the label
 	 */
@@ -21,7 +29,7 @@ public class CodeLabel extends Instruction {
 	public CodeLabel( ) { 
 		label = "label" + hashCode();
 	}
-	
+		
 	/**
 	 * Label the given instruction with this label.  This label is inserted
 	 * into the target list just before the instruction.

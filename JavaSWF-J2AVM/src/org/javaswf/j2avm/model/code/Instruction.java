@@ -1,5 +1,8 @@
 package org.javaswf.j2avm.model.code;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
@@ -409,7 +412,7 @@ public abstract class Instruction {
     	}
     }
 
-    static class Switch extends Instruction {
+    static class Switch extends Instruction implements LabelTargetter {
         CodeLabel defaultLabel;
 
         Case[] cases;
@@ -417,13 +420,36 @@ public abstract class Instruction {
         Switch(CodeLabel defaultLabel, Case... cases) {
             this.defaultLabel = defaultLabel;
             this.cases = cases;
+            
+            defaultLabel.targetters.add( this );
+            for( Case c : cases ) {
+                c.label.targetters.add( this );
+            }
         }
 
         public void accept(Instructions visitor) {
             visitor.switch_( defaultLabel, cases );
         }
         
-    	/** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
+        public Set<CodeLabel> targets() {
+            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+            targets.add( defaultLabel );
+            for( Case c : cases ) {
+                targets.add( c.label );                
+            }
+            return targets;
+        }
+        
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
+        public void release() {
+            defaultLabel.targetters.remove( this );
+            for( Case c : cases ) {
+                c.label.targetters.remove( this );
+            }          
+        }
+
+        /** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
     	@Override
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "switch" );
@@ -562,7 +588,7 @@ public abstract class Instruction {
     	}
     }
 
-    static class Branch extends Instruction {
+    static class Branch extends Instruction implements LabelTargetter {
         BranchType type;
 
         CodeLabel label;
@@ -576,7 +602,19 @@ public abstract class Instruction {
             visitor.branch( type, label );
         }
         
-    	/** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
+        public Set<CodeLabel> targets() {
+            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+            targets.add( label );
+            return targets;
+        }
+        
+    	/** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
+        public void release() {
+            label.targetters.remove( this );            
+        }
+
+        /** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
     	@Override
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "branch " + type.name().toLowerCase() + " --> " + label );		

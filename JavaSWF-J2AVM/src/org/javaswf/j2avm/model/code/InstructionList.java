@@ -30,6 +30,10 @@ public class InstructionList implements Iterable<Instruction> {
         insn.prev = null; 
         insn.next = null;
         insn.list = null;
+        
+        if( insn instanceof LabelTargetter ) {
+            ((LabelTargetter) insn).release();
+        }
     }
   
     /**
