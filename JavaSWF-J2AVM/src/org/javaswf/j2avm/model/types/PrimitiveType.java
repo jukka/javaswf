@@ -13,14 +13,14 @@ import java.util.Map;
  */
 public final class PrimitiveType extends ValueType {
 
-    public static final PrimitiveType BYTE    = new PrimitiveType( "byte" );
-    public static final PrimitiveType BOOLEAN = new PrimitiveType( "boolean" );
-    public static final PrimitiveType SHORT   = new PrimitiveType( "short" );
-    public static final PrimitiveType CHAR    = new PrimitiveType( "char" );
-    public static final PrimitiveType INT     = new PrimitiveType( "int" );
-    public static final PrimitiveType FLOAT   = new PrimitiveType( "float" );
-    public static final PrimitiveType LONG    = new PrimitiveType( "long" );
-    public static final PrimitiveType DOUBLE  = new PrimitiveType( "double" );
+    public static final PrimitiveType BYTE    = new PrimitiveType( "byte",    "B" );
+    public static final PrimitiveType BOOLEAN = new PrimitiveType( "boolean", "Z" );
+    public static final PrimitiveType SHORT   = new PrimitiveType( "short",   "S" );
+    public static final PrimitiveType CHAR    = new PrimitiveType( "char",    "C" );
+    public static final PrimitiveType INT     = new PrimitiveType( "int",     "I" );
+    public static final PrimitiveType FLOAT   = new PrimitiveType( "float",   "F" );
+    public static final PrimitiveType LONG    = new PrimitiveType( "long",    "L" );
+    public static final PrimitiveType DOUBLE  = new PrimitiveType( "double",  "D" );
     
     //map for looking up types by name
     private static final Map<String, PrimitiveType> types = 
@@ -49,8 +49,8 @@ public final class PrimitiveType extends ValueType {
         return this == LONG || this == DOUBLE;
     }
     
-    private PrimitiveType( String name ) {
-        super( name );
+    private PrimitiveType( String name, String abbreviation ) {
+        super( name, abbreviation );
     }
     
     /**

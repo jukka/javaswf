@@ -8,8 +8,8 @@ package org.javaswf.j2avm.model.types;
  */
 public abstract class ValueType extends JavaType {
 
-    /*pkg*/ ValueType( String name ) {
-        super( name );
+    /*pkg*/ ValueType( String name, String abbreviation ) {
+        super( name, abbreviation );
     }
     
     /**

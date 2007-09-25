@@ -4,14 +4,15 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.code.CodeLabel;
+import org.javaswf.j2avm.model.code.Frame;
 import org.javaswf.j2avm.model.code.Instruction;
 import org.javaswf.j2avm.model.code.InstructionList;
 import org.javaswf.j2avm.model.code.LabelTargetter;
@@ -65,13 +66,11 @@ public class CodeAttribute extends AttributeModel {
             handler.targetters.remove( this );            
         }
         
-        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
-        public Set<CodeLabel> targets() {
-            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets(Set) */
+        public void targets( Set<CodeLabel> targets ) {
             targets.add( start );
             targets.add( end );
             targets.add( handler );
-            return targets;
         }
 
         /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
@@ -94,8 +93,8 @@ public class CodeAttribute extends AttributeModel {
     /** Mutable map of attributes by name */
     public final Map<AttributeName,AttributeModel> attributes = new HashMap<AttributeName,AttributeModel>();
         
-    private int maxStack;
-    private int maxLocals;
+    public int maxStack;
+    public int maxLocals;
     
     /** The exception handlers in order of decreasing precedence */
     private final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
@@ -192,7 +191,7 @@ public class CodeAttribute extends AttributeModel {
         
         return code;
     }
-    
+        
     /**
      * Dump for debug purposes
      */
@@ -205,6 +204,11 @@ public class CodeAttribute extends AttributeModel {
         out.println();
 
         for( Instruction i : instructions ) {
+        	Frame frame = i.frameBefore();
+        	if( frame != null ) {
+        		frame.dump( out );
+        	}
+        	
             i.dump( out );
         }
         

@@ -1,6 +1,5 @@
 package org.javaswf.j2avm.model.code;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
@@ -13,6 +12,7 @@ import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
+import org.javaswf.j2avm.model.types.VoidType;
 
 /**
  * An individual instruction.
@@ -24,6 +24,9 @@ public abstract class Instruction {
     /*pkg*/ Instruction prev;
     /*pkg*/ Instruction next;
     /*pkg*/ InstructionList list;
+    /*pkg*/ Frame frameBefore;
+    /*pkg*/ Frame frameAfter;
+    
     
     /**
      * Accept the given visitor and call the appropriate instruction method.
@@ -31,12 +34,86 @@ public abstract class Instruction {
     public abstract void accept(Instructions visitor);
 
     /**
+     * Get the incoming frame
+     * 
+     * @return null if frames have not been determined
+     */
+    public final Frame frameBefore() {
+    	return frameBefore;
+    }
+
+    /**
+     * Get the outgoing frame
+     * 
+     * @return null if frames have not been determined
+     */
+    public final Frame frameAfter() {
+    	return frameAfter;
+    }
+    
+    /**
      * Remove this instruction from the list
      */
     public final void remove() {
     	if( list == null ) return;
     	list.remove( this );
     }
+    
+    /**
+     * Whether execution can flow from this instruction to the next, without
+     * branching. 
+     */
+    public boolean flowsToNext() {
+    	return true;
+    }
+    
+    /**
+     * Get the next instruction
+     * 
+     * @return null if this is the last instruction
+     */
+    public Instruction next() {
+    	return next;
+    }
+    
+    /**
+     * Get the previous instruction
+     * 
+     * @return null if this is the first instruction
+     */
+    public Instruction prev() {
+    	return prev;
+    }
+    
+    /**
+     * Merge an incoming frame with any already determined
+     * 
+     * @return true if the outgoing frame changed
+     */
+    public final boolean mergeIncomingFrame( Frame frame ) {
+    	
+    	//merge in an existing frame
+    	if( frameBefore != null ) {
+    		if( frameBefore.mergeLocals( frame ) ) {
+    	    	execute( frameBefore );    	
+    	    	return true;    			 
+    		}
+    		
+    		return false;
+    	}
+    	
+    	//execute for the first time
+    	execute( new Frame( frame ) );    	
+    	return true;
+    }
+    
+    /**
+     * Execute the instruction to determine the resulting Frame.  Sets the
+     * frameBefore and frameAfter values.
+     * 
+     * @param before the incoming frame
+     */
+    protected abstract void execute( Frame before );
     
     static class Nop extends Instruction {
         Nop() {
@@ -51,6 +128,12 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "nop" );		
     	}
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+		    frameAfter  = before;			
+		}
     }
 
     static class PushInt extends Instruction {
@@ -69,6 +152,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushInt " + value );		
     	}
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class PushFloat extends Instruction {
@@ -87,6 +177,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushFloat " + value );		
     	}
+		
+    	@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( PrimitiveType.FLOAT );
+		}    	
     }
 
     static class PushLong extends Instruction {
@@ -105,6 +202,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushLong " + value );		
     	}
+
+    	@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class PushDouble extends Instruction {
@@ -123,6 +227,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushDouble " + value );		
     	}
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class PushString extends Instruction {
@@ -143,6 +254,13 @@ public abstract class Instruction {
     		ipw.writeDoubleQuotedString( value  );
     		ipw.println();
     	}
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( ObjectType.STRING );
+		}
     }
 
     static class PushClass extends Instruction {
@@ -161,6 +279,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushClass " + type );		
     	}
+
+    	@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( ObjectType.CLASS );
+		}
     }
 
     static class PushNull extends Instruction {
@@ -176,6 +301,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushNull" );		
     	}
+
+    	@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( ObjectType.OBJECT );
+		}
     }
 
     static class PushVar extends Instruction {
@@ -197,6 +329,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushVar " + varIndex + " (" + type + ")" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( before.getLocal( varIndex ) );
+		}
     }
 
     static class StoreVar extends Instruction {
@@ -218,6 +357,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "storeVar " + varIndex + " (" + type + ")" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.setLocal( varIndex, frameAfter.pop() );
+		}
     }
 
     static class PushElement extends Instruction {
@@ -236,6 +382,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushElement (" + type + ")" );		
     	}
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop(); //index
+			frameAfter.pop(); //array			
+			frameAfter.push( type ); //element
+		}
     }
 
     static class StoreElement extends Instruction {
@@ -254,7 +409,16 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "storeElement (" + type + ")" );		
     	}
-    }
+
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop(); //index
+			frameAfter.pop(); //array			
+			frameAfter.pop(); //value
+		}
+}
 
     static class Convert extends Instruction {
         PrimitiveType fromType;
@@ -275,7 +439,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "convert " + fromType + " --> " + toType );		
     	}
-    }
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop(); //from
+			frameAfter.push( toType );
+		}
+	}
 
     static class CheckCast extends Instruction {
         ObjectOrArrayType type;
@@ -293,6 +465,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "checkCast " + type );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( type );
+		}
     }
 
     static class InstanceOf extends Instruction {
@@ -311,6 +491,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "instanceOf " + type );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class MethodReturn extends Instruction {
@@ -329,6 +517,17 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "methodReturn (" + returnType + ")" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = null;
+		}
+		
+		@Override
+		public boolean flowsToNext() {
+			return false;
+		}
     }
 
     static class ThrowException extends Instruction {
@@ -344,6 +543,17 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "throwException" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = null;
+		}
+		
+		@Override
+		public boolean flowsToNext() {
+			return false;
+		}
     }
 
     static class MonitorEnter extends Instruction {
@@ -359,6 +569,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "monitorEnter" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+		}
     }
 
     static class MonitorExit extends Instruction {
@@ -374,6 +591,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "monitorExit" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+		}
     }
 
     static class NewObject extends Instruction {
@@ -392,6 +616,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "newObject " + type );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( type );
+		}
     }
 
     static class NewArray extends Instruction {
@@ -410,6 +641,18 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "newArray (" + type.dimensionCount + ")" + type );		
     	}
+    	    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			
+			for( int i = 0; i < type.dimensionCount; i++ ) {
+				frameAfter.pop();				
+			}
+
+			frameAfter.push( type );
+		}    	
     }
 
     static class Switch extends Instruction implements LabelTargetter {
@@ -431,14 +674,12 @@ public abstract class Instruction {
             visitor.switch_( defaultLabel, cases );
         }
         
-        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
-        public Set<CodeLabel> targets() {
-            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets(Set) */
+        public void targets( Set<CodeLabel> targets ) {
             targets.add( defaultLabel );
             for( Case c : cases ) {
                 targets.add( c.label );                
             }
-            return targets;
         }
         
         /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
@@ -460,6 +701,18 @@ public abstract class Instruction {
 			ipw.println( "default --> " + defaultLabel );
     		ipw.unindent();
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+		}
+		
+		@Override
+		public boolean flowsToNext() {
+			return false;
+		}
     }
 
     static class PushField extends Instruction {
@@ -478,6 +731,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushField " + fieldDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop(); //instance
+			frameAfter.push( fieldDesc.type );
+		}
     }
 
     static class StoreField extends Instruction {
@@ -496,6 +757,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "storeField " + fieldDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop(); //value
+			frameAfter.pop(); //instance
+		}
     }
 
     static class PushStaticField extends Instruction {
@@ -514,6 +783,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pushStaticField " + fieldDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.push( fieldDesc.type );
+		}
     }
 
     static class StoreStaticField extends Instruction {
@@ -532,6 +808,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "storeStaticField " + fieldDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+		}
     }
 
     static class InvokeVirtual extends Instruction {
@@ -550,6 +833,22 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "invokeVirtual " + methodDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			
+			int count = methodDesc.signature.paramTypes.length;
+			for( int i = 0; i < count; i++ ) {
+				frameAfter.pop();
+			}
+			frameAfter.pop(); //instance
+			
+			if( methodDesc.type != VoidType.VOID ) {
+				frameAfter.push( (ValueType) methodDesc.type );
+			}
+		}
     }
 
     static class InvokeSpecial extends Instruction {
@@ -568,6 +867,22 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "invokeSpecial " + methodDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			
+			int count = methodDesc.signature.paramTypes.length;
+			for( int i = 0; i < count; i++ ) {
+				frameAfter.pop();
+			}
+			frameAfter.pop(); //instance
+			
+			if( methodDesc.type != VoidType.VOID ) {
+				frameAfter.push( (ValueType) methodDesc.type );
+			}
+		}
     }
 
     static class InvokeStatic extends Instruction {
@@ -586,6 +901,21 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "invokeStatic " + methodDesc );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			
+			int count = methodDesc.signature.paramTypes.length;
+			for( int i = 0; i < count; i++ ) {
+				frameAfter.pop();
+			}
+			
+			if( methodDesc.type != VoidType.VOID ) {
+				frameAfter.push( (ValueType) methodDesc.type );
+			}
+		}
     }
 
     static class Branch extends Instruction implements LabelTargetter {
@@ -602,11 +932,9 @@ public abstract class Instruction {
             visitor.branch( type, label );
         }
         
-        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets() */
-        public Set<CodeLabel> targets() {
-            Set<CodeLabel> targets = new HashSet<CodeLabel>();
+        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets(Set) */
+        public void targets( Set<CodeLabel> targets ) {
             targets.add( label );
-            return targets;
         }
         
     	/** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
@@ -619,6 +947,47 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "branch " + type.name().toLowerCase() + " --> " + label );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+
+			switch( type ) {
+				case UNCONDITIONAL:
+					return;
+					
+				case IF_EQUAL_TO_ZERO:
+				case IF_NOT_EQUAL_TO_ZERO:
+				case IF_LESS_THAN_ZERO:
+				case IF_GREATER_THAN_ZERO:
+				case IF_GREATER_OR_EQUAL_TO_ZERO:
+				case IF_LESS_OR_EQUAL_TO_ZERO:
+				case IF_NULL:
+				case IF_NOT_NULL:
+					frameAfter.pop();
+					return;
+					
+				case IF_EQUAL:
+				case IF_NOT_EQUAL:
+				case IF_LESS_THAN:
+				case IF_GREATER_THAN:
+				case IF_GREATER_OR_EQUAL:
+				case IF_LESS_OR_EQUAL:
+				case IF_SAME_OBJECT:
+				case IF_NOT_SAME_OBJECT:
+					frameAfter.pop();
+					frameAfter.pop();
+					return;
+			    
+				default: break;
+			}
+		}
+
+		@Override
+		public boolean flowsToNext() {
+			return type != BranchType.UNCONDITIONAL;
+		}
     }
 
     static class IncrementVar extends Instruction {
@@ -640,6 +1009,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "incrementVar " + varIndex + " by " + value );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.setLocal( varIndex, PrimitiveType.INT );
+		}
     }
 
     static class ArrayLength extends Instruction {
@@ -655,6 +1031,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "arrayLength" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class Pop extends Instruction {
@@ -673,6 +1057,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "pop " + count );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop( count );
+		}
     }
 
     static class Swap extends Instruction {
@@ -688,6 +1079,13 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "swap" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.swap();
+		}
     }
 
     static class Dup extends Instruction {
@@ -711,6 +1109,13 @@ public abstract class Instruction {
     		if( skip > 0 ) ipw.print( " skip " + skip );
     		ipw.println();
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.dup( count, skip );
+		}
     }
 
     static class AddInt extends Instruction {
@@ -726,6 +1131,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "addInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class SubInt extends Instruction {
@@ -741,6 +1155,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "subInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class MultInt extends Instruction {
@@ -756,6 +1179,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "multInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class DivInt extends Instruction {
@@ -771,6 +1203,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "divInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class RemInt extends Instruction {
@@ -786,6 +1227,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "remInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class NegInt extends Instruction {
@@ -801,6 +1251,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "negInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
    }
 
     static class AddLong extends Instruction {
@@ -816,6 +1274,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "addLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class SubLong extends Instruction {
@@ -831,6 +1298,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "subLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class MultLong extends Instruction {
@@ -846,6 +1322,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "multLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class DivLong extends Instruction {
@@ -861,6 +1346,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "divLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class RemLong extends Instruction {
@@ -876,6 +1370,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "remLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class NegLong extends Instruction {
@@ -891,6 +1394,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "negLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class AddFloat extends Instruction {
@@ -906,6 +1417,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "addFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class SubFloat extends Instruction {
@@ -921,6 +1441,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "subFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class MultFloat extends Instruction {
@@ -936,6 +1465,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "multFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class DivFloat extends Instruction {
@@ -951,6 +1489,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "divFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class RemFloat extends Instruction {
@@ -966,6 +1513,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "remFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class NegFloat extends Instruction {
@@ -981,6 +1537,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "negFloat" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.FLOAT );
+		}
     }
 
     static class AddDouble extends Instruction {
@@ -996,6 +1560,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "addDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class SubDouble extends Instruction {
@@ -1011,6 +1584,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "subDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class MultDouble extends Instruction {
@@ -1026,6 +1608,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "multDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class DivDouble extends Instruction {
@@ -1041,6 +1632,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "divDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class RemDouble extends Instruction {
@@ -1056,6 +1656,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "remDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class NegDouble extends Instruction {
@@ -1071,6 +1680,14 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "negDouble" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.DOUBLE );
+		}
     }
 
     static class ShiftLeftInt extends Instruction {
@@ -1086,6 +1703,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "shiftLeftInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class SignedShiftRightInt extends Instruction {
@@ -1101,6 +1727,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "signedShiftRightInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class UnsignedShiftRightInt extends Instruction {
@@ -1116,6 +1751,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "unsignedShiftRightInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class ShiftLeftLong extends Instruction {
@@ -1131,6 +1775,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "shiftLeftLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class SignedShiftRightLong extends Instruction {
@@ -1146,6 +1799,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "signedShiftRightLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class UnsignedShiftRightLong extends Instruction {
@@ -1161,6 +1823,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "unsignedShiftRightLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class AndInt extends Instruction {
@@ -1176,6 +1847,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "andInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class OrInt extends Instruction {
@@ -1191,6 +1871,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "orInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class XorInt extends Instruction {
@@ -1206,6 +1895,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "xorInt" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class AndLong extends Instruction {
@@ -1221,6 +1919,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "andLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class OrLong extends Instruction {
@@ -1236,6 +1943,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "orLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class XorLong extends Instruction {
@@ -1251,6 +1967,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "xorLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.LONG );
+		}
     }
 
     static class CompareLong extends Instruction {
@@ -1266,6 +1991,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "compareLong" );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class CompareFloat extends Instruction {
@@ -1284,6 +2018,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "compareFloat " + (nanG ? "nanG" : "nanL" ) );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     static class CompareDouble extends Instruction {
@@ -1302,6 +2045,15 @@ public abstract class Instruction {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "compareDouble " + (nanG ? "nanG" : "nanL" ) );		
     	}
+    	
+		@Override
+		protected void execute( Frame before ) {
+			frameBefore = before;
+			frameAfter  = new Frame( before );
+			frameAfter.pop();
+			frameAfter.pop();
+			frameAfter.push( PrimitiveType.INT );
+		}
     }
 
     

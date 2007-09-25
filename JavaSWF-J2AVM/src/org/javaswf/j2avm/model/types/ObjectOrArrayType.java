@@ -8,7 +8,7 @@ package org.javaswf.j2avm.model.types;
  */
 public abstract class ObjectOrArrayType extends ValueType {
 
-    /*pkg*/ ObjectOrArrayType( String name ) {
-        super( name );
+    /*pkg*/ ObjectOrArrayType( String name, String abbreviation ) {
+        super( name, abbreviation );
     }
 }

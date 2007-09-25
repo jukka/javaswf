@@ -64,6 +64,18 @@ public class InstructionCursor implements Instructions {
         return prev;
     }
     
+    /**
+     * Get the next instruction and position the cursor after it.
+     * @return null if there is no following instruction
+     */
+    public Instruction forward() {
+    	if( next == null ) return null;
+    
+    	prev = next;
+    	next = next.next;
+    	return prev;
+    }
+    
     /*pkg*/ InstructionCursor( InstructionList list, Instruction prev,
                                Instruction next) {
         this.list = list;

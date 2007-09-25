@@ -11,9 +11,9 @@ import java.util.Set;
 public interface LabelTargetter {
 
     /**
-     * Get the target labels
+     * Get the target labels - placing them into the given set
      */
-    public Set<CodeLabel> targets();
+    public void targets( Set<CodeLabel> labels );
     
     /**
      * Release all the targets

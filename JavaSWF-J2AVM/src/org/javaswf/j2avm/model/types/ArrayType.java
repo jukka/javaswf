@@ -29,7 +29,7 @@ public final class ArrayType extends ObjectOrArrayType {
     }
 
     private ArrayType( String name, ValueType type, int dimCount ) {
-    	super( name );
+    	super( name, "A" );
         elementType    = type;
         dimensionCount = dimCount;
     }

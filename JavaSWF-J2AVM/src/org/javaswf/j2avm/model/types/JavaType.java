@@ -7,10 +7,19 @@ package org.javaswf.j2avm.model.types;
  */
 public abstract class JavaType {
 
+	/**
+	 * The type name
+	 */
     public final String name;
     
-    /*pkg*/ JavaType( String name ) {
+    /**
+     * An abbreviation for the type. 
+     */
+    public final String abbreviation;
+    
+    /*pkg*/ JavaType( String name, String abbreviation ) {
         this.name = name;
+        this.abbreviation = abbreviation;
     }
     
     @Override

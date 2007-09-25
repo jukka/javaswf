@@ -17,15 +17,21 @@ public class Test implements Serializable, Cloneable {
 		
 		model.dump( ipw );
 		ipw.flush();
+		
+		if( args.length > 0 ) System.out.println( args[0] );
 	}
 	
 	public Test() {
 		for( int i = 0; i < 10; i++ ) {
 			String s;
-			switch(i) {
-				case 2: s = "two"; break;
-				case 6: s = "six"; break;
-				default: s = "other"; break;
+			try {
+				switch(i) {
+					case 2: s = "two"; break;
+					case 6: s = "six"; break;
+					default: s = "other"; break;
+				}
+			} catch( Exception ex ) {
+				s = "oops";
 			}
 			
 			System.out.println( s );

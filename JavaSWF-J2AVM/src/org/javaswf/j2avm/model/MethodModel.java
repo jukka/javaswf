@@ -4,11 +4,21 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
+import org.javaswf.j2avm.model.attributes.CodeAttribute;
+import org.javaswf.j2avm.model.code.CodeLabel;
+import org.javaswf.j2avm.model.code.Frame;
+import org.javaswf.j2avm.model.code.Instruction;
+import org.javaswf.j2avm.model.code.InstructionList;
+import org.javaswf.j2avm.model.code.LabelTargetter;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
@@ -99,5 +109,76 @@ public final class MethodModel {
     	}
     	
     	ipw.println();
+    }
+    
+    
+    /**
+     * Determine the frames for each instruction.
+     */
+    public void determineFrames() {
+    	CodeAttribute code = (CodeAttribute) attributes.get( AttributeName.Code );
+    	if( code == null ) return;
+    	
+    	InstructionList instructions = code.instructions;
+    	if( instructions.isEmpty() ) return;
+    	
+    	LinkedList<IncomingFrame> queue = new LinkedList<IncomingFrame>();
+    	Frame frame1 = (flags.contains( MethodFlag.MethodIsStatic )) ?
+    			           Frame.staticMethod( this ) :
+    			           Frame.instanceMethod( this );
+    	queue.add( new IncomingFrame( frame1, instructions.first()) );
+
+    	boolean processedHandlers = false;
+    	
+    	while( ! queue.isEmpty() ) {
+        	while( ! queue.isEmpty() ) {
+        		
+        		IncomingFrame infr = queue.removeFirst();
+        		Instruction   insn = infr.insn;
+        		
+        		//merge the incoming frame and if it caused a change in the
+        		//outgoing frame then enqueue downstream instructions
+        		if( infr.insn.mergeIncomingFrame( infr.incoming ) ) {
+        			Frame out = insn.frameAfter();
+        			
+        			if( insn.flowsToNext() ) {
+        				queue.add( new IncomingFrame( out, insn.next() ));
+        			}
+        			
+        			if( insn instanceof LabelTargetter ) {
+        				LabelTargetter targetter = (LabelTargetter) insn;
+        				
+        				Set<CodeLabel> labels = new HashSet<CodeLabel>();
+        				targetter.targets( labels );
+        				
+        				for( CodeLabel target : labels ) {
+        					queue.add( new IncomingFrame( out, target ));
+        				}
+        			}
+        		}        		
+        	}
+        	
+        	//process the exception handlers
+        	if( ! processedHandlers ) {
+        		for( Iterator<CodeAttribute.ExceptionHandler> i = code.handlers(); i.hasNext(); ) {
+					CodeAttribute.ExceptionHandler handler = i.next();
+					
+					Frame f = Frame.forHandler( handler );
+	        		queue.add( new IncomingFrame( f, handler.handler ) );
+	        	}
+        		
+        		processedHandlers = true;
+        	}
+    	}
+    }
+    
+    private class IncomingFrame {
+    	Frame       incoming;
+    	Instruction insn;    	
+    	
+    	IncomingFrame( Frame incoming, Instruction insn ) {
+    		this.incoming = incoming;
+    		this.insn     = insn;
+    	}
     }
 }

@@ -42,6 +42,13 @@ public class CodeLabel extends Instruction {
 		insn.list.insert( this, insn.prev, insn );
 	}
 	
+	/**
+	 * Get a cursor positioned immediately after this label.
+	 */
+	public InstructionCursor cursor() {
+		return new InstructionCursor( list, this, next );
+	}
+	
     /**
      * @see org.javaswf.j2avm.model.code.Instruction#accept(org.javaswf.j2avm.model.code.Instructions)
      */
@@ -60,5 +67,10 @@ public class CodeLabel extends Instruction {
 	@Override
 	public String toString() {
 		return label;
+	}
+
+	@Override
+	protected void execute( Frame before ) {
+		frameBefore = frameAfter = before;		
 	}
 }

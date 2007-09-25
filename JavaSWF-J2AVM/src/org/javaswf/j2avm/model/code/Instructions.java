@@ -227,9 +227,6 @@ public interface Instructions {
 
     /**
      * Pop the top stack value.
-     * 
-     * This abstracts away longs and doubles and treats them as single-size
-     * values.
      */
     public void pop( int count );
 
@@ -241,10 +238,7 @@ public interface Instructions {
     /**
      * Duplicate the top "count" stack values and insert them below after
      * skipping over "skip" values.
-     * 
-     * This abstracts away longs and doubles and treats them as single-size
-     * values.
-     * 
+     *      * 
      * @param count the number of values to duplicate - one or two
      * @param skip the number of values to skip over - zero, one or two
      */

@@ -118,6 +118,7 @@ public final class ClassModel {
             for (int i = 0; i < methodcount; i++) {
                 MethodModel method = new MethodModel( in, pool );
                 methods.put( method.signature, method );
+                method.determineFrames();
             }
             
             //attributes

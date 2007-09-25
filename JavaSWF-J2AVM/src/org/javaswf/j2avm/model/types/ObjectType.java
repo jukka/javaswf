@@ -11,6 +11,7 @@ public class ObjectType extends ObjectOrArrayType {
     public static final ObjectType STRING         = new ObjectType( "java.lang.String" );
     public static final ObjectType CLASS          = new ObjectType( "java.lang.Class" );
     public static final ObjectType STRING_BUIDLER = new ObjectType( "java.lang.StringBuilder" );
+    public static final ObjectType THROWABLE      = new ObjectType( "java.lang.Throwable" );
     
     /**
      * The package name or empty string
@@ -26,7 +27,7 @@ public class ObjectType extends ObjectOrArrayType {
      * @param className the fully qualified name of the class
      */
     public ObjectType( String className ) {
-        super( className );
+        super( className, abbrev( className ) );
         
         int period = className.lastIndexOf( '.' );
         if( period < 0 ) {
@@ -38,4 +39,11 @@ public class ObjectType extends ObjectOrArrayType {
         packageName = className.substring( 0, period );
         simpleName  = className.substring( period + 1 );
     }   
+    
+    private static String abbrev( String name ) {
+    	if( name.equals( "java.lang.String"    ) ) return "$";
+    	if( name.equals( "java.lang.Throwable" ) ) return "T";
+
+    	return "O";
+    }
 }
