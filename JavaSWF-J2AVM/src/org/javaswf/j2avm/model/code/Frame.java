@@ -47,10 +47,13 @@ public class Frame {
     }
 
     /**
-     * Push a type.  Pushes 64 bit types as two slots.
+     * Push a type.  Pushes 64 bit types as two slots if hasBeenNormalized is
+     * false.
      */
-    public void push( ValueType type ) {
-        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
+    public void push( boolean hasBeenNormalized, ValueType type ) {
+        if( (! hasBeenNormalized)
+         && type instanceof PrimitiveType 
+         && ((PrimitiveType) type).is64Bit() ) {
             stack.addFirst( null );
         }
         
@@ -58,12 +61,15 @@ public class Frame {
     }
     
     /**
-     * Pops a type.  64 bit types will pop two slots.
+     * Pops a type.  64 bit types will pop two slots if hasBeenNormalized is
+     * false.
      */
-    public ValueType pop() {
+    public ValueType pop( boolean hasBeenNormalized ) {
         ValueType type = stack.removeFirst();
         
-        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
+        if((! hasBeenNormalized) 
+         && type instanceof PrimitiveType 
+         && ((PrimitiveType) type).is64Bit() ) {
             stack.removeFirst();
         }
 

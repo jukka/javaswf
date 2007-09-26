@@ -6,12 +6,15 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.epistem.io.CountingDataInput;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.code.BranchType;
 import org.javaswf.j2avm.model.code.CodeLabel;
 import org.javaswf.j2avm.model.code.Instruction;
@@ -51,8 +54,14 @@ public class OperationConvertor {
 	private final InstructionList list;
 	private final ConstantPool cpool;
 	private final CountingDataInput in; 
-	private final int codeSize;	
+	private final int codeSize;
 	private int offset;
+	
+	/**
+	 * Set of instructions that may behave differently if there are 64 bit
+	 * types on the stack
+	 */
+	private Set<Instruction> dupPop64 = new HashSet<Instruction>();
 	
 	/**
 	 * @param instructions the instructions to write to
@@ -79,6 +88,10 @@ public class OperationConvertor {
             //associate offset with instruction
             Instruction insn = list.last();
             
+            if( insn.mayInvolve64BitSemantics() ) {
+            	dupPop64.add( insn );
+            }
+            
             //label already at offset
             Instruction labelInsn = offsets.get( offset ); 
             if( labelInsn != null && labelInsn instanceof CodeLabel ) {
@@ -88,6 +101,10 @@ public class OperationConvertor {
             else {
                 offsets.put( offset, insn );            	
             }            
+        }
+        
+        if( ! dupPop64.isEmpty() ) {
+        	
         }
 	}
 	

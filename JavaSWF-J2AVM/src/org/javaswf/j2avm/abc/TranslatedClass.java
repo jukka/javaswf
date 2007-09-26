@@ -24,6 +24,10 @@ public class TranslatedClass {
      */
     private final AVM2Class avm2Class;
     
+    /*pkg*/ int classScopeDepth;  //the scope depth of the class definition
+    
+    /*pkg*/ AVM2Class avm2class;
+    
     /*pkg*/ TranslatedClass( AVM2Class avm2Class ) {
         this.avm2Class = avm2Class;
     }

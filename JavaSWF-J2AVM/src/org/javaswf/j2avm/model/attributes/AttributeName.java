@@ -26,4 +26,16 @@ public enum AttributeName {
     private AttributeName( Class<? extends AttributeModel> attributeClass ) {
         this.attributeClass = attributeClass;
     }        
+    
+    /**
+     * Get the enum instance that corresponds to the given model class. 
+     */
+    public static AttributeName forClass( Class<? extends AttributeModel> modelClass ) {
+    	String name = modelClass.getSimpleName();
+    	if( name.endsWith( "Attribute" ) ) {
+    		name = name.substring( 0, name.length() - "Attribute".length() );
+    	}
+    	
+    	return valueOf( name );
+    }
 }

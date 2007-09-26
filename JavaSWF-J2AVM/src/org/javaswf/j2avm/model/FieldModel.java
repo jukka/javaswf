@@ -44,6 +44,19 @@ public final class FieldModel {
 		this.type  = type;
 	}
 	
+	
+	/**
+	 * Get the attribute with the given type.
+	 * 
+	 * @param modelClass the type of attribute to return
+	 * @return null if the attribute does not exist
+	 */
+	public <T extends AttributeModel> T attribute( Class<T> modelClass ) {
+		@SuppressWarnings("unchecked")
+		T t = (T) attributes.get( AttributeName.forClass( modelClass ) );
+		return t;
+	}
+	
 	/**
 	 * Parse a field
 	 */

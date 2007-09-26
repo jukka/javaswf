@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.javaswf.j2avm.JavaClass;
+import org.javaswf.j2avm.model.code.InstructionListWalker;
+import org.javaswf.j2avm.model.code.Instructions;
 import org.javaswf.j2avm.runtime.annotations.Getter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -24,14 +26,11 @@ import static org.javaswf.j2avm.asm.ASMUtils.*;
 import static org.javaswf.j2avm.emitter.EmitterUtils.*;
 
 /**
- * Visitor for ASM instructions for a single method
+ * Visitor for instructions for a single method
  *
  * @author nickmain
  */
-public class ASMInstructionVisitor extends EmptyVisitor {
-
-    private AbstractInsnNode instruction; //the instruction being visited
-    private Frame            frame; //the frame of the instruction
+public class InstructionVisitor extends InstructionListWalker {
 
     private final AVM2Code   avm2Code;
     private final MethodNode methodNode;
@@ -47,7 +46,7 @@ public class ASMInstructionVisitor extends EmptyVisitor {
      * @param methodNode the method being translated
      * @param avm2code the AVM2 code to target
      */
-    /*pkg*/ ASMInstructionVisitor( JavaClass javaClass, 
+    InstructionVisitor( JavaClass javaClass, 
                                    MethodNode methodNode, 
                                    AVM2Code avm2code ) {
         this.avm2Code   = avm2code;

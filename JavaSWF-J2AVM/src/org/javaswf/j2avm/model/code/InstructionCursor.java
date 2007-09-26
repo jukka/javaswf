@@ -25,8 +25,6 @@ public class InstructionCursor implements Instructions {
 
     private final InstructionList list;
 
-    private Instruction prev;
-
     private Instruction next;
 
     /**
@@ -37,12 +35,11 @@ public class InstructionCursor implements Instructions {
      */
     public boolean visitNext( Instructions visitor ) {
         
-        if( next == null ) return false;
-        next.accept( visitor );
+    	Instruction i = next();
+        if( i == null ) return false;
+        i.accept( visitor );
 
-        prev = next;
-        next = (prev != null) ? prev.next : null;
-        
+        next = i.next;        
         return true;
     }
 
@@ -52,6 +49,14 @@ public class InstructionCursor implements Instructions {
      * @return null if the cursor is at the end of the list
      */
     public Instruction next() {
+    	if( next == null ) return null;
+    	
+    	//scan past any deleted instructions
+    	while( next.list == null ) {
+    		next = next.next;
+    		if( next == null ) return null;
+    	}
+    	
         return next;
     }
     
@@ -61,7 +66,9 @@ public class InstructionCursor implements Instructions {
      * @return null if the cursor is at the start of the list
      */
     public Instruction prev() {
-        return prev;
+    	Instruction i = next();
+    	if( i == null ) return list.last();    	
+        return i.prev();
     }
     
     /**
@@ -69,23 +76,22 @@ public class InstructionCursor implements Instructions {
      * @return null if there is no following instruction
      */
     public Instruction forward() {
-    	if( next == null ) return null;
+    	Instruction i = next();
+    	if( i == null ) return null;
     
-    	prev = next;
-    	next = next.next;
-    	return prev;
+    	next = i.next;
+    	return i;
     }
     
-    /*pkg*/ InstructionCursor( InstructionList list, Instruction prev,
-                               Instruction next) {
+    /*pkg*/ InstructionCursor( InstructionList list, Instruction next ) {
         this.list = list;
-        this.prev = prev;
         this.next = next;
     }
 
     private void add(Instruction insn) {
-        list.insert( insn, prev, next );
-        prev = insn;
+    	Instruction i = next();
+    	Instruction prev = ( i == null ) ? list.last() : i.prev;
+        list.insert( insn, prev, i );
         next = insn.next;
     }
 

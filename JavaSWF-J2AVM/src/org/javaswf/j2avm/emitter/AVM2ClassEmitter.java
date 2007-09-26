@@ -67,8 +67,7 @@ public class AVM2ClassEmitter implements TranslationStep {
         
         this.context   = context;
         this.javaClass = javaClass;
-        this.classNode = javaClass.node;
-        this.abcFile   = context.getAbcFile();
+        this.abcFile   = abc.abcFile;
         this.info      = javaClass.info;
         
         if( context.debug ) {
@@ -119,8 +118,7 @@ public class AVM2ClassEmitter implements TranslationStep {
     
     private final TranslatedABC abc;
     
-    private JavaClass javaClass;
-    private ClassNode classNode;
+    private ClassModel javaClass;
     private TranslationContext context;
     private AVM2ABCFile abcFile;
     private TranslationInfo info;
@@ -318,8 +316,8 @@ public class AVM2ClassEmitter implements TranslationStep {
         AVM2Code code = new AVM2Code( body.instructions );
         code.setupInitialScope();
         
-        ASMInstructionVisitor visitor = 
-            new ASMInstructionVisitor( javaClass, methodNode, code );
+        InstructionVisitor visitor = 
+            new InstructionVisitor( javaClass, methodNode, code );
         
         try {
             visitor.visitAll();

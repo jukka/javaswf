@@ -27,8 +27,6 @@ public class InstructionList implements Iterable<Instruction> {
         
         count--;
         
-        insn.prev = null; 
-        insn.next = null;
         insn.list = null;
         
         if( insn instanceof LabelTargetter ) {
@@ -40,14 +38,14 @@ public class InstructionList implements Iterable<Instruction> {
      * Get a cursor that is positioned at the start of the list
      */
     public InstructionCursor cursorAtStart() {
-        return new InstructionCursor( this, null, first );
+        return new InstructionCursor( this, first );
     }
     
     /**
      * Get a cursor that is positioned at the end of the list
      */
     public InstructionCursor cursorAtEnd() {
-        return new InstructionCursor( this, last, null );
+        return new InstructionCursor( this, null );
     }
     
     /**
@@ -58,7 +56,7 @@ public class InstructionList implements Iterable<Instruction> {
      		throw new IllegalArgumentException( "Instruction is not part of this list" );
      	}
     	
-        return new InstructionCursor( this, insn.prev, insn );
+        return new InstructionCursor( this, insn );
     }
     
     /**
@@ -69,7 +67,7 @@ public class InstructionList implements Iterable<Instruction> {
      		throw new IllegalArgumentException( "Instruction is not part of this list" );
      	}
     	
-        return new InstructionCursor( this, insn, insn.next );
+        return new InstructionCursor( this, insn.next );
     }
     
     /**
@@ -144,6 +142,13 @@ public class InstructionList implements Iterable<Instruction> {
 	private Instruction first;
     private Instruction last;
     private int count;
+    
+    /**
+     * If true then this list has been normalized such that 64 bit types
+     * are assumed to be single slots (rather than the double slots that the
+     * JVM normally uses).
+     */
+    /*pkg*/ boolean hasBeenNormalized;
     
     /*pkg*/ void insert( Instruction newInsn, 
                          Instruction prevInsn, Instruction nextInsn ) {

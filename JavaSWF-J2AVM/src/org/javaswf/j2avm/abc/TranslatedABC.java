@@ -32,7 +32,7 @@ public class TranslatedABC {
         return translatedClasses.get( className );
     }
     
-    private final AVM2ABCFile abcFile = new AVM2ABCFile();
+    public final AVM2ABCFile abcFile = new AVM2ABCFile();
     
     /**
      * Map of Java class name to AVM2 class

@@ -44,15 +44,17 @@
 	
     <!-- The J2AVM sanity test -->
     <target name="sanity-test" >
-    	<j2avm swf         ="generated/test.swf"
-    		   classpathref="classesToTranslate"
+    	<j2avm classpathref="classesToTranslate"
     		   class       ="test.Test"
-    		   bgcolor     ="#ffffcc"
-    		   width       ="600"
-    		   height      ="600"
     		   verbose     ="yes"
     		   debugverbose="yes"
+    		>
+    		<swf bgcolor="#ffffcc"
+                 width  ="600"
+                 height ="600"
+                 file="generated/test.swf"    		
     		/>
+    	</j2avm>
     </target>
 
     <!-- Dump the Flex compiled test.swf -->

@@ -3,6 +3,7 @@ package org.javaswf.j2avm.emitter;
 import java.util.List;
 
 import org.javaswf.j2avm.JavaClass;
+import org.javaswf.j2avm.model.ClassModel;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -75,12 +76,12 @@ public class EmitterUtils {
      * @param method the method
      * @return true if the method overrides a super method
      */
-    public static boolean isOverride( JavaClass jclass, MethodNode method ) {
+    public static boolean isOverride( ClassModel jclass, MethodModel method ) {
 
         String desc = method.desc;
         String name = method.name;
         
-        JavaClass superclass = jclass.superclass;
+        ClassModel superclass = jclass.superclass;
         while( superclass != null ) {
             @SuppressWarnings("unchecked")
             List<MethodNode> superMethods = (List<MethodNode>) superclass.node.methods;

@@ -1,13 +1,13 @@
 package org.javaswf.j2avm.ant;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 
 import org.apache.tools.ant.BuildException;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.util.TraceClassVisitor;
+import org.epistem.io.IndentingPrintWriter;
+import org.javaswf.j2avm.model.ClassModel;
 
 /**
  * ANT task to dump a Java class
@@ -31,21 +31,19 @@ public class JavaClassDumperTask extends TaskWithAClass {
 
         if( dumpFile == null ) throw new BuildException( "File to dump to is missing" );
         
-        Class<?> clazz = loadClass();
-        
-        try {
-            PrintWriter pw = new PrintWriter( dumpFile );
-            try {
-                String fileName = clazz.getName().replace( '.', '/' ) + ".class";
-                
-                InputStream in = clazz.getClassLoader().getResourceAsStream( fileName ); 
-                ClassReader reader = new ClassReader( in );        
-                reader.accept( new TraceClassVisitor( pw ), 0 );
-            } finally {
-                pw.close();
-            }
-        } catch( IOException ioe ) {
-            throw new BuildException( ioe );
-        }
+		InputStream in = loader.getResourceAsStream( 
+		                        	className.replace( '.', '/' ) + ".class" );
+		
+		ClassModel model = new ClassModel( in );		
+		
+		try {
+			FileWriter writer = new FileWriter( dumpFile );
+			IndentingPrintWriter ipw = new IndentingPrintWriter( writer );
+			model.dump( ipw );
+			ipw.flush();
+			writer.close();
+		} catch( IOException ioe ) {
+			throw new BuildException( ioe );
+		}
     }
 }

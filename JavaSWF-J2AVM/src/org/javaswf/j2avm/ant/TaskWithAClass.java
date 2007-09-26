@@ -14,8 +14,8 @@ import org.apache.tools.ant.util.ClasspathUtils;
  */
 public abstract class TaskWithAClass extends Task {
 
-    private ClassLoader loader;
-    private String      className;
+    protected ClassLoader loader;
+    protected String      className;
     
 
     protected Class<?> loadClass() throws BuildException {

@@ -46,7 +46,7 @@ public class CodeLabel extends Instruction {
 	 * Get a cursor positioned immediately after this label.
 	 */
 	public InstructionCursor cursor() {
-		return new InstructionCursor( list, this, next );
+		return new InstructionCursor( list, next );
 	}
 	
     /**

@@ -57,6 +57,18 @@ public final class MethodModel {
 	}
 	
 	/**
+	 * Get the attribute with the given type.
+	 * 
+	 * @param modelClass the type of attribute to return
+	 * @return null if the attribute does not exist
+	 */
+	public <T extends AttributeModel> T attribute( Class<T> modelClass ) {
+		@SuppressWarnings("unchecked")
+		T t = (T) attributes.get( AttributeName.forClass( modelClass ) );
+		return t;
+	}
+	
+	/**
 	 * Parse a method
 	 */
 	/*pkg*/ MethodModel( DataInput in, ConstantPool pool ) throws IOException {
@@ -116,7 +128,7 @@ public final class MethodModel {
      * Determine the frames for each instruction.
      */
     public void determineFrames() {
-    	CodeAttribute code = (CodeAttribute) attributes.get( AttributeName.Code );
+    	CodeAttribute code = attribute( CodeAttribute.class );
     	if( code == null ) return;
     	
     	InstructionList instructions = code.instructions;
