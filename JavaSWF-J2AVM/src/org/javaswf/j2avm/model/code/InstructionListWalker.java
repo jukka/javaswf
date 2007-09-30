@@ -86,15 +86,15 @@ public abstract class InstructionListWalker implements Instructions {
     /**
      * Get an interface for inserting instructions before the one being visited.
      */
-    protected final Instructions insertBefore() {
-        return list.cursorBefore( current );
+    protected final InstructionsWrapper insertBefore() {
+        return new InstructionsWrapper( list.cursorBefore( current ));
     }
 
     /**
      * Get an interface for inserting instructions after the one being visited.
      */
-    protected final Instructions insertAfter() {
-        return list.cursorAfter( current );
+    protected final InstructionsWrapper insertAfter() {
+        return new InstructionsWrapper( list.cursorAfter( current ));
     }
 
     //=======================================================================

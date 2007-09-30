@@ -2,9 +2,16 @@ package org.javaswf.j2avm.emitter;
 
 import java.util.List;
 
-import org.javaswf.j2avm.JavaClass;
+import org.javaswf.j2avm.TranslationContext;
+import org.javaswf.j2avm.abc.TranslatedABC;
 import org.javaswf.j2avm.model.ClassModel;
-import org.objectweb.asm.Type;
+import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.types.ArrayType;
+import org.javaswf.j2avm.model.types.JavaType;
+import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.types.PrimitiveType;
+import org.javaswf.j2avm.model.types.Signature;
+import org.javaswf.j2avm.model.types.VoidType;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
@@ -22,22 +29,28 @@ public class EmitterUtils {
     /**
      * Get the AVM2 QName corresponding to a Java type
      */
-    public static AVM2QName qnameForJavaType( Type type ) {
+    public static AVM2QName qnameForJavaType( JavaType type,
+    		                                  TranslatedABC abc ) {
 
-        switch( type.getSort() ) {
-            case Type.VOID:    return AVM2StandardName.TypeVoid.qname;
-            case Type.BOOLEAN: return AVM2StandardName.TypeBoolean.qname;
-            case Type.CHAR:    return AVM2StandardName.TypeInt.qname;
-            case Type.BYTE:    return AVM2StandardName.TypeInt.qname;
-            case Type.SHORT:   return AVM2StandardName.TypeInt.qname;
-            case Type.INT:     return AVM2StandardName.TypeInt.qname;
-            case Type.FLOAT:   return AVM2StandardName.TypeNumber.qname;
-            case Type.LONG:    return AVM2StandardName.TypeInt.qname;
-            case Type.DOUBLE:  return AVM2StandardName.TypeNumber.qname;
-            case Type.ARRAY:   return AVM2StandardName.TypeArray.qname;
-            case Type.OBJECT:  return AVM2StandardName.TypeObject.qname;
-            default:  return null;
+    	if( type == VoidType.VOID         ) return AVM2StandardName.TypeVoid.qname; 
+        if( type == PrimitiveType.BYTE    ) return AVM2StandardName.TypeInt.qname;
+        if( type == PrimitiveType.BOOLEAN ) return AVM2StandardName.TypeBoolean.qname;
+        if( type == PrimitiveType.SHORT   ) return AVM2StandardName.TypeInt.qname;
+        if( type == PrimitiveType.CHAR    ) return AVM2StandardName.TypeInt.qname;
+        if( type == PrimitiveType.INT     ) return AVM2StandardName.TypeInt.qname;
+        if( type == PrimitiveType.FLOAT   ) return AVM2StandardName.TypeNumber.qname;
+        if( type == PrimitiveType.LONG    ) return AVM2StandardName.TypeInt.qname;
+        if( type == PrimitiveType.DOUBLE  ) return AVM2StandardName.TypeNumber.qname;
+
+        if( type instanceof ArrayType  ) {
+        	return AVM2StandardName.TypeArray.qname;
         }
+        
+    	if( type instanceof ObjectType ) {
+    		return abc.nameForJavaClass( type.name );
+    	}
+ 
+    	return null;
     }
     
     /**
@@ -74,26 +87,24 @@ public class EmitterUtils {
      * 
      * @param jclass the class of the method
      * @param method the method
+     * @param context the translation context
      * @return true if the method overrides a super method
      */
-    public static boolean isOverride( ClassModel jclass, MethodModel method ) {
+    public static boolean isOverride( ClassModel jclass, MethodModel method,
+    		                          TranslationContext context ) {
 
-        String desc = method.desc;
-        String name = method.name;
+        Signature sig = method.signature;
         
-        ClassModel superclass = jclass.superclass;
+        ClassModel superclass = context.modelForName( jclass.superclass.name );
         while( superclass != null ) {
-            @SuppressWarnings("unchecked")
-            List<MethodNode> superMethods = (List<MethodNode>) superclass.node.methods;
-            for( MethodNode superMethod : superMethods ) {
+            for( Signature superSig : superclass.methods.keySet() ) {
                 
-                if( superMethod.name.equals( name )
-                 && superMethod.desc.equals( desc )) {
-                    return true; //found matching method name and sig
+                if( superSig.equals( sig )) {
+                    return true; //found matching method signature
                 }
             }
             
-            superclass = superclass.superclass;
+            superclass = context.modelForName( superclass.superclass.name );
         }
         
         return false;

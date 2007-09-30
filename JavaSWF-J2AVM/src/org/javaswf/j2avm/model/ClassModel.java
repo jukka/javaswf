@@ -5,14 +5,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
-import org.javaswf.j2avm.model.attributes.AttributeName;
 import org.javaswf.j2avm.model.flags.ClassFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.ObjectType;
@@ -23,7 +21,7 @@ import org.javaswf.j2avm.model.types.Signature;
  *
  * @author nickmain
  */
-public final class ClassModel {
+public final class ClassModel extends Model {
 	
 	/**
 	 * The class type
@@ -39,10 +37,6 @@ public final class ClassModel {
 	/** Methods by signature */
 	public final Map<Signature,MethodModel> methods = new HashMap<Signature, MethodModel>();
     
-	/** Attributes by name */
-	public final Map<AttributeName,AttributeModel> attributes = 
-		new EnumMap<AttributeName,AttributeModel>(AttributeName.class);    
-	
 	/** The class flags */
 	public final Collection<ClassFlag> flags;
 
@@ -118,7 +112,6 @@ public final class ClassModel {
             for (int i = 0; i < methodcount; i++) {
                 MethodModel method = new MethodModel( in, pool );
                 methods.put( method.signature, method );
-                method.determineFrames();
             }
             
             //attributes
@@ -137,19 +130,7 @@ public final class ClassModel {
         	}
         }
     }
-    
-	/**
-	 * Get the attribute with the given type.
-	 * 
-	 * @param modelClass the type of attribute to return
-	 * @return null if the attribute does not exist
-	 */
-	public <T extends AttributeModel> T attribute( Class<T> modelClass ) {
-		@SuppressWarnings("unchecked")
-		T t = (T) attributes.get( AttributeName.forClass( modelClass ) );
-		return t;
-	}
-    
+        
     /**
      * Dump the model
      */

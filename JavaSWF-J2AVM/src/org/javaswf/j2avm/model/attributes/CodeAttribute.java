@@ -2,23 +2,21 @@ package org.javaswf.j2avm.model.attributes;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.javaswf.j2avm.model.code.CodeLabel;
 import org.javaswf.j2avm.model.code.Frame;
 import org.javaswf.j2avm.model.code.Instruction;
+import org.javaswf.j2avm.model.code.InstructionCursor;
 import org.javaswf.j2avm.model.code.InstructionList;
-import org.javaswf.j2avm.model.code.LabelTargetter;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.parser.OperationConvertor;
+import org.javaswf.j2avm.model.types.JavaType;
+import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.types.PrimitiveType;
 
 
 /**
@@ -28,126 +26,54 @@ import org.javaswf.j2avm.model.types.ObjectType;
  */
 public class CodeAttribute extends AttributeModel {
 
-    /** An exception handler */
-    public static class ExceptionHandler implements LabelTargetter {
-        /** First instruction in the try block */        
-        public final CodeLabel start;
-        
-        /** First instruction after the try block */
-        public final CodeLabel end;
-        
-        /** First instruction of the catch handler */
-        public final CodeLabel handler;
-        
-        /** The type to catch - may be null (means any exception) */
-        public final ObjectType exceptionType;
-        
-        public ExceptionHandler( CodeLabel start, 
-        		                 CodeLabel end, 
-        		                 CodeLabel handler, 
-        		                 ObjectType exceptionType ) {
-        	
-            this.start         = start;
-            this.end           = end;
-            this.handler       = handler;
-            this.exceptionType = exceptionType;
-            
-            start  .targetters.add( this );
-            end    .targetters.add( this );
-            handler.targetters.add( this );
-        }
-        
-        /**
-         * Remove this handler from the targetted CodeLabels
-         */
-        public void remove() {
-            start  .targetters.remove( this );
-            end    .targetters.remove( this );
-            handler.targetters.remove( this );            
-        }
-        
-        /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets(Set) */
-        public void targets( Set<CodeLabel> targets ) {
-            targets.add( start );
-            targets.add( end );
-            targets.add( handler );
-        }
-
-        /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
-        public void release() {
-            start  .targetters.remove( this );
-            end    .targetters.remove( this );
-            handler.targetters.remove( this );            
-        }
-
-        /**
-         * Dump for debug purposes
-         */
-        public void dump( IndentingPrintWriter out ) {
-            String type = (exceptionType != null) ? exceptionType.name : "<any>";
-            out.println( "try{ " + start + " .. " + end + 
-                         " } catch( " + type + " ) --> " + handler );
-        }
-    }
-    
     /** Mutable map of attributes by name */
     public final Map<AttributeName,AttributeModel> attributes = new HashMap<AttributeName,AttributeModel>();
         
     public int maxStack;
     public int maxLocals;
     
-    /** The exception handlers in order of decreasing precedence */
-    private final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
-    
     /** The instructions - may be empty for a native or abstract method */
-    public final InstructionList instructions = new InstructionList();;
+    public final InstructionList instructions = new InstructionList();
     
     public CodeAttribute() {
         super( AttributeName.Code.name() );
     }
     
     /**
-     * Append a new exception handler
+     * Create a do-nothing method body with the given return type.  Returns
+     * zero or null, as appropriate.
      * 
-     * @return the new handler
+     * @param returnType the method return type to simulate 
      */
-    public final ExceptionHandler addHandler( CodeLabel start, 
-                                              CodeLabel end, 
-                                              CodeLabel handler, 
-                                              ObjectType exceptionType ) {
-        ExceptionHandler eh = 
-            new ExceptionHandler( start, end, handler, exceptionType );
-        
-        handlers.add( eh );
-        return eh;
-    }
-    
-    /**
-     * Get an iterator over the exception handlers in order of decreasing
-     * importance. The remove operation is supported.
-     */
-    public final Iterator<ExceptionHandler> handlers() {
-        return new Iterator<ExceptionHandler>() {            
-            private final Iterator<ExceptionHandler> it = handlers.iterator();
-            private ExceptionHandler handler;            
-            
-            /** @see java.util.Iterator#hasNext() */
-            public boolean hasNext() {
-                return it.hasNext();
-            }
-
-            /** @see java.util.Iterator#next() */
-            public ExceptionHandler next() {
-                handler = it.next();
-                return handler;
-            }
-
-            /** @see java.util.Iterator#remove() */
-            public void remove() {
-                it.remove();
-                handler.release();
-            }
-        };
+    public static CodeAttribute dummyFor( JavaType returnType ) {
+		CodeAttribute code = new CodeAttribute();
+		InstructionCursor cur = code.instructions.cursorAtStart();
+		
+		//return null for non-primitive methods
+		if( returnType instanceof ObjectOrArrayType ) {
+			cur.pushNull();
+		}
+		else if( returnType == PrimitiveType.BYTE 
+			  || returnType == PrimitiveType.BOOLEAN
+			  || returnType == PrimitiveType.SHORT
+			  || returnType == PrimitiveType.CHAR
+			  || returnType == PrimitiveType.INT ) {
+			
+			cur.pushInt( 0 );
+		}
+		else if( returnType == PrimitiveType.LONG ) {
+			cur.pushLong( 0L );					
+		}
+		else if( returnType == PrimitiveType.FLOAT ) {
+			cur.pushFloat( 0f );
+		}
+		else if( returnType == PrimitiveType.DOUBLE ) {
+			cur.pushDouble( 0.0 );
+		}
+		
+		cur.methodReturn( returnType );
+		
+		return code;
     }
     
     public static CodeAttribute parse( ConstantPool pool, DataInput in ) throws IOException {
@@ -177,10 +103,10 @@ public class CodeAttribute extends AttributeModel {
                 new ObjectType( pool.getClassName( type ) ) :
                 null;
                 
-            code.addHandler( convertor.labelAtOffset( start ), 
-				             convertor.labelAtOffset( end ), 
-				             convertor.labelAtOffset( handler ), 
-				             exType );
+            code.instructions.addHandler( convertor.labelAtOffset( start ), 
+				                          convertor.labelAtOffset( end ), 
+				                          convertor.labelAtOffset( handler ), 
+				                          exType );
         }
         
         //attributes
@@ -212,15 +138,16 @@ public class CodeAttribute extends AttributeModel {
             i.dump( out );
         }
         
-        if( ! handlers.isEmpty() ) {
+        if( instructions.hasExceptionHandlers() ) {
             out.println();
             out.println( "handlers {" );
             out.indent();
 
-            for( ExceptionHandler handler : handlers ) {
-                handler.dump( out );
-            }
-            
+            for( Iterator<InstructionList.ExceptionHandler> it = instructions.handlers(); 
+                 it.hasNext(); ) {
+				it.next().dump( out );				
+			}
+
             out.unindent();
             out.println( "}" );
         }

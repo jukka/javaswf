@@ -226,7 +226,12 @@ public interface Instructions {
     public void arrayLength();
 
     /**
-     * Pop the top stack value.
+     * Pop the one or two top stack values.
+     * 
+     * Unlike the raw JVM pop instructions this treats 64-bit values (long
+     * and double) as single stack slots.
+     * 
+     * @param count 1 or 2
      */
     public void pop( int count );
 
@@ -238,7 +243,10 @@ public interface Instructions {
     /**
      * Duplicate the top "count" stack values and insert them below after
      * skipping over "skip" values.
-     *      * 
+     *      
+     * Unlike the raw JVM dup instructions this treats 64-bit values (long
+     * and double) as single stack slots.
+     *      
      * @param count the number of values to duplicate - one or two
      * @param skip the number of values to skip over - zero, one or two
      */

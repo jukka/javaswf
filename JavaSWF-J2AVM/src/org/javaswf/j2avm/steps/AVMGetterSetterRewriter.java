@@ -1,14 +1,12 @@
 package org.javaswf.j2avm.steps;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.javaswf.j2avm.emitter.EmitterUtils;
+import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.types.ValueType;
 import org.javaswf.j2avm.runtime.annotations.Getter;
 import org.javaswf.j2avm.runtime.annotations.Setter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.FieldInsnNode;
 
 /**
  * An instruction rewriter that replaces calls to getter and setter methods in
@@ -19,52 +17,47 @@ import org.objectweb.asm.tree.FieldInsnNode;
  *
  * @author nickmain
  */
-public class AVMGetterSetterRewriter extends CallAndAccessRewriter {
+public class AVMGetterSetterRewriter extends RewriteStep {
 
-    /** @see org.javaswf.j2avm.steps.CallAndAccessRewriter#rewriteVirtualCall(java.lang.String, java.lang.String, org.objectweb.asm.Type, org.objectweb.asm.Type[]) */
-    @Override
-    protected void rewriteVirtualCall( String className, String methodName,
-                                       Type returnType, Type[] paramTypes) {
+    /** @see org.javaswf.j2avm.model.code.InstructionListWalker#invokeVirtual(org.javaswf.j2avm.model.MethodDescriptor) */
+	@Override
+	public void invokeVirtual( MethodDescriptor methodDesc ) {
         
-        Method meth = getCurrentMethod();
-
-        boolean isGetter = false;
-        boolean isSetter = false;
-
-        //need to look for the annotations by name since they are loaded
-        //via a different classloader and are different Class instances
-        for( Annotation anno : meth.getDeclaredAnnotations() ) {
-            if( anno.annotationType().getName().equals( Getter.class.getName())) {
-                isGetter = true;
-            }
-            if( anno.annotationType().getName().equals( Setter.class.getName())) {
-                isSetter = true;
-            }
-        }
+		String methodName = methodDesc.signature.name;
+        MethodModel meth = methodFor( methodDesc );
+        
+        boolean isGetter = meth.annotation( Getter.class.getName() ) != null;
+        boolean isSetter = meth.annotation( Setter.class.getName() ) != null;
         
         //getter
         if( isGetter ) {
             String fieldName = EmitterUtils.nameFromAccessor( methodName );
-            String fieldDesc = returnType.getDescriptor();
+            FieldDescriptor fieldDesc = 
+            	new FieldDescriptor( methodDesc.owner, 
+            			             fieldName, 
+            			             (ValueType) meth.returnType );
             
-            replaceWith( new FieldInsnNode( Opcodes.GETFIELD, 
-                                            className, fieldName, fieldDesc ) );
+            insertAfter().pushField( fieldDesc );
+            remove();
             
-            log( "Replaced " + className + "::" + methodName 
-                 + " with field get for " + fieldName );
+            context().debug( "Replaced " + classModel().type + "::" + methodName 
+                             + " with field get for " + fieldName );
             return;
         }
 
         //setter
         if( isSetter ) {
             String fieldName = EmitterUtils.nameFromAccessor( methodName );
-            String fieldDesc = paramTypes[0].getDescriptor();
+            FieldDescriptor fieldDesc = 
+            	new FieldDescriptor( methodDesc.owner, 
+            			             fieldName, 
+            			             methodDesc.signature.paramTypes[0] );
             
-            replaceWith( new FieldInsnNode( Opcodes.PUTFIELD, 
-                                            className, fieldName, fieldDesc ) );
+            insertAfter().storeField( fieldDesc );
+            remove();
 
-            log( "Replaced " + className + "::" + methodName 
-                    + " with field set for " + fieldName );
+            context().debug( "Replaced " + classModel().type + "::" + methodName 
+                             + " with field set for " + fieldName );
             return;
         }
     }

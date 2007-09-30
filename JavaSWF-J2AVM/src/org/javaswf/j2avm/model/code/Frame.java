@@ -47,13 +47,10 @@ public class Frame {
     }
 
     /**
-     * Push a type.  Pushes 64 bit types as two slots if hasBeenNormalized is
-     * false.
+     * Push a type.  Pushes 64 bit types as two slots.
      */
-    public void push( boolean hasBeenNormalized, ValueType type ) {
-        if( (! hasBeenNormalized)
-         && type instanceof PrimitiveType 
-         && ((PrimitiveType) type).is64Bit() ) {
+    public void push( ValueType type ) {
+        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
             stack.addFirst( null );
         }
         
@@ -61,19 +58,24 @@ public class Frame {
     }
     
     /**
-     * Pops a type.  64 bit types will pop two slots if hasBeenNormalized is
-     * false.
+     * Pops a type.  64 bit types will pop two slots.
      */
-    public ValueType pop( boolean hasBeenNormalized ) {
+    public ValueType pop() {
         ValueType type = stack.removeFirst();
         
-        if((! hasBeenNormalized) 
-         && type instanceof PrimitiveType 
-         && ((PrimitiveType) type).is64Bit() ) {
+        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
             stack.removeFirst();
         }
 
         return type;
+    }
+    
+    /**
+     * Peek at a stack slot
+     * @param index zero is stack top
+     */
+    public ValueType peek( int index ) {
+    	return stack.get( index );
     }
     
     /**
@@ -246,7 +248,7 @@ public class Frame {
     /**
      * Make a frame for the start of an exception handler
      */
-    public static Frame forHandler( CodeAttribute.ExceptionHandler handler ) {
+    public static Frame forHandler( InstructionList.ExceptionHandler handler ) {
     	
     	Collection<Frame> frames = new ArrayList<Frame>();
     	InstructionCursor cursor = handler.start.cursor();

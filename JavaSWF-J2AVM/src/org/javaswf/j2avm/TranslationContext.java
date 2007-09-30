@@ -32,7 +32,7 @@ public final class TranslationContext {
         
         //skip already enqueued or translated classes
         if( classesToBeTranslated.contains( className ) 
-         || translatedClassNames.containsKey( className ) ) {
+         || translatedClasses    .contains( className ) ) {
             return;
         }
         
@@ -80,13 +80,10 @@ public final class TranslationContext {
     public final boolean debug;
 
     private final Set<String> classesToBeTranslated = new HashSet<String>();
+    private final Set<String> translatedClasses     = new HashSet<String>();
         
     private final ClassLoader loader;
-    
-    //java class name to avm2 class name
-    private final Map<String, String> translatedClassNames =
-        new HashMap<String, String>();
-    
+            
     private final Map<String , ClassModel> classModels = 
         new HashMap<String, ClassModel>();
     

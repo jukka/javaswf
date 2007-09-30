@@ -7,7 +7,7 @@ import org.javaswf.j2avm.abc.TranslatedABC;
 import org.javaswf.j2avm.emitter.AVM2ClassEmitter;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.steps.AVMGetterSetterRewriter;
-import org.javaswf.j2avm.steps.CallAndAccessRewriteStep;
+import org.javaswf.j2avm.steps.NativeAndAbstractMethodsStep;
 
 /**
  * The main J2AVM entry point.
@@ -78,11 +78,10 @@ public final class J2AVM {
     
     private void addDefaultSteps() {
         pipeline.addSteps(
-                new CallAndAccessRewriteStep(
-                    new AVMGetterSetterRewriter()
-                ),
-                new AVM2ClassEmitter( abc )
-            ); 
+        	new NativeAndAbstractMethodsStep(),
+            new AVMGetterSetterRewriter(),
+            new AVM2ClassEmitter( abc )
+        ); 
     }
     
     private final TranslatedABC       abc      = new TranslatedABC();

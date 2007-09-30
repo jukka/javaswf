@@ -112,9 +112,15 @@ public abstract class Instruction {
      * types are on the stack - that is pop(2) and dup with a count or skip of
      * 2.
      */
-    public boolean mayInvolve64BitSemantics() {
+    /*pkg*/ boolean mayInvolve64BitSlots() {
     	return false;
     }
+    
+    /**
+     * Normalize the instruction so that it treats 64 bits types as single
+     * stack slots rather than 2.
+     */
+    /*pkg*/ void normalize() {}
     
     /**
      * Execute the instruction to determine the resulting Frame.  Sets the
@@ -166,7 +172,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -191,7 +197,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}    	
     }
 
@@ -216,7 +222,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -241,7 +247,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -268,7 +274,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, ObjectType.STRING );
+			frameAfter.push( ObjectType.STRING );
 		}
     }
 
@@ -293,7 +299,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, ObjectType.CLASS );
+			frameAfter.push( ObjectType.CLASS );
 		}
     }
 
@@ -315,7 +321,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, ObjectType.OBJECT );
+			frameAfter.push( ObjectType.OBJECT );
 		}
     }
 
@@ -343,7 +349,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, before.getLocal( varIndex ) );
+			frameAfter.push( before.getLocal( varIndex ) );
 		}
     }
 
@@ -372,6 +378,7 @@ public abstract class Instruction {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
 			frameAfter.setLocal( varIndex, type );
+			frameAfter.pop( );
 		}
     }
 
@@ -396,9 +403,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized ); //index
-			frameAfter.pop( list.hasBeenNormalized ); //array			
-			frameAfter.push( list.hasBeenNormalized, type ); //element
+			frameAfter.pop( ); //index
+			frameAfter.pop( ); //array			
+			frameAfter.push( type ); //element
 		}
     }
 
@@ -423,9 +430,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized ); //index
-			frameAfter.pop( list.hasBeenNormalized ); //array			
-			frameAfter.pop( list.hasBeenNormalized ); //value
+			frameAfter.pop( ); //index
+			frameAfter.pop( ); //array			
+			frameAfter.pop( ); //value
 		}
 }
 
@@ -453,8 +460,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized ); //from
-			frameAfter.push( list.hasBeenNormalized, toType );
+			frameAfter.pop( ); //from
+			frameAfter.push( toType );
 		}
 	}
 
@@ -479,8 +486,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, type );
+			frameAfter.pop( );
+			frameAfter.push( type );
 		}
     }
 
@@ -505,8 +512,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -583,7 +590,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
+			frameAfter.pop( );
 		}
     }
 
@@ -605,7 +612,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
+			frameAfter.pop( );
 		}
     }
 
@@ -630,7 +637,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, type );
+			frameAfter.push( type );
 		}
     }
 
@@ -657,10 +664,10 @@ public abstract class Instruction {
 			frameAfter  = new Frame( before );
 			
 			for( int i = 0; i < type.dimensionCount; i++ ) {
-				frameAfter.pop( list.hasBeenNormalized );				
+				frameAfter.pop( );				
 			}
 
-			frameAfter.push( list.hasBeenNormalized, type );
+			frameAfter.push( type );
 		}    	
     }
 
@@ -715,7 +722,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
+			frameAfter.pop( );
 		}
 		
 		@Override
@@ -745,8 +752,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized ); //instance
-			frameAfter.push( list.hasBeenNormalized, fieldDesc.type );
+			frameAfter.pop( ); //instance
+			frameAfter.push( fieldDesc.type );
 		}
     }
 
@@ -771,8 +778,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized ); //value
-			frameAfter.pop( list.hasBeenNormalized ); //instance
+			frameAfter.pop( ); //value
+			frameAfter.pop( ); //instance
 		}
     }
 
@@ -797,7 +804,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.push( list.hasBeenNormalized, fieldDesc.type );
+			frameAfter.push( fieldDesc.type );
 		}
     }
 
@@ -822,7 +829,7 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
+			frameAfter.pop( );
 		}
     }
 
@@ -850,12 +857,12 @@ public abstract class Instruction {
 			
 			int count = methodDesc.signature.paramTypes.length;
 			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( list.hasBeenNormalized );
+				frameAfter.pop( );
 			}
-			frameAfter.pop( list.hasBeenNormalized ); //instance
+			frameAfter.pop( ); //instance
 			
 			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( list.hasBeenNormalized, (ValueType) methodDesc.type );
+				frameAfter.push( (ValueType) methodDesc.type );
 			}
 		}
     }
@@ -884,12 +891,12 @@ public abstract class Instruction {
 			
 			int count = methodDesc.signature.paramTypes.length;
 			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( list.hasBeenNormalized );
+				frameAfter.pop( );
 			}
-			frameAfter.pop( list.hasBeenNormalized ); //instance
+			frameAfter.pop( ); //instance
 			
 			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( list.hasBeenNormalized, (ValueType) methodDesc.type );
+				frameAfter.push( (ValueType) methodDesc.type );
 			}
 		}
     }
@@ -918,11 +925,11 @@ public abstract class Instruction {
 			
 			int count = methodDesc.signature.paramTypes.length;
 			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( list.hasBeenNormalized );
+				frameAfter.pop( );
 			}
 			
 			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( list.hasBeenNormalized, (ValueType) methodDesc.type );
+				frameAfter.push( (ValueType) methodDesc.type );
 			}
 		}
     }
@@ -974,7 +981,7 @@ public abstract class Instruction {
 				case IF_LESS_OR_EQUAL_TO_ZERO:
 				case IF_NULL:
 				case IF_NOT_NULL:
-					frameAfter.pop( list.hasBeenNormalized );
+					frameAfter.pop( );
 					return;
 					
 				case IF_EQUAL:
@@ -985,8 +992,8 @@ public abstract class Instruction {
 				case IF_LESS_OR_EQUAL:
 				case IF_SAME_OBJECT:
 				case IF_NOT_SAME_OBJECT:
-					frameAfter.pop( list.hasBeenNormalized );
-					frameAfter.pop( list.hasBeenNormalized );
+					frameAfter.pop( );
+					frameAfter.pop( );
 					return;
 			    
 				default: break;
@@ -1045,8 +1052,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1071,13 +1078,36 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
+			
+			//64 bit type requires a double pop
+			if( count == 1 && list.hasBeenNormalized ) {
+				ValueType vt = before.peek( 0 );
+				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+					frameAfter.pop( 2 );
+					return;
+				}				
+			}
+			
 			frameAfter.pop( count );
 		}
 		
 		@Override
-	    public boolean mayInvolve64BitSemantics() {
+		/*pkg*/ boolean mayInvolve64BitSlots() {
 	    	return count == 2;
 	    }
+
+		/** @see org.javaswf.j2avm.model.code.Instruction#normalize() */
+		@Override
+		void normalize() {
+			//if popping two slots and the stack top is a 64 bit type then
+			//normalize to popping 1
+			if( count == 2 ) {
+				ValueType vt = frameBefore.peek( 0 );
+				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+					count = 1;
+				}
+			}
+		}
     }
 
     static class Swap extends Instruction {
@@ -1128,13 +1158,58 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.dup( count, skip );
+			
+			int c = count;
+			int s = skip;
+			
+			//if normalized and item to be skipped or duped is a 64 bit type
+			//then need to use 2 slots
+			if( list.hasBeenNormalized ) { 
+				if( count == 1 ) {
+					ValueType vt = frameBefore.peek( 0 );
+					if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+						c = 2;
+					}
+				}
+				
+				if( skip == 1 ) {
+					ValueType vt = frameBefore.peek( c );
+					if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+						s = 2;
+					}
+				}
+			}			
+			
+			frameAfter.dup( c, s );
 		}
 		
 		@Override
-	    public boolean mayInvolve64BitSemantics() {
+		/*pkg*/ boolean mayInvolve64BitSlots() {
 	    	return count == 2 || skip == 2;
 	    }
+		
+		/** @see org.javaswf.j2avm.model.code.Instruction#normalize() */
+		@Override
+		void normalize() {
+
+			//if skipping two slots and the item to be skipped is a 64 bit type then
+			//normalize to skipping 1
+			if( skip == 2 ) {
+				ValueType vt = frameBefore.peek( count );
+				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+					skip = 1;
+				}
+			}
+
+			//if duping two slots and the stack top is a 64 bit type then
+			//normalize to duping 1
+			if( count == 2 ) {
+				ValueType vt = frameBefore.peek( 0 );
+				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
+					count = 1;
+				}
+			}
+		}
     }
 
     static class AddInt extends Instruction {
@@ -1155,9 +1230,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1179,9 +1254,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1203,9 +1278,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1227,9 +1302,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1251,9 +1326,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1275,8 +1350,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
    }
 
@@ -1298,9 +1373,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1322,9 +1397,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1346,9 +1421,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1370,9 +1445,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1394,9 +1469,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1418,8 +1493,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1441,9 +1516,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1465,9 +1540,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1489,9 +1564,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1513,9 +1588,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1537,9 +1612,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1561,8 +1636,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.FLOAT );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.FLOAT );
 		}
     }
 
@@ -1584,9 +1659,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1608,9 +1683,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1632,9 +1707,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1656,9 +1731,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1680,9 +1755,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1704,8 +1779,8 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.DOUBLE );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.DOUBLE );
 		}
     }
 
@@ -1727,9 +1802,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1751,9 +1826,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1775,9 +1850,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1799,9 +1874,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1823,9 +1898,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1847,9 +1922,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1871,9 +1946,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1895,9 +1970,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1919,9 +1994,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -1943,9 +2018,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1967,9 +2042,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -1991,9 +2066,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.LONG );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.LONG );
 		}
     }
 
@@ -2015,9 +2090,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -2042,9 +2117,9 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
 
@@ -2069,12 +2144,11 @@ public abstract class Instruction {
 		protected void execute( Frame before ) {
 			frameBefore = before;
 			frameAfter  = new Frame( before );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.pop( list.hasBeenNormalized );
-			frameAfter.push( list.hasBeenNormalized, PrimitiveType.INT );
+			frameAfter.pop( );
+			frameAfter.pop( );
+			frameAfter.push( PrimitiveType.INT );
 		}
     }
-
     
     /**
      * Dump the instruction .
