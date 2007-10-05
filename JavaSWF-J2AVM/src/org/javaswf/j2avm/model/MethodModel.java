@@ -7,9 +7,11 @@ import java.util.Collection;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
+import org.javaswf.j2avm.model.code.ValueGenerator;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
+import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.Signature;
 import org.javaswf.j2avm.model.types.ValueType;
 
@@ -18,7 +20,7 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public final class MethodModel extends Model {
+public final class MethodModel extends Model implements ValueGenerator {
 
 	/** Name for constructor methods */
 	public static final String CONSTRUCTOR_NAME = "<init>";
@@ -56,7 +58,7 @@ public final class MethodModel extends Model {
 	/**
 	 * Parse a method
 	 */
-	/*pkg*/ MethodModel( DataInput in, ConstantPool pool ) throws IOException {
+	/*pkg*/ MethodModel( ObjectType owner, DataInput in, ConstantPool pool ) throws IOException {
         
         int flagBits = in.readUnsignedShort();
         int nameIdx  = in.readUnsignedShort();
@@ -88,7 +90,7 @@ public final class MethodModel extends Model {
         //normalize the instructions (single slots for long and double)
         CodeAttribute code = attribute( CodeAttribute.class );
         if( code != null ) {
-        	code.instructions.normalize( this );
+        	code.instructions.normalize( owner, this );
         }
 	}
 	

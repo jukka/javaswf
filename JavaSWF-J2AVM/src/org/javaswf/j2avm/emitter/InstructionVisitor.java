@@ -5,18 +5,22 @@ import static org.javaswf.j2avm.emitter.EmitterUtils.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.javaswf.j2avm.TranslationContext;
 import org.javaswf.j2avm.abc.TranslatedABC;
 import org.javaswf.j2avm.abc.TranslatedClass;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.code.BranchType;
 import org.javaswf.j2avm.model.code.CodeLabel;
 import org.javaswf.j2avm.model.code.Instruction;
 import org.javaswf.j2avm.model.code.InstructionListWalker;
+import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
+import org.javaswf.j2avm.model.types.Signature;
 import org.javaswf.j2avm.model.types.ValueType;
 import org.javaswf.j2avm.model.types.VoidType;
 import org.objectweb.asm.Label;
@@ -39,19 +43,30 @@ import com.anotherbigidea.flash.avm2.model.AVM2QName;
  */
 public class InstructionVisitor extends InstructionListWalker {
 
-    private final AVM2Code        avm2Code;
-    private final TranslatedABC   abc;
-    private final TranslatedClass avm2Class;
-
+    private final AVM2Code           avm2Code;
+    private final TranslatedABC      abc;
+    private final TranslatedClass    avm2Class;
+    private final TranslationContext context;
+    private final MethodModel        methodModel;
+    private final ClassModel         classModel;
+    
+    private boolean superConstructorCalled = false;
+    
     /**
      * @param avm2code the target AVM2 method body
      * @param abc the target ABC file
      * @param avm2Class the target AVM2 class
      */
-    InstructionVisitor( AVM2Code avm2code, TranslatedABC abc, TranslatedClass avm2Class ) {
+    InstructionVisitor( AVM2Code avm2code, TranslatedABC abc, 
+    		            TranslatedClass avm2Class, TranslationContext context,
+    		            ClassModel classModel, MethodModel methodModel ) {
         this.avm2Code  = avm2code;
         this.abc       = abc;
         this.avm2Class = avm2Class;
+        this.context   = context;
+        
+        this.classModel  = classModel;
+        this.methodModel = methodModel;        
     }
 
     /** @see org.javaswf.j2avm.model.code.InstructionListWalker#pushField(org.javaswf.j2avm.model.FieldDescriptor) */
@@ -83,37 +98,6 @@ public class InstructionVisitor extends InstructionListWalker {
         
         //TODO: account for potential stack size increase
 	}
-
-
-    /**
-     * @see org.objectweb.asm.commons.EmptyVisitor#visitInsn(int)
-     */
-    @Override
-    public void visitInsn(int opcode) {
-        switch( opcode ) {
-                            
-                
-                
-            case Opcodes.I2D: avm2Code.append( Operation.OP_convert_d ); return;
-                
-            case Opcodes.F2D: //fall-thru
-            case Opcodes.L2D:
-                //floats and longs are already doubles - do nothing
-                return;
-            
-            case Opcodes.IADD: avm2Code.append( Operation.OP_add_i ); return;
-            case Opcodes.IMUL: avm2Code.append( Operation.OP_multiply_i ); return;
-            
-            case Opcodes.I2L: avm2Code.append( Operation.OP_convert_d ); return; //longs are represented by doubles
-            
-            case Opcodes.D2L: //TODO: how to truncate a double ? 
-            case Opcodes.F2L: //TODO: 
-
-            default: throw new RuntimeException( "Unhandled opcode " + opcode );
-        }
-    }
-    
-    
     
     /** @see org.javaswf.j2avm.model.code.InstructionListWalker#convert(org.javaswf.j2avm.model.types.PrimitiveType, org.javaswf.j2avm.model.types.PrimitiveType) */
 	@Override
@@ -298,68 +282,67 @@ public class InstructionVisitor extends InstructionListWalker {
         }
 	}
 
-    /**
-     * @see org.objectweb.asm.commons.EmptyVisitor#visitMethodInsn(int, java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+    /** @see org.javaswf.j2avm.model.code.InstructionListWalker#invokeSpecial(org.javaswf.j2avm.model.MethodDescriptor) */
+	@Override
+	public void invokeSpecial( MethodDescriptor methodDesc ) {
+        int argCount = methodDesc.signature.paramTypes.length;
+        Signature sig = methodDesc.signature;
         
-        int argCount = getArgCount( desc );        
-        
-        switch( opcode ) {
-            case Opcodes.INVOKEINTERFACE: //fall-thru
-            case Opcodes.INVOKEVIRTUAL: {
+        if( MethodModel.CONSTRUCTOR_NAME.equals( sig.name ) ) { //constructor call            
+            if( methodDesc.owner.equals( classModel.superclass )) {
+            	//call to the super-constructor
+                avm2Code.append( Operation.OP_constructsuper, argCount );
+                
+                //TODO: could this be a call to construct an instance of the
+                //      superclass, rather than to the super within self
+                //      constructor ?
+            }
+            else {
+                //call to a constructor that is not the superclass.
+                
+                //TODO: for now skip this and just pop the object
+                avm2Code.append( Operation.OP_pop );                        
+            }
                                 
-                Operation op = isVoidMethod( desc ) ?
+        } else { //super call or private call
+            
+        	MethodModel m = context.methodFor( methodDesc );
+            if( m.flags.contains( MethodFlag.MethodIsPrivate )) { //private
+
+                Operation op = (m.returnType == VoidType.VOID) ?
                                    Operation.OP_callpropvoid :
                                    Operation.OP_callproperty;
+                 
+                avm2Code.append( op, nameForPrivateMethod( methodDesc.signature.name ), argCount );
                 
-                avm2Code.append( op, nameForMethod( name ), argCount );
-                                
-                return;
             }
+            else { //super call
                 
-            case Opcodes.INVOKESPECIAL: {
-                if( "<init>".equals( name ) ) { //constructor call
-                    
-                    String className = externalName( owner );
-                    if( className.equals( javaClass.superclass.clazz.getName())) {                    
-                        avm2Code.append( Operation.OP_constructsuper, argCount );
-                    }
-                    else {
-                        //call to a constructor that is not the superclass.
-                        
-                        //TODO: for now skip this and just pop the object
-                        avm2Code.append( Operation.OP_pop );                        
-                    }
-                                        
-                } else { //super call or private call
-                    
-                    Method m = getMethod( javaClass, owner, name, desc ); 
-                    if( Modifier.isPrivate( m.getModifiers() ) ) { //private
-
-                        Operation op = isVoidMethod( desc ) ?
-                                           Operation.OP_callpropvoid :
-                                           Operation.OP_callproperty;
-                         
-                        avm2Code.append( op, nameForPrivateMethod( name ), argCount );
-                        
-                    }
-                    else { //super call
-                        
-                    }
-                    
-                    //TODO:
-                }
-                return;
             }
-
+            
             //TODO:
-            case Opcodes.INVOKESTATIC:
-            default: throw new RuntimeException( "Unhandled opcode " + opcode );
         }
+	}
+
+	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#invokeStatic(org.javaswf.j2avm.model.MethodDescriptor) */
+	@Override
+	public void invokeStatic( MethodDescriptor methodDesc ) {
+		//TODO: implement static methods
+		throw new RuntimeException( "Static method invocation is yet to be implemented" );
+	}
+
+	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#invokeVirtual(org.javaswf.j2avm.model.MethodDescriptor) */
+	@Override
+	public void invokeVirtual( MethodDescriptor methodDesc ) {
+        int argCount = methodDesc.signature.paramTypes.length;
         
-    }
+        Operation op = 
+        	(context.methodFor( methodDesc ).returnType == VoidType.VOID) ?
+                Operation.OP_callpropvoid :
+                Operation.OP_callproperty;
+        
+        avm2Code.append( op, nameForMethod( methodDesc.signature.name ), argCount );        
+	}
 
     /** @see org.javaswf.j2avm.model.code.InstructionListWalker#newObject(org.javaswf.j2avm.model.types.ObjectType) */
 	@Override

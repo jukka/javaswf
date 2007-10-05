@@ -63,7 +63,13 @@ import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
  * @author nickmain
  */
 public class AVM2ClassEmitter implements TranslationStep {
-        
+    
+    private final TranslatedABC abc;
+    private TranslatedClass avm2Class;
+    private ClassModel javaClass;
+    private TranslationContext context;
+    private AVM2ABCFile abcFile;
+	
     /**
      * @param abc the target ABC file data
      */
@@ -75,7 +81,8 @@ public class AVM2ClassEmitter implements TranslationStep {
     /** @see org.javaswf.j2avm.TranslationStep#process(org.javaswf.j2avm.model.ClassModel, org.javaswf.j2avm.TranslationContext) */
     public boolean process( ClassModel classModel, TranslationContext context ) {
         
-        this.context = context;
+        this.context   = context;
+        this.javaClass = classModel;
         
         if( context.debug ) {
             context.debug( "*** AVM2ClassEmitter - Visiting " + classModel.type );
@@ -117,13 +124,7 @@ public class AVM2ClassEmitter implements TranslationStep {
         
         return true;
     }
-    
-    private final TranslatedABC abc;
-    private TranslatedClass avm2Class;
-    private ClassModel javaClass;
-    private TranslationContext context;
-    private AVM2ABCFile abcFile;
-    
+        
     /**
      * Emit the class initialization script and determine the scope depth.
      * 
@@ -142,6 +143,7 @@ public class AVM2ClassEmitter implements TranslationStep {
         
         //get the inheritance chain of the class
         LinkedList<ClassModel> superclasses = new LinkedList<ClassModel>();
+
         ClassModel superclass = context.modelForName( javaClass.superclass.name );
         while( superclass != null ) {
             if( superclass.type.equals( ObjectType.OBJECT )) {
@@ -322,7 +324,8 @@ public class AVM2ClassEmitter implements TranslationStep {
         AVM2Code code = new AVM2Code( body.instructions );
         code.setupInitialScope();
         
-        InstructionVisitor visitor = new InstructionVisitor( code );        
+        InstructionVisitor visitor = 
+        	new InstructionVisitor( code,abc, avm2Class, context, javaClass, method );        
         visitor.walk( javaClass, method );
                         
         //TODO: these values need further thought..

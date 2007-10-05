@@ -27,45 +27,15 @@ public class InstructionsWrapper {
 		this.instructions = instructions;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#addDouble() */
-	public InstructionsWrapper addDouble() {
-		instructions.addDouble();
+	/** @see org.javaswf.j2avm.model.code.Instructions#binaryOp(org.javaswf.j2avm.model.code.BinOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
+	public InstructionsWrapper binaryOp( BinOpType type, PrimitiveType resultType ) {
+		instructions.binaryOp( type, resultType );
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#addFloat() */
-	public InstructionsWrapper addFloat() {
-		instructions.addFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#addInt() */
-	public InstructionsWrapper addInt() {
-		instructions.addInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#addLong() */
-	public InstructionsWrapper addLong() {
-		instructions.addLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#andInt() */
-	public InstructionsWrapper andInt() {
-		instructions.andInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#andLong() */
-	public InstructionsWrapper andLong() {
-		instructions.andLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#arrayLength() */
-	public InstructionsWrapper arrayLength() {
-		instructions.arrayLength();
+	/** @see org.javaswf.j2avm.model.code.Instructions#unaryOp(org.javaswf.j2avm.model.code.UnaryOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
+	public InstructionsWrapper unaryOp( UnaryOpType type, PrimitiveType resultType ) {
+		instructions.unaryOp( type, resultType );
 		return this;
 	}
 
@@ -84,54 +54,12 @@ public class InstructionsWrapper {
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareDouble(boolean) */
-	public InstructionsWrapper compareDouble( boolean nanG ) {
-		instructions.compareDouble( nanG );
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareFloat(boolean) */
-	public InstructionsWrapper compareFloat( boolean nanG ) {
-		instructions.compareFloat( nanG );
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareLong() */
-	public InstructionsWrapper compareLong() {
-		instructions.compareLong();
-		return this;
-	}
-
 	/**
 	 * @see org.javaswf.j2avm.model.code.Instructions#convert(org.javaswf.j2avm.model.types.PrimitiveType,org.javaswf.j2avm.model.types.PrimitiveType)
 	 */
 	public InstructionsWrapper convert( PrimitiveType fromType,
 			PrimitiveType toType ) {
 		instructions.convert( fromType, toType );
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divDouble() */
-	public InstructionsWrapper divDouble() {
-		instructions.divDouble();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divFloat() */
-	public InstructionsWrapper divFloat() {
-		instructions.divFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divInt() */
-	public InstructionsWrapper divInt() {
-		instructions.divInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divLong() */
-	public InstructionsWrapper divLong() {
-		instructions.divLong();
 		return this;
 	}
 
@@ -195,54 +123,6 @@ public class InstructionsWrapper {
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#multDouble() */
-	public InstructionsWrapper multDouble() {
-		instructions.multDouble();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multFloat() */
-	public InstructionsWrapper multFloat() {
-		instructions.multFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multInt() */
-	public InstructionsWrapper multInt() {
-		instructions.multInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multLong() */
-	public InstructionsWrapper multLong() {
-		instructions.multLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negDouble() */
-	public InstructionsWrapper negDouble() {
-		instructions.negDouble();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negFloat() */
-	public InstructionsWrapper negFloat() {
-		instructions.negFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negInt() */
-	public InstructionsWrapper negInt() {
-		instructions.negInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negLong() */
-	public InstructionsWrapper negLong() {
-		instructions.negLong();
-		return this;
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#newArray(org.javaswf.j2avm.model.types.ArrayType) */
 	public InstructionsWrapper newArray( ArrayType type ) {
 		instructions.newArray( type );
@@ -258,18 +138,6 @@ public class InstructionsWrapper {
 	/** @see org.javaswf.j2avm.model.code.Instructions#nop() */
 	public InstructionsWrapper nop() {
 		instructions.nop();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#orInt() */
-	public InstructionsWrapper orInt() {
-		instructions.orInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#orLong() */
-	public InstructionsWrapper orLong() {
-		instructions.orLong();
 		return this;
 	}
 
@@ -348,54 +216,6 @@ public class InstructionsWrapper {
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#remDouble() */
-	public InstructionsWrapper remDouble() {
-		instructions.remDouble();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remFloat() */
-	public InstructionsWrapper remFloat() {
-		instructions.remFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remInt() */
-	public InstructionsWrapper remInt() {
-		instructions.remInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remLong() */
-	public InstructionsWrapper remLong() {
-		instructions.remLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#shiftLeftInt() */
-	public InstructionsWrapper shiftLeftInt() {
-		instructions.shiftLeftInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#shiftLeftLong() */
-	public InstructionsWrapper shiftLeftLong() {
-		instructions.shiftLeftLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#signedShiftRightInt() */
-	public InstructionsWrapper signedShiftRightInt() {
-		instructions.signedShiftRightInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#signedShiftRightLong() */
-	public InstructionsWrapper signedShiftRightLong() {
-		instructions.signedShiftRightLong();
-		return this;
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#storeElement(org.javaswf.j2avm.model.types.ValueType) */
 	public InstructionsWrapper storeElement( ValueType type ) {
 		instructions.storeElement( type );
@@ -423,30 +243,6 @@ public class InstructionsWrapper {
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#subDouble() */
-	public InstructionsWrapper subDouble() {
-		instructions.subDouble();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subFloat() */
-	public InstructionsWrapper subFloat() {
-		instructions.subFloat();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subInt() */
-	public InstructionsWrapper subInt() {
-		instructions.subInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subLong() */
-	public InstructionsWrapper subLong() {
-		instructions.subLong();
-		return this;
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#swap() */
 	public InstructionsWrapper swap() {
 		instructions.swap();
@@ -466,29 +262,4 @@ public class InstructionsWrapper {
 		instructions.throwException();
 		return this;
 	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#unsignedShiftRightInt() */
-	public InstructionsWrapper unsignedShiftRightInt() {
-		instructions.unsignedShiftRightInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#unsignedShiftRightLong() */
-	public InstructionsWrapper unsignedShiftRightLong() {
-		instructions.unsignedShiftRightLong();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#xorInt() */
-	public InstructionsWrapper xorInt() {
-		instructions.xorInt();
-		return this;
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#xorLong() */
-	public InstructionsWrapper xorLong() {
-		instructions.xorLong();
-		return this;
-	}
-
 }

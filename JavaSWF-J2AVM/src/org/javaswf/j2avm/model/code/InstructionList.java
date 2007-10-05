@@ -8,76 +8,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.ObjectType;
 
 public class InstructionList implements Iterable<Instruction> {
 
-    /** An exception handler */
-	public static class ExceptionHandler implements LabelTargetter {
-	    /** First instruction in the try block */        
-	    public final CodeLabel start;
-	    
-	    /** First instruction after the try block */
-	    public final CodeLabel end;
-	    
-	    /** First instruction of the catch handler */
-	    public final CodeLabel handler;
-	    
-	    /** The type to catch - may be null (means any exception) */
-	    public final ObjectType exceptionType;
-	    
-	    public ExceptionHandler( CodeLabel start, 
-	    		                 CodeLabel end, 
-	    		                 CodeLabel handler, 
-	    		                 ObjectType exceptionType ) {
-	    	
-	        this.start         = start;
-	        this.end           = end;
-	        this.handler       = handler;
-	        this.exceptionType = exceptionType;
-	        
-	        start  .targetters.add( this );
-	        end    .targetters.add( this );
-	        handler.targetters.add( this );
-	    }
-	    
-	    /**
-	     * Remove this handler from the targetted CodeLabels
-	     */
-	    public void remove() {
-	        start  .targetters.remove( this );
-	        end    .targetters.remove( this );
-	        handler.targetters.remove( this );            
-	    }
-	    
-	    /** @see org.javaswf.j2avm.model.code.LabelTargetter#targets(Set) */
-	    public void targets( Set<CodeLabel> targets ) {
-	        targets.add( start );
-	        targets.add( end );
-	        targets.add( handler );
-	    }
-	
-	    /** @see org.javaswf.j2avm.model.code.LabelTargetter#release() */
-	    public void release() {
-	        start  .targetters.remove( this );
-	        end    .targetters.remove( this );
-	        handler.targetters.remove( this );            
-	    }
-	
-	    /**
-	     * Dump for debug purposes
-	     */
-	    public void dump( IndentingPrintWriter out ) {
-	        String type = (exceptionType != null) ? exceptionType.name : "<any>";
-	        out.println( "try{ " + start + " .. " + end + 
-	                     " } catch( " + type + " ) --> " + handler );
-	    }
-	}
-
-	/**
+    /**
      * Get the number of instructions in the list
      */
     public int size() {
@@ -223,12 +160,12 @@ public class InstructionList implements Iterable<Instruction> {
      * 
      * @return the new handler
      */
-    public final InstructionList.ExceptionHandler addHandler( CodeLabel start, 
+    public final ExceptionHandler addHandler( CodeLabel start, 
                                               CodeLabel end, 
                                               CodeLabel handler, 
                                               ObjectType exceptionType ) {
-        InstructionList.ExceptionHandler eh = 
-            new InstructionList.ExceptionHandler( start, end, handler, exceptionType );
+        ExceptionHandler eh = 
+            new ExceptionHandler( start, end, handler, exceptionType );
         
         handlers.add( eh );
         return eh;
@@ -238,10 +175,10 @@ public class InstructionList implements Iterable<Instruction> {
      * Get an iterator over the exception handlers in order of decreasing
      * importance. The remove operation is supported.
      */
-    public final Iterator<InstructionList.ExceptionHandler> handlers() {
-        return new Iterator<InstructionList.ExceptionHandler>() {            
-            private final Iterator<InstructionList.ExceptionHandler> it = handlers.iterator();
-            private InstructionList.ExceptionHandler handler;            
+    public final Iterator<ExceptionHandler> handlers() {
+        return new Iterator<ExceptionHandler>() {            
+            private final Iterator<ExceptionHandler> it = handlers.iterator();
+            private ExceptionHandler handler;            
             
             /** @see java.util.Iterator#hasNext() */
             public boolean hasNext() {
@@ -249,7 +186,7 @@ public class InstructionList implements Iterable<Instruction> {
             }
 
             /** @see java.util.Iterator#next() */
-            public InstructionList.ExceptionHandler next() {
+            public ExceptionHandler next() {
                 handler = it.next();
                 return handler;
             }
@@ -267,7 +204,7 @@ public class InstructionList implements Iterable<Instruction> {
     private int count;
     
     /** The exception handlers in order of decreasing precedence */
-    private final List<InstructionList.ExceptionHandler> handlers = new ArrayList<InstructionList.ExceptionHandler>();
+    private final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
     
     /**
      * If true then this list has been normalized such that 64 bit types
@@ -306,7 +243,7 @@ public class InstructionList implements Iterable<Instruction> {
      * Normalize the list - convert dup and pop instructions to assume that
      * 64 bit types only occupy a single stack slot rather than 2.
      */
-    public void normalize( MethodModel method ) {
+    public void normalize( ObjectType owner, MethodModel method ) {
     	if( hasBeenNormalized ) return;
     	
     	if( ! needsNormalization ) {
@@ -314,7 +251,7 @@ public class InstructionList implements Iterable<Instruction> {
         	return;
     	}
     	
-    	determineFrames( method );
+    	determineFrames( owner, method );
     	
     	Instruction i = first;
     	while( i != null ) {
@@ -328,12 +265,12 @@ public class InstructionList implements Iterable<Instruction> {
     /**
      * Determine the frames for each instruction.
      */
-    public void determineFrames( MethodModel method ) {
+    public void determineFrames( ObjectType owner, MethodModel method ) {
     	
     	LinkedList<IncomingFrame> queue = new LinkedList<IncomingFrame>();
     	Frame frame1 = (method.flags.contains( MethodFlag.MethodIsStatic )) ?
     			           Frame.staticMethod( method ) :
-    			           Frame.instanceMethod( method );
+    			           Frame.instanceMethod( method, owner );
     	queue.add( new IncomingFrame( frame1, first()) );
 
     	boolean processedHandlers = false;
@@ -368,8 +305,8 @@ public class InstructionList implements Iterable<Instruction> {
         	
         	//process the exception handlers
         	if( ! processedHandlers ) {
-        		for( Iterator<InstructionList.ExceptionHandler> i = handlers(); i.hasNext(); ) {
-					InstructionList.ExceptionHandler handler = i.next();
+        		for( Iterator<ExceptionHandler> i = handlers(); i.hasNext(); ) {
+					ExceptionHandler handler = i.next();
 					
 					Frame f = Frame.forHandler( handler );
 	        		queue.add( new IncomingFrame( f, handler.handler ) );

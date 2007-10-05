@@ -25,7 +25,7 @@ public class AVMGetterSetterRewriter extends RewriteStep {
         
 		String methodName = methodDesc.signature.name;
         MethodModel meth = methodFor( methodDesc );
-        
+
         boolean isGetter = meth.annotation( Getter.class.getName() ) != null;
         boolean isSetter = meth.annotation( Setter.class.getName() ) != null;
         

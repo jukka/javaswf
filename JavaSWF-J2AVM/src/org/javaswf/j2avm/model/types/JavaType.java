@@ -41,6 +41,30 @@ public abstract class JavaType {
     public final int hashCode() {
         return name.hashCode();
     }
+
+    /**
+     * Get the type that is the common denominator between two types.
+     * This does not attempt to determine common super-types.
+     * 
+     * @return null if the types are incompatible
+     */
+    public static JavaType common( JavaType a, JavaType b ) {
+    	
+    	if( a.equals( b ) ) return a;
+
+    	if( a instanceof ObjectOrArrayType && b instanceof ObjectOrArrayType ) {
+    		return ObjectType.OBJECT;
+    	}
+    	
+    	if( a instanceof PrimitiveType && b instanceof PrimitiveType ) {
+    		PrimitiveType pa = (PrimitiveType) a;
+    		PrimitiveType pb = (PrimitiveType) b;
+    		
+    		if( pa.isIntType && pb.isIntType ) return PrimitiveType.INT;
+    	}
+    	
+    	return null;
+    }
     
     /**
      * Create a JavaType from a type name 

@@ -13,19 +13,19 @@ import java.util.Map;
  */
 public final class PrimitiveType extends ValueType {
 
-    public static final PrimitiveType BYTE    = new PrimitiveType( "byte",    "B" );
-    public static final PrimitiveType BOOLEAN = new PrimitiveType( "boolean", "Z" );
-    public static final PrimitiveType SHORT   = new PrimitiveType( "short",   "S" );
-    public static final PrimitiveType CHAR    = new PrimitiveType( "char",    "C" );
-    public static final PrimitiveType INT     = new PrimitiveType( "int",     "I" );
-    public static final PrimitiveType FLOAT   = new PrimitiveType( "float",   "F" );
-    public static final PrimitiveType LONG    = new PrimitiveType( "long",    "L" );
-    public static final PrimitiveType DOUBLE  = new PrimitiveType( "double",  "D" );
+    public static final PrimitiveType BYTE    = new PrimitiveType( "byte",    "B", true );
+    public static final PrimitiveType BOOLEAN = new PrimitiveType( "boolean", "Z", true );
+    public static final PrimitiveType SHORT   = new PrimitiveType( "short",   "S", true );
+    public static final PrimitiveType CHAR    = new PrimitiveType( "char",    "C", true );
+    public static final PrimitiveType INT     = new PrimitiveType( "int",     "I", true );
+    public static final PrimitiveType FLOAT   = new PrimitiveType( "float",   "F", false );
+    public static final PrimitiveType LONG    = new PrimitiveType( "long",    "L", false );
+    public static final PrimitiveType DOUBLE  = new PrimitiveType( "double",  "D", false );
     
     //map for looking up types by name
     private static final Map<String, PrimitiveType> types = 
     	new HashMap<String, PrimitiveType>();
-    
+        
     static {
     	for( Field f : PrimitiveType.class.getDeclaredFields() ) {
     		if( PrimitiveType.class.isAssignableFrom( f.getType() )
@@ -43,14 +43,21 @@ public final class PrimitiveType extends ValueType {
     }
     
     /**
+     * True if this type is represented as an int on the stack by the JVM - that
+     * is, byte, boolean, char, short and int.
+     */
+    public final boolean isIntType;
+    
+    /**
      * Whether this type is a 64 bit type.
      */
     public boolean is64Bit() {
         return this == LONG || this == DOUBLE;
     }
     
-    private PrimitiveType( String name, String abbreviation ) {
+    private PrimitiveType( String name, String abbreviation, boolean isInt ) {
         super( name, abbreviation );
+        this.isIntType = isInt;
     }
     
     /**

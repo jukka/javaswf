@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.javaswf.j2avm.model.ClassModel;
+import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.types.Signature;
 
 /**
  * The context of the translation.  Translation steps should look to
@@ -97,5 +101,27 @@ public final class TranslationContext {
     /*pkg*/ TranslationContext( ClassLoader loader ) {  
         this.loader = loader;
         debug = J2AVM.log.isLoggable( Level.FINEST );
-    }    
+    }
+    
+	/**
+	 * Get a method from a descriptor. Will search up the inheritance
+	 * chain until the method is found.
+	 * 
+	 * @param desc the method descriptor
+	 * 
+	 * @return null if the referenced method could not be found
+	 */
+	public final MethodModel methodFor( MethodDescriptor desc ) {	
+		return methodFor( desc.owner, desc );
+	}
+	
+	private MethodModel methodFor( ObjectType type, MethodDescriptor desc ) {
+		ClassModel clazz = modelForName( type.name );
+		if( clazz == null ) return null;
+
+		MethodModel mm = clazz.methods.get( desc.signature );		
+		if( mm != null ) return mm;
+		
+		return methodFor( clazz.superclass, desc );
+	}
 }

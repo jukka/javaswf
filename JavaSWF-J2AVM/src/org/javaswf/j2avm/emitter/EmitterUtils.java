@@ -104,7 +104,9 @@ public class EmitterUtils {
                 }
             }
             
-            superclass = context.modelForName( superclass.superclass.name );
+            ObjectType supertype = superclass.superclass;
+            if( supertype == null ) break;
+            superclass = context.modelForName( supertype.name );
         }
         
         return false;

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.epistem.io.IndentingPrintWriter;
+import org.javaswf.j2avm.model.code.ExceptionHandler;
 import org.javaswf.j2avm.model.code.Frame;
 import org.javaswf.j2avm.model.code.Instruction;
 import org.javaswf.j2avm.model.code.InstructionCursor;
@@ -130,7 +131,7 @@ public class CodeAttribute extends AttributeModel {
         out.println();
 
         for( Instruction i : instructions ) {
-        	Frame frame = i.frameBefore();
+        	Frame frame = i.frame();
         	if( frame != null ) {
         		frame.dump( out );
         	}
@@ -143,7 +144,7 @@ public class CodeAttribute extends AttributeModel {
             out.println( "handlers {" );
             out.indent();
 
-            for( Iterator<InstructionList.ExceptionHandler> it = instructions.handlers(); 
+            for( Iterator<ExceptionHandler> it = instructions.handlers(); 
                  it.hasNext(); ) {
 				it.next().dump( out );				
 			}

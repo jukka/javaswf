@@ -52,10 +52,7 @@ public class RewriteStep extends InstructionListWalker implements TranslationSte
 	 * 
 	 * @return null if the referenced method could not be found
 	 */
-	protected final MethodModel methodFor( MethodDescriptor desc ) {		
-		ClassModel clazz = context.modelForName( desc.owner.name );
-		if( clazz == null ) return null;
-		
-		return clazz.methods.get( desc.signature );
+	protected final MethodModel methodFor( MethodDescriptor desc ) {				
+		return context.methodFor( desc );
 	}
 }

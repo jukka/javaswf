@@ -110,7 +110,7 @@ public final class ClassModel extends Model {
             //methods
             int methodcount = in.readUnsignedShort();
             for (int i = 0; i < methodcount; i++) {
-                MethodModel method = new MethodModel( in, pool );
+                MethodModel method = new MethodModel( type, in, pool );
                 methods.put( method.signature, method );
             }
             

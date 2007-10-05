@@ -1,14 +1,14 @@
 package org.javaswf.j2avm.model.code;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
-import org.javaswf.j2avm.model.types.ObjectOrArrayType;
+import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
@@ -21,60 +21,61 @@ import org.javaswf.j2avm.model.types.ValueType;
  */
 public class Frame {
 
-    /** The stack - top at index 0 */
-    private final LinkedList<ValueType> stack;
+    /** The stack - top at front */
+    public final Value[] stack;
     
     /** The local vars, some slots may be null */
-    private final ValueType[] locals;
+    public final Value[] locals;
     
     /**
      * Copy an existing frame
      */
     public Frame( Frame toCopy ) {
-        this.stack  = new LinkedList<ValueType>( toCopy.stack );
-        this.locals = new ValueType[ toCopy.locals.length ];
-        System.arraycopy( toCopy.locals, 0, locals, 0, locals.length );
+    	stack = toCopy.
+    	
+    	stack .addAll( toCopy.stack  );
+    	locals.addAll( toCopy.locals );
     }
     
     /**
      * Create an empty frame.
-     * 
-     * @param maxLocals the max locals that can be stored
      */
-    public Frame( int maxLocals ) {
-        this.stack  = new LinkedList<ValueType>();
-        this.locals = new ValueType[ maxLocals ];    	
+    public Frame() {
+    	stack = locals = new Value[0];
     }
 
     /**
-     * Push a type.  Pushes 64 bit types as two slots.
+     * Push a value.  Pushes 64 bit types as two slots.
      */
-    public void push( ValueType type ) {
+    public void push( Value value ) {
+    	ValueType type = value.type();
+    	
         if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
             stack.addFirst( null );
         }
         
-        stack.addFirst( type );
+        stack.addFirst( value );
     }
     
     /**
-     * Pops a type.  64 bit types will pop two slots.
+     * Pops a value.  64 bit types will pop two slots.
      */
-    public ValueType pop() {
-        ValueType type = stack.removeFirst();
+    public Value pop() {
+        Value     value = stack.removeFirst();
+        ValueType type  = value.type();
         
         if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
             stack.removeFirst();
         }
 
-        return type;
+        return value;
     }
     
     /**
      * Peek at a stack slot
      * @param index zero is stack top
      */
-    public ValueType peek( int index ) {
+    public Value peek( int index ) {
     	return stack.get( index );
     }
     
@@ -82,16 +83,20 @@ public class Frame {
      * Set a local variable.  Sets two slots for a 64 bit type.
      * 
      * @param index the local var index
-     * @param type the type to set
-     * @throws IndexOutOfBoundsException if the index is out of bounds
+     * @param value the value to set
      */
-    public void setLocal( int index, ValueType type ) {
+    public void setLocal( int index, Value value ) {
 
-        locals[ index ] = type;
-        
-        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
-            locals[ index + 1 ] = null;
+    	ValueType type = value.type();
+    	int newSize = index + 1;
+
+    	if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
+            newSize++;
         }
+
+    	while( locals.size() < newSize ) locals.add( null ); 
+    		
+    	locals.set( index, value );
     }
     
     /**
@@ -99,26 +104,11 @@ public class Frame {
      * 
      * @param index the local var index
      * @return null if the given local is not valid or is not set.
-     * 
-     * @throws IndexOutOfBoundsException if the index is out of bounds
      */
-    public ValueType getLocal( int index ) {
-        return locals[ index ];
+    public Value getLocal( int index ) {
+        if( locals.size() < index+1 ) return null;
+    	return locals.get( index );
     }    
-    
-    /**
-     * Get the max locals count.
-     */
-    public int maxLocals() {
-        return locals.length;
-    }
-    
-    /**
-     * Get the current size of the stack
-     */
-    public int stackSize() {
-        return stack.size();
-    }
     
     /**
      * Pop a given number of slots (ignores size of types)
@@ -133,8 +123,8 @@ public class Frame {
      * Swap the top two slots (which should not be 64 bit types)
      */
     public void swap() {
-        ValueType top = stack.removeFirst();
-        ValueType snd = stack.removeFirst();
+        Value top = stack.removeFirst();
+        Value snd = stack.removeFirst();
         stack.addFirst( top );
         stack.addFirst( snd );
     }
@@ -147,11 +137,11 @@ public class Frame {
      * @param skip slots to skip over - 0, 1 or 2
      */
     public void dup( int count, int skip ) {
-        ValueType top = stack.removeFirst();
-        ValueType snd = (count==2) ? stack.removeFirst() : null;
+        Value top = stack.removeFirst();
+        Value snd = (count==2) ? stack.removeFirst() : null;
 
-        ValueType skip1 = (skip > 0) ? stack.removeFirst() : null;
-        ValueType skip2 = (skip > 1) ? stack.removeFirst() : null;
+        Value skip1 = (skip > 0) ? stack.removeFirst() : null;
+        Value skip2 = (skip > 1) ? stack.removeFirst() : null;
 
         if( snd != null ) stack.addFirst( snd );
         stack.addFirst( top );
@@ -164,40 +154,16 @@ public class Frame {
     }
     
     /**
-     * Merge the locals from another frame into this one.  The resulting locals
-     * represent what can be known about the type in each slot.  Null slots
-     * denote unknown, conflicting or invalid types.
+     * Merge the values from another frame into this one.
      * 
      * @return true if any slots changed
      */
-    public boolean mergeLocals( Frame f ) {
-    	ValueType[] locals2 = f.locals;
+    public boolean merge( Frame f ) {
     	
-    	boolean changed = false;
+    	boolean stackChanged  = merge( stack,  f.stack );
+    	boolean localsChanged = merge( locals, f.locals );
     	
-    	for( int i = 0; i < locals.length; i++ ) {
-			ValueType otherType = (i < locals2.length) ? locals2[i] : null;
-			ValueType thisType = locals[i];
-			
-			if( otherType == null || thisType == null ) {
-				locals[i] = null;
-				continue;
-			}
-			
-			if( otherType.equals( thisType )) continue;
-			
-			if( otherType instanceof ObjectOrArrayType
-			 && thisType  instanceof ObjectOrArrayType ) {
-				
-				changed = changed || (! locals[i].equals( ObjectType.OBJECT )); 				
-				locals[i] = ObjectType.OBJECT;
-			}
-			
-			changed = changed || (locals[i] != null); 
-			locals[i] = null;			
-		}
-    	
-    	return changed;
+    	return stackChanged || localsChanged;
     }
     
     /**
@@ -206,51 +172,79 @@ public class Frame {
     public void dump( IndentingPrintWriter ipw ) {
    	 	ipw.print( "[" );
     	
-    	for( ValueType slot : locals ) {
+   	 	boolean first = false;
+    	for( Value slot : locals ) {
+    		if( first ) first = false;
+    		else ipw.print( "|" );
+    		
 			if( slot == null ) ipw.print( "-" );
-			else               ipw.print( slot.abbreviation );
+			else               ipw.print( slot );
 		}
     	
    	    ipw.print( "] " );
    	    
-     	for( ValueType slot : stack ) {
-			if( slot == null ) ipw.print( "-" );
-			else               ipw.print( slot.abbreviation );
+   	    first = false;
+   	    for( Value slot : stack ) {
+    		if( first ) first = false;
+    		else ipw.print( "|" );
+
+    		if( slot == null ) ipw.print( "-" );
+			else               ipw.print( slot );
 		}
      	
      	ipw.println();
     }
-    
-    /**
-     * Determine the set of local vars that are common to the given frames.
-     * This can be used to determine the local variable state that can be
-     * accessed in an exception handler - by finding the local variable types
-     * that are common to all the instructions in the try-block.
-     * The resulting frame consists of the merged locals and an empty stack
-     */
-    public static Frame merge( Collection<Frame> frames ) {
-    	
-    	Frame frame = null;
-    	
-    	for( Frame f : frames ) {
-    		if( frame == null ) {
-    			frame = new Frame( f );
-    			frame.stack.clear();
-    		} 
-    		else {
-    		    frame.mergeLocals( f );	
-    		}
-    	}
         
-        return frame;
+    /**
+     * Merge the src values into the dest.
+     * 
+     * @return true if any slots were altered
+     */
+    private static boolean merge( List<Value> dest, List<Value> src ) {
+    	boolean altered = false;
+    	
+    	int size = Math.max( dest.size(), src.size() );
+    	for( int i = 0; i < size; i++ ) {
+			Value a = (i < dest.size()) ? dest.get( i ) : null;
+			Value b = (i < src .size()) ? src .get( i ) : null;
+			
+			Value merged = merge( a, b );
+			
+			if( merged != a ) {
+				altered = true;
+				set( dest, i, merged );				
+			}
+		}
+    	
+    	return altered;
+    }
+    
+    private static Value merge( Value a, Value b ) {
+    	if( a == null || b == null ) return null;
+    	if( a == b ) return a;
+    	
+    	ValueType common = (ValueType) JavaType.common( a.type(), b.type() );
+    	if( common == null ) return null;
+    	
+    	ValueGenerator gen = (a.creator == b.creator) ? a.creator : null;
+
+    	return new Value( gen, common, "*" );
+    }
+    
+    private static void set( List<Value> list, int index, Value value ) {
+    	int newSize = index + 1;
+    	while( list.size() < newSize ) list.add( null );
+    	list.set( index, value );
     }
     
     /**
      * Make a frame for the start of an exception handler
      */
-    public static Frame forHandler( InstructionList.ExceptionHandler handler ) {
+    public static Frame forHandler( ExceptionHandler handler ) {
     	
-    	Collection<Frame> frames = new ArrayList<Frame>();
+    	//gather and merge all the frames from within the try-block
+    	//in order to determine the common local variables
+    	List<Frame> frames = new ArrayList<Frame>();
     	InstructionCursor cursor = handler.start.cursor();
     	
     	Instruction i;
@@ -258,24 +252,29 @@ public class Frame {
     		frames.add( i.frameBefore );  //frameAfter is not relevant ??    		
     	}
     	
-    	Frame f = merge( frames );
-        f.stack.add( ObjectType.THROWABLE );
+    	Frame f = new Frame( frames.get( 0 ) );
+    	for( Frame frame : frames ) {
+			f.merge( frame );
+		}
+    	
+    	f.stack.clear();
+        f.stack.add( new Value( handler, handler.exceptionType, "catch_" + handler.handler.label ));
         return f;
     }
     
     /**
      * Make a frame for the beginning of an instance method or constructor
      */
-    public static Frame instanceMethod( MethodModel method ) {
-    	    	
+    public static Frame instanceMethod( MethodModel method, ObjectType owner ) {
+
+    	Frame f = new Frame();
+
     	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
-    	if( code == null ) return new Frame(0);
+    	if( code != null ) {    	
+	    	f.setLocal( 0, new Value( method, owner, "this" ) );
+	    	setLocals( method, f, method.signature.paramTypes, 1 );
+    	}
     	
-    	Frame f = new Frame( code.maxLocals );
-    	f.setLocal( 0, ObjectType.OBJECT );
-    	int local = 1;
-    	
-    	setLocals( f, method.signature.paramTypes, local );    	
         return f;        
     }
 
@@ -283,17 +282,21 @@ public class Frame {
      * Make a frame for the beginning of a static method.
      */
     public static Frame staticMethod( MethodModel method ) {
+    	Frame f = new Frame();    	
+
     	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
-    	if( code == null ) return new Frame(0);
-    	
-    	Frame f = new Frame( code.maxLocals );    	
-    	setLocals( f, method.signature.paramTypes, 0 );
+    	if( code != null ) setLocals( method, f, method.signature.paramTypes, 0 );
         return f;        
     }
 
-    private static void setLocals( Frame f, ValueType[] paramTypes, int local ) {
-    	for( int i = 0; i < paramTypes.length; i++ ) {
-			f.setLocal( local, paramTypes[i] );
+    private static void setLocals( MethodModel method, Frame f, ValueType[] paramTypes, int local ) {
+    	Value[] params = new Value[ paramTypes.length ];
+    	for( int i = 0; i < params.length; i++ ) {
+			params[i] = new Value( method, paramTypes[i], "p" + (i+1) );
+		}
+    	
+    	for( int i = 0; i < params.length; i++ ) {
+			f.setLocal( local, params[i] );
 			
 			if( paramTypes[i] == PrimitiveType.LONG 
 			 || paramTypes[i] == PrimitiveType.DOUBLE ) {
@@ -304,4 +307,19 @@ public class Frame {
 			}
 		}    	
     }
+
+	/** @see java.lang.Object#equals(java.lang.Object) */
+	@Override
+	public boolean equals( Object obj ) {
+		if( obj == null || !( obj instanceof Frame )) return false;
+		
+		Frame f = (Frame) obj;
+		
+		int stackSize = stack.size();
+		if( f.stack.size() != stack.size() ) return false;
+	
+		for( int i = 0; i < stackSize; i++ ) {
+			if( ! stack.get( i ).equals( obj )  )
+		}
+	}
 }

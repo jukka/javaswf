@@ -221,11 +221,6 @@ public interface Instructions {
     public void incrementVar( int varIndex, int value );
 
     /**
-     * The array length operator
-     */
-    public void arrayLength();
-
-    /**
      * Pop the one or two top stack values.
      * 
      * Unlike the raw JVM pop instructions this treats 64-bit values (long
@@ -252,126 +247,19 @@ public interface Instructions {
      */
     public void dup( int count, int skip );
 
-    /** Int addition */
-    public void addInt();
-
-    /** Int subtraction */
-    public void subInt();
-
-    /** Int multiplication */
-    public void multInt();
-
-    /** Int division */
-    public void divInt();
-
-    /** Int remainder */
-    public void remInt();
-
-    /** Int negation */
-    public void negInt();
-        
-    /** Long addition */
-    public void addLong();
-
-    /** Long subtraction */
-    public void subLong();
-
-    /** Long multiplication */
-    public void multLong();
-
-    /** Long division */
-    public void divLong();
-
-    /** Long remainder */
-    public void remLong();
-    
-    /** Long negation */
-    public void negLong();
-        
-    /** Float addition */
-    public void addFloat();
-
-    /** Float subtraction */
-    public void subFloat();
-
-    /** Float multiplication */
-    public void multFloat();
-
-    /** Float division */
-    public void divFloat();
-
-    /** Float remainder */
-    public void remFloat();
-    
-    /** Float negation */
-    public void negFloat();
-        
-    /** Double addition */
-    public void addDouble();
-
-    /** Double subtraction */
-    public void subDouble();
-
-    /** Double multiplication */
-    public void multDouble();
-
-    /** Double division */
-    public void divDouble();
-
-    /** Double remainder */
-    public void remDouble();
-    
-    /** Double negation */
-    public void negDouble();
-        
-    /** Int shift left */
-    public void shiftLeftInt();
-    
-    /** Int signed shift right */
-    public void signedShiftRightInt();
-    
-    /** Int unsigned shift right */
-    public void unsignedShiftRightInt();
-    
-    /** Long shift left */
-    public void shiftLeftLong();
-    
-    /** Long signed shift right */
-    public void signedShiftRightLong();
-    
-    /** Long unsigned shift right */
-    public void unsignedShiftRightLong();
-    
-    /** Int bitwise AND */
-    public void andInt();
-    
-    /** Int bitwise OR */
-    public void orInt();
-    
-    /** Int bitwise XOR */
-    public void xorInt();
-
-    /** Long bitwise AND */
-    public void andLong();
-    
-    /** Long bitwise OR */
-    public void orLong();
-    
-    /** Long bitwise XOR */
-    public void xorLong();
-
-    /** Long comparison */
-    public void compareLong();
-
     /**
-     * Float comparison
-     * @param nanG true if NaN pushes 1, -1 otherwise
+     * A unary operation
+     * 
+     * @param type the type of operation
+     * @param resultType the result type
      */
-    public void compareFloat( boolean nanG );
-
+    public void unaryOp( UnaryOpType type, PrimitiveType resultType );
+    
     /**
-     * Double comparison
-     * @param nanG true if NaN pushes 1, -1 otherwise
+     * A binary operation
+     * 
+     * @param type the type of binary operation
+     * @param resultType the result type
      */
-    public void compareDouble( boolean nanG );
+    public void binaryOp( BinOpType type, PrimitiveType resultType );
 }

@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.javaswf.j2avm.model.code.BinOpType.*;
+import static org.javaswf.j2avm.model.code.UnaryOpType.*;
 import org.epistem.io.CountingDataInput;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
@@ -247,42 +249,42 @@ public class OperationConvertor {
     public void handle_DUP2_X1         ( ) { instructions.dup( 2, 1 ); }
     public void handle_DUP2_X2         ( ) { instructions.dup( 2, 2 ); }         
     public void handle_SWAP            ( ) { instructions.swap(); }
-    public void handle_IADD            ( ) { instructions.addInt(); }
-    public void handle_LADD            ( ) { instructions.addLong(); }
-    public void handle_FADD            ( ) { instructions.addFloat(); }
-    public void handle_DADD            ( ) { instructions.addDouble(); }
-    public void handle_ISUB            ( ) { instructions.subInt(); }
-    public void handle_LSUB            ( ) { instructions.subLong(); }
-    public void handle_FSUB            ( ) { instructions.subFloat(); }
-    public void handle_DSUB            ( ) { instructions.subDouble(); }            
-    public void handle_IMUL            ( ) { instructions.multInt(); }            
-    public void handle_LMUL            ( ) { instructions.multLong(); }            
-    public void handle_FMUL            ( ) { instructions.multFloat(); }            
-    public void handle_DMUL            ( ) { instructions.multDouble(); }            
-    public void handle_IDIV            ( ) { instructions.divInt(); }            
-    public void handle_LDIV            ( ) { instructions.divLong(); }            
-    public void handle_FDIV            ( ) { instructions.divFloat(); }            
-    public void handle_DDIV            ( ) { instructions.divDouble(); }            
-    public void handle_IREM            ( ) { instructions.remInt(); }            
-    public void handle_LREM            ( ) { instructions.remLong(); }            
-    public void handle_FREM            ( ) { instructions.remFloat(); }            
-    public void handle_DREM            ( ) { instructions.remDouble(); }            
-    public void handle_INEG            ( ) { instructions.negInt(); }            
-    public void handle_LNEG            ( ) { instructions.negLong(); }            
-    public void handle_FNEG            ( ) { instructions.negFloat(); }            
-    public void handle_DNEG            ( ) { instructions.negDouble(); }            
-    public void handle_ISHL            ( ) { instructions.shiftLeftInt(); }            
-    public void handle_LSHL            ( ) { instructions.shiftLeftLong(); }            
-    public void handle_ISHR            ( ) { instructions.signedShiftRightInt(); }            
-    public void handle_LSHR            ( ) { instructions.signedShiftRightLong(); }            
-    public void handle_IUSHR           ( ) { instructions.unsignedShiftRightInt(); }           
-    public void handle_LUSHR           ( ) { instructions.unsignedShiftRightLong(); }           
-    public void handle_IAND            ( ) { instructions.andInt(); }            
-    public void handle_LAND            ( ) { instructions.andLong(); }            
-    public void handle_IOR             ( ) { instructions.orInt(); }             
-    public void handle_LOR             ( ) { instructions.orLong(); }             
-    public void handle_IXOR            ( ) { instructions.xorInt(); }            
-    public void handle_LXOR            ( ) { instructions.xorLong(); }            
+    public void handle_IADD            ( ) { instructions.binaryOp( ADD, PrimitiveType.INT ); }
+    public void handle_LADD            ( ) { instructions.binaryOp( ADD, PrimitiveType.LONG ); }
+    public void handle_FADD            ( ) { instructions.binaryOp( ADD, PrimitiveType.FLOAT ); }
+    public void handle_DADD            ( ) { instructions.binaryOp( ADD, PrimitiveType.DOUBLE ); }
+    public void handle_ISUB            ( ) { instructions.binaryOp( SUBTRACT, PrimitiveType.INT ); }
+    public void handle_LSUB            ( ) { instructions.binaryOp( SUBTRACT, PrimitiveType.LONG ); }
+    public void handle_FSUB            ( ) { instructions.binaryOp( SUBTRACT, PrimitiveType.FLOAT ); }
+    public void handle_DSUB            ( ) { instructions.binaryOp( SUBTRACT, PrimitiveType.DOUBLE ); }            
+    public void handle_IMUL            ( ) { instructions.binaryOp( MULTIPLY, PrimitiveType.INT ); }            
+    public void handle_LMUL            ( ) { instructions.binaryOp( MULTIPLY, PrimitiveType.LONG ); }            
+    public void handle_FMUL            ( ) { instructions.binaryOp( MULTIPLY, PrimitiveType.FLOAT ); }            
+    public void handle_DMUL            ( ) { instructions.binaryOp( MULTIPLY, PrimitiveType.DOUBLE ); }            
+    public void handle_IDIV            ( ) { instructions.binaryOp( DIVIDE, PrimitiveType.INT ); }            
+    public void handle_LDIV            ( ) { instructions.binaryOp( DIVIDE, PrimitiveType.LONG ); }            
+    public void handle_FDIV            ( ) { instructions.binaryOp( DIVIDE, PrimitiveType.FLOAT ); }            
+    public void handle_DDIV            ( ) { instructions.binaryOp( DIVIDE, PrimitiveType.DOUBLE ); }            
+    public void handle_IREM            ( ) { instructions.binaryOp( REMAINDER, PrimitiveType.INT ); }            
+    public void handle_LREM            ( ) { instructions.binaryOp( REMAINDER, PrimitiveType.LONG ); }            
+    public void handle_FREM            ( ) { instructions.binaryOp( REMAINDER, PrimitiveType.FLOAT ); }            
+    public void handle_DREM            ( ) { instructions.binaryOp( REMAINDER, PrimitiveType.DOUBLE ); }            
+    public void handle_INEG            ( ) { instructions.unaryOp( NEGATE, PrimitiveType.INT ); }
+    public void handle_LNEG            ( ) { instructions.unaryOp( NEGATE, PrimitiveType.LONG ); }            
+    public void handle_FNEG            ( ) { instructions.unaryOp( NEGATE, PrimitiveType.FLOAT ); }            
+    public void handle_DNEG            ( ) { instructions.unaryOp( NEGATE, PrimitiveType.DOUBLE ); }            
+    public void handle_ISHL            ( ) { instructions.binaryOp( SHIFT_LEFT, PrimitiveType.INT ); }            
+    public void handle_LSHL            ( ) { instructions.binaryOp( SHIFT_LEFT, PrimitiveType.LONG ); }            
+    public void handle_ISHR            ( ) { instructions.binaryOp( SHIFT_RIGHT_SIGNED, PrimitiveType.INT ); }            
+    public void handle_LSHR            ( ) { instructions.binaryOp( SHIFT_RIGHT_SIGNED, PrimitiveType.LONG ); }            
+    public void handle_IUSHR           ( ) { instructions.binaryOp( SHIFT_RIGHT_UNSIGNED, PrimitiveType.INT ); }           
+    public void handle_LUSHR           ( ) { instructions.binaryOp( SHIFT_RIGHT_UNSIGNED, PrimitiveType.LONG ); }           
+    public void handle_IAND            ( ) { instructions.binaryOp( AND, PrimitiveType.INT ); }            
+    public void handle_LAND            ( ) { instructions.binaryOp( AND, PrimitiveType.LONG ); }            
+    public void handle_IOR             ( ) { instructions.binaryOp( OR, PrimitiveType.INT ); }             
+    public void handle_LOR             ( ) { instructions.binaryOp( OR, PrimitiveType.LONG ); }             
+    public void handle_IXOR            ( ) { instructions.binaryOp( XOR, PrimitiveType.INT ); }            
+    public void handle_LXOR            ( ) { instructions.binaryOp( XOR, PrimitiveType.LONG ); }            
     public void handle_IINC            ( int index, int value ) { instructions.incrementVar( index, value ); }                
     public void handle_I2L             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.LONG ); }             
     public void handle_I2F             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.FLOAT ); }             
@@ -299,11 +301,11 @@ public class OperationConvertor {
     public void handle_I2B             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.BYTE ); }             
     public void handle_I2C             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.CHAR ); }             
     public void handle_I2S             ( ) { instructions.convert( PrimitiveType.INT, PrimitiveType.SHORT ); }             
-    public void handle_LCMP            ( ) { instructions.compareLong(); }            
-    public void handle_FCMPL           ( ) { instructions.compareFloat( false ); }           
-    public void handle_FCMPG           ( ) { instructions.compareFloat( true ); }           
-    public void handle_DCMPL           ( ) { instructions.compareDouble( false ); }           
-    public void handle_DCMPG           ( ) { instructions.compareDouble( true ); }           
+    public void handle_LCMP            ( ) { instructions.binaryOp( COMPARE,   PrimitiveType.INT ); }            
+    public void handle_FCMPL           ( ) { instructions.binaryOp( COMPARE_L, PrimitiveType.INT ); }           
+    public void handle_FCMPG           ( ) { instructions.binaryOp( COMPARE_G, PrimitiveType.INT ); }           
+    public void handle_DCMPL           ( ) { instructions.binaryOp( COMPARE_L, PrimitiveType.INT ); }           
+    public void handle_DCMPG           ( ) { instructions.binaryOp( COMPARE_G, PrimitiveType.INT ); }           
     public void handle_IFEQ            ( int offset ) { instructions.branch( BranchType.IF_EQUAL_TO_ZERO,            labelAtOffset( offset ) ); }            
     public void handle_IFNE            ( int offset ) { instructions.branch( BranchType.IF_NOT_EQUAL_TO_ZERO,        labelAtOffset( offset ) ); }            
     public void handle_IFLT            ( int offset ) { instructions.branch( BranchType.IF_LESS_OR_EQUAL_TO_ZERO,    labelAtOffset( offset ) ); }            
@@ -340,7 +342,7 @@ public class OperationConvertor {
     public void handle_NEW             ( ObjectType type ) { instructions.newObject( type ); }             
     public void handle_NEWARRAY        ( ArrayType type ) { instructions.newArray( type ); }        
     public void handle_ANEWARRAY       ( ValueType type ) { instructions.newArray( new ArrayType( type, 1 )); }       
-    public void handle_ARRAYLENGTH     ( ) { instructions.arrayLength(); }     
+    public void handle_ARRAYLENGTH     ( ) { instructions.unaryOp( ARRAY_LENGTH, PrimitiveType.INT ); }     
     public void handle_ATHROW          ( ) { instructions.throwException(); }          
     public void handle_CHECKCAST       ( ObjectOrArrayType type ) { instructions.checkCast( type ); }       
     public void handle_INSTANCEOF      ( ObjectOrArrayType type ) { instructions.instanceOf( type ); }      
