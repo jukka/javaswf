@@ -103,14 +103,14 @@ public final class ClassModel extends Model {
             //fields
             int fieldcount = in.readUnsignedShort();
             for (int i = 0; i < fieldcount; i++) {
-                FieldModel field = new FieldModel( in, pool );
+                FieldModel field = new FieldModel( this, in, pool );
                 fields.put( field.name, field );
             }
             
             //methods
             int methodcount = in.readUnsignedShort();
             for (int i = 0; i < methodcount; i++) {
-                MethodModel method = new MethodModel( type, in, pool );
+                MethodModel method = new MethodModel( this, in, pool );
                 methods.put( method.signature, method );
             }
             

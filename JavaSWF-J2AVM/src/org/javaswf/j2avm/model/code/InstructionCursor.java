@@ -323,13 +323,6 @@ public class InstructionCursor implements Instructions {
     }
 
     /**
-     * @see org.javaswf.j2avm.model.code.Instructions#arrayLength()
-     */
-    public void arrayLength() {
-        add( new ArrayLength() );
-    }
-
-    /**
      * @see org.javaswf.j2avm.model.code.Instructions#pop(int)
      */
     public void pop( int count ) {

@@ -69,8 +69,9 @@ public class CodeLabel extends Instruction {
 		return label;
 	}
 
+	/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 	@Override
-	protected void execute( Frame before ) {
-		frameBefore = frameAfter = before;		
+	protected Frame compute() {
+		return frame;
 	}
 }

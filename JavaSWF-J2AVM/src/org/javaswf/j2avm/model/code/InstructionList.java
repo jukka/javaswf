@@ -1,19 +1,17 @@
 package org.javaswf.j2avm.model.code;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.javaswf.j2avm.model.MethodModel;
-import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.ObjectType;
 
 public class InstructionList implements Iterable<Instruction> {
-
+	
     /**
      * Get the number of instructions in the list
      */
@@ -199,9 +197,31 @@ public class InstructionList implements Iterable<Instruction> {
         };
     }
     
+    
+    
 	private Instruction first;
     private Instruction last;
     private int count;
+    
+    private int valueNameIndex = 0;
+    private static String valueNames = "abcdefghijklmnopqrstuvwxyz";
+    
+    /**
+     * Generate the next value name
+     */
+    String nextValueName() {
+    	if( valueNameIndex < valueNames.length() ) {
+    		int i = valueNameIndex;
+    		valueNameIndex++;
+    		return valueNames.substring( i, i+1 );
+    	}
+    	
+    	int suffix = valueNameIndex / valueNames.length();
+    	int i      = valueNameIndex % valueNames.length();
+
+    	valueNameIndex++;
+		return valueNames.substring( i, i+1 ) + suffix;
+    }
     
     /** The exception handlers in order of decreasing precedence */
     private final List<ExceptionHandler> handlers = new ArrayList<ExceptionHandler>();
@@ -213,6 +233,8 @@ public class InstructionList implements Iterable<Instruction> {
      */
     /*pkg*/ boolean hasBeenNormalized;
     private boolean needsNormalization; //if not normalized this flag indicates dup/pop insertions
+    
+    private boolean hasFrames = false;
     
     /*pkg*/ void insert( Instruction newInsn, 
                          Instruction prevInsn, Instruction nextInsn ) {
@@ -243,7 +265,7 @@ public class InstructionList implements Iterable<Instruction> {
      * Normalize the list - convert dup and pop instructions to assume that
      * 64 bit types only occupy a single stack slot rather than 2.
      */
-    public void normalize( ObjectType owner, MethodModel method ) {
+    public void normalize( MethodModel method ) {
     	if( hasBeenNormalized ) return;
     	
     	if( ! needsNormalization ) {
@@ -251,7 +273,7 @@ public class InstructionList implements Iterable<Instruction> {
         	return;
     	}
     	
-    	determineFrames( owner, method );
+    	determineFrames( method );
     	
     	Instruction i = first;
     	while( i != null ) {
@@ -263,59 +285,128 @@ public class InstructionList implements Iterable<Instruction> {
     }
     
     /**
-     * Determine the frames for each instruction.
+     * Clear all the frames.
      */
-    public void determineFrames( ObjectType owner, MethodModel method ) {
+    public void clearFrames() {
+    	Instruction i = first;
+    	while( i != null ) {
+    		i.frame = null;
+    		i = i.next;
+    	}
     	
-    	LinkedList<IncomingFrame> queue = new LinkedList<IncomingFrame>();
-    	Frame frame1 = (method.flags.contains( MethodFlag.MethodIsStatic )) ?
-    			           Frame.staticMethod( method ) :
-    			           Frame.instanceMethod( method, owner );
-    	queue.add( new IncomingFrame( frame1, first()) );
+    	hasFrames = false;
+    }
+    
+    /**
+     * Determine the frames for each instruction.
+     * Clears any existing frames first.
+     */
+    public void determineFrames( MethodModel method ) {
+    	
+    	if( hasFrames ) clearFrames();    	
+    	if( isEmpty() ) return;
 
-    	boolean processedHandlers = false;
+    	new FrameBuilder( method ).build();
     	
-    	while( ! queue.isEmpty() ) {
-        	while( ! queue.isEmpty() ) {
-        		
-        		IncomingFrame infr = queue.removeFirst();
-        		Instruction   insn = infr.insn;
-        		
-        		//merge the incoming frame and if it caused a change in the
-        		//outgoing frame then enqueue downstream instructions
-        		if( infr.insn.mergeIncomingFrame( infr.incoming ) ) {
-        			Frame out = insn.frameAfter();
-        			
-        			if( insn.flowsToNext() ) {
-        				queue.add( new IncomingFrame( out, insn.next() ));
-        			}
-        			
-        			if( insn instanceof LabelTargetter ) {
-        				LabelTargetter targetter = (LabelTargetter) insn;
-        				
-        				Set<CodeLabel> labels = new HashSet<CodeLabel>();
-        				targetter.targets( labels );
-        				
-        				for( CodeLabel target : labels ) {
-        					queue.add( new IncomingFrame( out, target ));
-        				}
-        			}
-        		}        		
-        	}
+    	hasFrames = true;
+    }
+    
+    private class FrameBuilder {
+    	LinkedList<IncomingFrame>    queue    = new LinkedList<IncomingFrame>();
+    	LinkedList<ExceptionHandler> handlerQ = new LinkedList<ExceptionHandler>();
+    	
+    	FrameBuilder( MethodModel method ) {
+        	Frame frame1 = Frame.forMethod( method );
+        	queue.add( new IncomingFrame( frame1, first()) );
         	
-        	//process the exception handlers
-        	if( ! processedHandlers ) {
-        		for( Iterator<ExceptionHandler> i = handlers(); i.hasNext(); ) {
-					ExceptionHandler handler = i.next();
-					
-					Frame f = Frame.forHandler( handler );
-	        		queue.add( new IncomingFrame( f, handler.handler ) );
-	        	}
-        		
-        		processedHandlers = true;
+    		for( ExceptionHandler handler : handlers ) {
+    			handlerQ.add( handler );
         	}
     	}
-    }
+    	
+    	void build() {
+    		processQueue();
+    		
+    		//add the exception handlers and process
+    		while( ! handlerQ.isEmpty() ) {
+    			ExceptionHandler handler = handlerQ.removeFirst();
+    			Frame f = Frame.forHandler( handler );
+        		queue.add( new IncomingFrame( f, handler.handler ) );
+        		
+        		processQueue();
+    		}
+    	}
+    	
+    	void processQueue() {
+    		while( ! queue.isEmpty() ) {
+        		IncomingFrame infr = queue.removeFirst();
+        		Instruction   insn = infr.insn;
+    			
+        		Frame newFrame = insn.compute( infr.incoming );
+    			Collection<Instruction> subseqs = insn.subsequents();
+    			
+    			for( Instruction i : subseqs ) {
+					if( i.frame == null ) {						
+						if( i instanceof CodeLabel ) {
+							CodeLabel label = (CodeLabel) i;
+							
+							//if the label only has one incoming arc then
+							//use the incoming frame as-is, otherwise make a
+							//copy to allow merging the values coming in from
+							//the other arcs
+							boolean singleArc = label.targetters.size() == 1;
+							
+							if( ! singleArc ) {
+								newFrame = new Frame( newFrame ); //copy
+							}							
+						}						
+						
+						queue.add( new IncomingFrame( newFrame, i ) );
+					}
+					else if( i instanceof CodeLabel ) {
+						//merge the incoming values with the existing ones
+						Slot[] stack  = i.frame.stack;
+						Slot[] locals = i.frame.locals;
+						
+						Slot[] newStack  = newFrame.stack;
+						Slot[] newLocals = newFrame.locals;						
+						
+						for( int j = 0; j < stack.length; j++ ) {
+							Slot s = (newStack.length > j) ? newStack[j] : null;
+							
+							if( stack[j] != null && stack[j].getValue() != null ) {
+								if( s == null || s.getValue() == null ) {
+									stack[j].setValue( null ); 
+								}
+								else {
+									stack[j].setValue( 
+										Value.merge( stack[j].getValue(), 
+												     s.getValue() ));
+								}
+							}
+						}			
+						
+						for( int j = 0; j < locals.length; j++ ) {
+							Slot s = (newLocals.length > j) ? newLocals[j] : null;
+							
+							if( locals[j] != null && locals[j].getValue() != null ) {
+								if( s == null || s.getValue() == null ) {
+									locals[j].setValue( null ); 
+								}
+								else {
+									locals[j].setValue( 
+										Value.merge( locals[j].getValue(), 
+												     s.getValue() ));
+								}
+							}
+						}	
+					}
+				}
+    		}
+    	}
+    	
+
+    }    
     
     private class IncomingFrame {
     	Frame       incoming;

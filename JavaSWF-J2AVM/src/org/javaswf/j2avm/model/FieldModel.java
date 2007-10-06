@@ -26,22 +26,29 @@ public final class FieldModel extends Model {
 	/** The field flags */
 	public final Collection<FieldFlag> flags;
 
+	/** The owning class */
+	public final ClassModel owner;
+	
 	/**
 	 * @param name the field name
 	 * @param type the field type
 	 * @param flags the field flags
 	 */
-	public FieldModel( String name, ValueType type, Collection<FieldFlag> flags ) {
+	public FieldModel( String name, ValueType type, Collection<FieldFlag> flags,
+			           ClassModel owner ) {
 		this.flags = flags;
 		this.name  = name;
 		this.type  = type;
+		this.owner = owner;
 	}
 	
 	/**
 	 * Parse a field
 	 */
-	/*pkg*/ FieldModel( DataInput in, ConstantPool pool ) throws IOException {
+	/*pkg*/ FieldModel( ClassModel owner, DataInput in, ConstantPool pool ) throws IOException {
         
+		this.owner = owner;
+		
 		int flagBits = in.readUnsignedShort();
         int nameIdx  = in.readUnsignedShort();
         int typeIdx  = in.readUnsignedShort();

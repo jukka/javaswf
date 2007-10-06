@@ -1,15 +1,14 @@
 package org.javaswf.j2avm.model.code;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.attributes.AttributeName;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
-import org.javaswf.j2avm.model.types.JavaType;
-import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
 
@@ -22,148 +21,98 @@ import org.javaswf.j2avm.model.types.ValueType;
 public class Frame {
 
     /** The stack - top at front */
-    public final Value[] stack;
+    public final Slot[] stack;
     
     /** The local vars, some slots may be null */
-    public final Value[] locals;
+    public final Slot[] locals;
     
     /**
-     * Copy an existing frame
+     * Copy an existing frame - create all new slots but keep the referenced
+     * values.
      */
     public Frame( Frame toCopy ) {
-    	stack = toCopy.
+    	this( toCopy.stack .length, toCopy.locals.length );
     	
-    	stack .addAll( toCopy.stack  );
-    	locals.addAll( toCopy.locals );
+    	for( int i = 0; i < stack.length; i++ ) {
+			stack[i] = new Slot( toCopy.stack[i].getValue() );
+		}
+
+    	for( int i = 0; i < locals.length; i++ ) {
+			locals[i] = new Slot( toCopy.locals[i].getValue() );
+		}
     }
     
     /**
      * Create an empty frame.
      */
     public Frame() {
-    	stack = locals = new Value[0];
+    	this( 0, 0 );
     }
 
     /**
-     * Push a value.  Pushes 64 bit types as two slots.
+     * Create a frame with the given stack size and max locals
      */
-    public void push( Value value ) {
-    	ValueType type = value.type();
-    	
-        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
-            stack.addFirst( null );
-        }
-        
-        stack.addFirst( value );
+    public Frame( int stackSize, int maxLocals ) {
+    	stack  = new Slot[ stackSize ];
+    	locals = new Slot[ maxLocals ];    	
     }
-    
+ 
     /**
-     * Pops a value.  64 bit types will pop two slots.
+     * Create a new frame that has all the same slots as this frame plus the
+     * extra value on the top of the stack
      */
-    public Value pop() {
-        Value     value = stack.removeFirst();
-        ValueType type  = value.type();
-        
-        if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
-            stack.removeFirst();
-        }
-
-        return value;
-    }
-    
-    /**
-     * Peek at a stack slot
-     * @param index zero is stack top
-     */
-    public Value peek( int index ) {
-    	return stack.get( index );
-    }
-    
-    /**
-     * Set a local variable.  Sets two slots for a 64 bit type.
-     * 
-     * @param index the local var index
-     * @param value the value to set
-     */
-    public void setLocal( int index, Value value ) {
-
-    	ValueType type = value.type();
-    	int newSize = index + 1;
-
-    	if( type instanceof PrimitiveType && ((PrimitiveType) type).is64Bit() ) {
-            newSize++;
-        }
-
-    	while( locals.size() < newSize ) locals.add( null ); 
-    		
-    	locals.set( index, value );
-    }
-    
-    /**
-     * Get a local variable.
-     * 
-     * @param index the local var index
-     * @return null if the given local is not valid or is not set.
-     */
-    public Value getLocal( int index ) {
-        if( locals.size() < index+1 ) return null;
-    	return locals.get( index );
-    }    
-    
-    /**
-     * Pop a given number of slots (ignores size of types)
-     * 
-     * @param count the number of slots to pop
-     */
-    public void pop( int count ) {
-        while( count-- > 0 ) stack.removeFirst();
+    public Frame push( Value value ) {
+    	return push( new Slot( value ) );
     }
 
     /**
-     * Swap the top two slots (which should not be 64 bit types)
+     * Create a new frame that has all the same slots as this frame plus the
+     * extra slot on the top of the stack
      */
-    public void swap() {
-        Value top = stack.removeFirst();
-        Value snd = stack.removeFirst();
-        stack.addFirst( top );
-        stack.addFirst( snd );
+    public Frame push( Slot s ) {
+    	Frame f = new Frame( stack.length + 1, locals.length );
+    	System.arraycopy( stack , 0, f.stack , 1, stack.length  );
+    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
+    	f.stack[0] = s;
+    	return f;
     }
-    
+
     /**
-     * Duplicate the given number of slots and insert them after skipping
-     * over the given number of slots. Type size is ignored.
-     * 
-     * @param count slots to duplicate - 1 or 2
-     * @param skip slots to skip over - 0, 1 or 2
+     * Create a new frame that has all the same slots as this one except that
+     * the given number of slots are popped from the stack and the new value
+     * is pushed.
      */
-    public void dup( int count, int skip ) {
-        Value top = stack.removeFirst();
-        Value snd = (count==2) ? stack.removeFirst() : null;
-
-        Value skip1 = (skip > 0) ? stack.removeFirst() : null;
-        Value skip2 = (skip > 1) ? stack.removeFirst() : null;
-
-        if( snd != null ) stack.addFirst( snd );
-        stack.addFirst( top );
-
-        if( skip2 != null ) stack.addFirst( skip2 );
-        if( skip1 != null ) stack.addFirst( skip1 );
-
-        if( snd != null ) stack.addFirst( snd );
-        stack.addFirst( top );
+    public Frame popPush( int popCount, Value value ) {    	
+    	Frame f = new Frame( stack.length + 1 - popCount, locals.length );
+    	System.arraycopy( stack , 0, f.stack , 1, stack.length - popCount  );
+    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
+    	f.stack[0] = new Slot( value );
+    	return f;    	
     }
-    
+
     /**
-     * Merge the values from another frame into this one.
-     * 
-     * @return true if any slots changed
+     * Create a new frame that has all the same slots as this one except that
+     * the given number of slots are popped from the stack.
      */
-    public boolean merge( Frame f ) {
-    	
-    	boolean stackChanged  = merge( stack,  f.stack );
-    	boolean localsChanged = merge( locals, f.locals );
-    	
-    	return stackChanged || localsChanged;
+    public Frame pop( int popCount ) {    	
+    	Frame f = new Frame( stack.length - popCount, locals.length );
+    	System.arraycopy( stack , 0, f.stack , 0, stack.length - popCount  );
+    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
+    	return f;    	
+    }
+
+    /**
+     * Create a new frame that has all the same slots as this one except that
+     * the top two stack slots are swapped
+     */
+    public Frame swap() {    	
+    	Frame f = new Frame( stack.length, locals.length );
+    	System.arraycopy( stack , 0, f.stack , 0, stack.length  );
+    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
+    	Slot s = f.stack[0];
+    	f.stack[0] = f.stack[1];
+    	f.stack[1] = s;
+    	return f;    	
     }
     
     /**
@@ -173,68 +122,28 @@ public class Frame {
    	 	ipw.print( "[" );
     	
    	 	boolean first = false;
-    	for( Value slot : locals ) {
+    	for( Slot slot : locals ) {
     		if( first ) first = false;
     		else ipw.print( "|" );
     		
-			if( slot == null ) ipw.print( "-" );
-			else               ipw.print( slot );
+			if     ( slot            == null ) ipw.print( "-" );
+			else if( slot.getValue() == null ) ipw.print( "-" );
+			else                               ipw.print( slot.getValue() );
 		}
     	
    	    ipw.print( "] " );
    	    
    	    first = false;
-   	    for( Value slot : stack ) {
+   	    for( Slot slot : stack ) {
     		if( first ) first = false;
     		else ipw.print( "|" );
 
-    		if( slot == null ) ipw.print( "-" );
-			else               ipw.print( slot );
+			if     ( slot            == null ) ipw.print( "-" );
+			else if( slot.getValue() == null ) ipw.print( "-" );
+			else                               ipw.print( slot.getValue() );
 		}
      	
      	ipw.println();
-    }
-        
-    /**
-     * Merge the src values into the dest.
-     * 
-     * @return true if any slots were altered
-     */
-    private static boolean merge( List<Value> dest, List<Value> src ) {
-    	boolean altered = false;
-    	
-    	int size = Math.max( dest.size(), src.size() );
-    	for( int i = 0; i < size; i++ ) {
-			Value a = (i < dest.size()) ? dest.get( i ) : null;
-			Value b = (i < src .size()) ? src .get( i ) : null;
-			
-			Value merged = merge( a, b );
-			
-			if( merged != a ) {
-				altered = true;
-				set( dest, i, merged );				
-			}
-		}
-    	
-    	return altered;
-    }
-    
-    private static Value merge( Value a, Value b ) {
-    	if( a == null || b == null ) return null;
-    	if( a == b ) return a;
-    	
-    	ValueType common = (ValueType) JavaType.common( a.type(), b.type() );
-    	if( common == null ) return null;
-    	
-    	ValueGenerator gen = (a.creator == b.creator) ? a.creator : null;
-
-    	return new Value( gen, common, "*" );
-    }
-    
-    private static void set( List<Value> list, int index, Value value ) {
-    	int newSize = index + 1;
-    	while( list.size() < newSize ) list.add( null );
-    	list.set( index, value );
     }
     
     /**
@@ -248,30 +157,50 @@ public class Frame {
     	InstructionCursor cursor = handler.start.cursor();
     	
     	Instruction i;
+    	int maxLocals = 0; 
     	while((i = cursor.forward()) != handler.end ) {
-    		frames.add( i.frameBefore );  //frameAfter is not relevant ??    		
+    		Frame iframe = i.frame();
+    		frames.add( iframe );
+    		maxLocals = Math.max( maxLocals, iframe.locals.length );
     	}
     	
-    	Frame f = new Frame( frames.get( 0 ) );
-    	for( Frame frame : frames ) {
-			f.merge( frame );
+    	Frame f = new Frame( 1, maxLocals );
+    	Value exception = new Value( handler, handler.exceptionType, 
+    			                    "catch_" + handler.handler.label );
+    	f.stack[0] = new Slot(exception);
+    	
+    	//merge the values in each slot
+    	slotLoop:
+    	for( int j = 0; j < maxLocals; j++ ) {
+    		Value[] vals = new Value[ frames.size() ];
+    		
+        	for( Frame frame : frames ) {
+        		Slot s = ( frame.locals.length > j ) ? 
+        				      frame.locals[j] :
+        				      null;
+        				      
+                //if any frame has no value in this slot then leave the slot
+        	    //empty and go to the next slot
+        	    if( s == null || s.getValue() == null ) continue slotLoop;
+        	}
+        	
+        	Value merged = Value.merge( vals );
+        	f.locals[j] = new Slot(merged);
 		}
     	
-    	f.stack.clear();
-        f.stack.add( new Value( handler, handler.exceptionType, "catch_" + handler.handler.label ));
         return f;
     }
     
     /**
      * Make a frame for the beginning of an instance method or constructor
      */
-    public static Frame instanceMethod( MethodModel method, ObjectType owner ) {
+    private static Frame instanceMethod( MethodModel method ) {
 
     	Frame f = new Frame();
 
     	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
     	if( code != null ) {    	
-	    	f.setLocal( 0, new Value( method, owner, "this" ) );
+	    	f.locals[0] = new Slot( new Value( method, method.owner.type, "this" ));
 	    	setLocals( method, f, method.signature.paramTypes, 1 );
     	}
     	
@@ -279,9 +208,20 @@ public class Frame {
     }
 
     /**
+     * Make a frame for the start of the given method
+     */
+    public static Frame forMethod( MethodModel method ) {
+    	if( method.flags.contains( MethodFlag.MethodIsStatic ) ) {
+    		return staticMethod( method );
+    	}
+    	
+    	return instanceMethod( method );
+    }
+    
+    /**
      * Make a frame for the beginning of a static method.
      */
-    public static Frame staticMethod( MethodModel method ) {
+    private static Frame staticMethod( MethodModel method ) {
     	Frame f = new Frame();    	
 
     	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
@@ -296,7 +236,7 @@ public class Frame {
 		}
     	
     	for( int i = 0; i < params.length; i++ ) {
-			f.setLocal( local, params[i] );
+			f.locals[local] = new Slot( params[i] );
 			
 			if( paramTypes[i] == PrimitiveType.LONG 
 			 || paramTypes[i] == PrimitiveType.DOUBLE ) {
@@ -315,11 +255,7 @@ public class Frame {
 		
 		Frame f = (Frame) obj;
 		
-		int stackSize = stack.size();
-		if( f.stack.size() != stack.size() ) return false;
-	
-		for( int i = 0; i < stackSize; i++ ) {
-			if( ! stack.get( i ).equals( obj )  )
-		}
+		return Arrays.equals( stack , f.stack  ) 
+		    && Arrays.equals( locals, f.locals );
 	}
 }

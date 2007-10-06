@@ -1,5 +1,9 @@
 package org.javaswf.j2avm.model.code;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
@@ -28,7 +32,7 @@ public abstract class Instruction implements ValueGenerator {
     /**
      * The incoming frame - may be null.
      */
-    private Frame frame;
+    protected Frame frame;
     
     /**
      * Accept the given visitor and call the appropriate instruction method.
@@ -63,8 +67,16 @@ public abstract class Instruction implements ValueGenerator {
      * 
      * @return null if this is the last instruction
      */
-    public Instruction next() {
+    public final Instruction next() {
     	return next;
+    }
+    
+    /**
+     * Get the subsequent instructions that may be reached by normal execution.
+     */
+    public Collection<Instruction> subsequents() {
+    	if( next == null ) return Collections.emptySet();    	
+    	return Collections.singleton( next );
     }
     
     /**
@@ -72,40 +84,22 @@ public abstract class Instruction implements ValueGenerator {
      * 
      * @return null if this is the first instruction
      */
-    public Instruction prev() {
+    public final Instruction prev() {
     	return prev;
     }
     
     /**
-     * Perform the operation, given the incoming frame and
-     * carry the results forward to the incoming frames of all
-     * following instructions.
-     */
-    public final void compute() {
-    	//TODO:
-    }
-    
-    /**
-     * Merge an incoming frame with any already determined
+     * Perform the operation, given the incoming frame and return the
+     * computed frame.
      * 
-     * @return true if the outgoing frame changed
+     * @param frame the incoming frame
      */
-    public final boolean mergeIncomingFrame( Frame frame ) {
-    	
-    	//merge in an existing frame
-    	if( frameBefore != null ) {
-    		if( frameBefore.mergeLocals( frame ) ) {
-    	    	execute( frameBefore );    	
-    	    	return true;    			 
-    		}
-    		
-    		return false;
-    	}
-    	
-    	//execute for the first time
-    	execute( new Frame( frame ) );    	
-    	return true;
+    public final Frame compute( Frame frame ) {
+    	this.frame = frame;
+    	return compute();
     }
+
+    protected abstract Frame compute();
     
     /**
      * Whether the instruction may involve semantics that differ when 64 bit
@@ -122,14 +116,6 @@ public abstract class Instruction implements ValueGenerator {
      */
     /*pkg*/ void normalize() {}
     
-    /**
-     * Execute the instruction to determine the resulting Frame.  Sets the
-     * frameBefore and frameAfter values.
-     * 
-     * @param before the incoming frame
-     */
-    protected abstract void execute( Frame before );
-    
     static class Nop extends Instruction {
         Nop() {
         }
@@ -144,11 +130,11 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "nop" );		
     	}
 
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-		    frameAfter  = before;			
-		}
+		protected Frame compute() {
+			return frame;
+		}		
     }
 
     static class PushInt extends Instruction {
@@ -168,11 +154,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushInt " + value );		
     	}
 
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( PrimitiveType.INT );
+		protected Frame compute() {
+			return frame.push( new Value( this, PrimitiveType.INT, list.nextValueName() ));
 		}
     }
 
@@ -193,12 +178,11 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushFloat " + value );		
     	}
 		
-    	@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( PrimitiveType.FLOAT );
-		}    	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+		@Override
+		protected Frame compute() {
+			return frame.push( new Value( this, PrimitiveType.FLOAT, list.nextValueName() ));
+		}
     }
 
     static class PushLong extends Instruction {
@@ -218,11 +202,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushLong " + value );		
     	}
 
-    	@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( PrimitiveType.LONG );
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+		@Override
+		protected Frame compute() {
+			return frame.push( new Value( this, PrimitiveType.LONG, list.nextValueName() ));
 		}
     }
 
@@ -243,11 +226,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushDouble " + value );		
     	}
 
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( PrimitiveType.DOUBLE );
+		protected Frame compute() {
+			return frame.push( new Value( this, PrimitiveType.DOUBLE, list.nextValueName() ));
 		}
     }
 
@@ -270,11 +252,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println();
     	}
 
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( ObjectType.STRING );
+		protected Frame compute() {
+			return frame.push( new Value( this, ObjectType.STRING, list.nextValueName() ));
 		}
     }
 
@@ -295,11 +276,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushClass " + type );		
     	}
 
-    	@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( ObjectType.CLASS );
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+		@Override
+		protected Frame compute() {
+			return frame.push( new Value( this, ObjectType.CLASS, list.nextValueName() ));
 		}
     }
 
@@ -317,11 +297,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushNull" );		
     	}
 
-    	@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( ObjectType.OBJECT );
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+		@Override
+		protected Frame compute() {
+			return frame.push( new Value( this, ObjectType.OBJECT, list.nextValueName() ));
 		}
     }
 
@@ -345,11 +324,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushVar " + varIndex + " (" + type + ")" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( before.getLocal( varIndex ) );
+		protected Frame compute() {
+			return frame.push( frame.locals[ varIndex ] );
 		}
     }
 
@@ -399,13 +377,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushElement (" + type + ")" );		
     	}
 
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( ); //index
-			frameAfter.pop( ); //array			
-			frameAfter.push( type ); //element
+		protected Frame compute() {
+			return frame.popPush( 2, new Value( this, type, list.nextValueName() ));
 		}
     }
 
@@ -482,12 +457,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "checkCast " + type );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-			frameAfter.push( type );
+		protected Frame compute() {
+			return frame.popPush( 1, new Value( this, type, list.nextValueName() ));
 		}
     }
 
@@ -508,12 +481,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "instanceOf " + type );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-			frameAfter.push( PrimitiveType.INT );
+		protected Frame compute() {
+			return frame.popPush( 1, new Value( this, PrimitiveType.BOOLEAN, list.nextValueName() ));
 		}
     }
 
@@ -534,10 +505,16 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "methodReturn (" + returnType + ")" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = null;
+		protected Frame compute() {
+			return frame; //since there are no subsequents
+		}
+    	
+		/** @see org.javaswf.j2avm.model.code.Instruction#subsequents() */
+		@Override
+		public Collection<Instruction> subsequents() {
+			return Collections.emptySet();
 		}
 		
 		@Override
@@ -560,10 +537,16 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "throwException" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = null;
+		protected Frame compute() {
+			return frame;  //since there are no subsequents
+		}
+    	
+		/** @see org.javaswf.j2avm.model.code.Instruction#subsequents() */
+		@Override
+		public Collection<Instruction> subsequents() {
+			return Collections.emptySet();
 		}
 		
 		@Override
@@ -586,11 +569,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "monitorEnter" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
+		protected Frame compute() {
+			return frame.pop( 1 );
 		}
     }
 
@@ -608,11 +590,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "monitorExit" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
+		protected Frame compute() {
+			return frame.pop( 1 );
 		}
     }
 
@@ -633,11 +614,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "newObject " + type );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( type );
+		protected Frame compute() {
+			return frame.push( new Value( this, type, "new_" + list.nextValueName() ) );
 		}
     }
 
@@ -718,16 +698,29 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.unindent();
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
+		protected Frame compute() {
+			return frame.pop( 1 );
 		}
 		
 		@Override
 		public boolean flowsToNext() {
 			return false;
+		}
+		    	
+		/** @see org.javaswf.j2avm.model.code.Instruction#subsequents() */
+		@Override
+		public Collection<Instruction> subsequents() {
+
+			Collection<Instruction> subs = new HashSet<Instruction>();
+			subs.add( defaultLabel );
+			
+			for( Case c : cases ) {
+				subs.add( c.label );	
+			}
+			
+			return subs;
 		}
     }
 
@@ -748,12 +741,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushField " + fieldDesc );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( ); //instance
-			frameAfter.push( fieldDesc.type );
+		protected Frame compute() {
+			return frame.popPush( 1, new Value( this, fieldDesc.type, list.nextValueName()) );
 		}
     }
 
@@ -800,11 +791,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "pushStaticField " + fieldDesc );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.push( fieldDesc.type );
+		protected Frame compute() {
+			return frame.push( new Value( this, fieldDesc.type, list.nextValueName()) );
 		}
     }
 
@@ -942,6 +932,7 @@ public abstract class Instruction implements ValueGenerator {
         Branch(BranchType type, CodeLabel label) {
             this.type = type;
             this.label = label;
+            label.targetters.add( this );
         }
 
         public void accept(Instructions visitor) {
@@ -964,6 +955,20 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "branch " + type.name().toLowerCase() + " --> " + label );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#subsequents() */
+		@Override
+		public Collection<Instruction> subsequents() {
+			if( type == BranchType.UNCONDITIONAL || next == null ) {
+				return Collections.singleton( (Instruction) label );
+			}
+			
+			Collection<Instruction> subs = new HashSet<Instruction>();
+			subs.add( next );
+			subs.add( label );
+			
+			return subs;
+		}
+
 		@Override
 		protected void execute( Frame before ) {
 			frameBefore = before;
@@ -1034,29 +1039,6 @@ public abstract class Instruction implements ValueGenerator {
 		}
     }
 
-    static class ArrayLength extends Instruction {
-        ArrayLength() {
-        }
-
-        public void accept(Instructions visitor) {
-            visitor.arrayLength();
-        }
-        
-    	/** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
-    	@Override
-    	public void dump(IndentingPrintWriter ipw) {
-    		ipw.println( "arrayLength" );		
-    	}
-    	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-			frameAfter.push( PrimitiveType.INT );
-		}
-    }
-
     static class Pop extends Instruction {
     	int count;
     	
@@ -1124,11 +1106,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "swap" );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.swap();
+		protected Frame compute() {
+			return frame.swap();
 		}
     }
 
@@ -1232,13 +1213,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( type.name().toLowerCase() + " " + resultType.name );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-			frameAfter.pop( );
-			frameAfter.push( PrimitiveType.INT );
+		protected Frame compute() {
+			return frame.popPush( 2, new Value( this, resultType, list.nextValueName()) );
 		}
     }
 
@@ -1262,13 +1240,10 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( type.name().toLowerCase() + " " + resultType.name );		
     	}
     	
+		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-			frameAfter.pop( );
-			frameAfter.push( PrimitiveType.INT );
+		protected Frame compute() {
+			return frame.popPush( 1, new Value( this, resultType, list.nextValueName()) );
 		}
     }
 

@@ -11,7 +11,6 @@ import org.javaswf.j2avm.model.code.ValueGenerator;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
-import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.Signature;
 import org.javaswf.j2avm.model.types.ValueType;
 
@@ -34,17 +33,21 @@ public final class MethodModel extends Model implements ValueGenerator {
 		
 	/** The method flags */
 	public final Collection<MethodFlag> flags;
-	
+
+	/** The owning class */
+	public final ClassModel owner;
+
 	/**
 	 * @param sig the method signature
 	 * @param returnType the return type
 	 * @param flags the method flags
 	 */
-	public MethodModel( Signature sig, ValueType returnType, 
+	public MethodModel( ClassModel owner, Signature sig, ValueType returnType, 
 			            Collection<MethodFlag> flags ) {
 		this.flags      = flags;
 		this.signature  = sig;
 		this.returnType = returnType;
+		this.owner      = owner;
 	}
 	
 	/**
@@ -58,8 +61,10 @@ public final class MethodModel extends Model implements ValueGenerator {
 	/**
 	 * Parse a method
 	 */
-	/*pkg*/ MethodModel( ObjectType owner, DataInput in, ConstantPool pool ) throws IOException {
+	/*pkg*/ MethodModel( ClassModel owner, DataInput in, ConstantPool pool ) throws IOException {
         
+		this.owner = owner; 
+		
         int flagBits = in.readUnsignedShort();
         int nameIdx  = in.readUnsignedShort();
 
@@ -89,8 +94,8 @@ public final class MethodModel extends Model implements ValueGenerator {
         
         //normalize the instructions (single slots for long and double)
         CodeAttribute code = attribute( CodeAttribute.class );
-        if( code != null ) {
-        	code.instructions.normalize( owner, this );
+        if( code != null ) {        	
+        	code.instructions.normalize( this );
         }
 	}
 	
