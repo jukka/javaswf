@@ -232,7 +232,6 @@ public class InstructionList implements Iterable<Instruction> {
      * JVM normally uses).
      */
     /*pkg*/ boolean hasBeenNormalized;
-    private boolean needsNormalization; //if not normalized this flag indicates dup/pop insertions
     
     private boolean hasFrames = false;
     
@@ -255,34 +254,7 @@ public class InstructionList implements Iterable<Instruction> {
         }
         
         count++;
-        
-        if( (! hasBeenNormalized) && newInsn.mayInvolve64BitSlots() ) {
-        	needsNormalization = true;
-        }
     }    
-    
-    /**
-     * Normalize the list - convert dup and pop instructions to assume that
-     * 64 bit types only occupy a single stack slot rather than 2.
-     */
-    public void normalize( MethodModel method ) {
-    	if( hasBeenNormalized ) return;
-    	
-    	if( ! needsNormalization ) {
-        	hasBeenNormalized = true;
-        	return;
-    	}
-    	
-    	determineFrames( method );
-    	
-    	Instruction i = first;
-    	while( i != null ) {
-    		i.normalize();
-    		i = i.next;
-    	}
-
-    	hasBeenNormalized = true;    	
-    }
     
     /**
      * Clear all the frames.
@@ -309,6 +281,7 @@ public class InstructionList implements Iterable<Instruction> {
     	new FrameBuilder( method ).build();
     	
     	hasFrames = true;
+        hasBeenNormalized = true;
     }
     
     private class FrameBuilder {
@@ -353,10 +326,8 @@ public class InstructionList implements Iterable<Instruction> {
 							//if the label only has one incoming arc then
 							//use the incoming frame as-is, otherwise make a
 							//copy to allow merging the values coming in from
-							//the other arcs
-							boolean singleArc = label.targetters.size() == 1;
-							
-							if( ! singleArc ) {
+							//the other arcs							
+							if( label.incomingArcs().size() > 1 ) {
 								newFrame = new Frame( newFrame ); //copy
 							}							
 						}						
@@ -364,6 +335,7 @@ public class InstructionList implements Iterable<Instruction> {
 						queue.add( new IncomingFrame( newFrame, i ) );
 					}
 					else if( i instanceof CodeLabel ) {
+					    
 						//merge the incoming values with the existing ones
 						Slot[] stack  = i.frame.stack;
 						Slot[] locals = i.frame.locals;

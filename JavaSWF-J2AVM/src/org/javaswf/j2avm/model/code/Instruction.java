@@ -1,9 +1,10 @@
 package org.javaswf.j2avm.model.code;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.epistem.io.IndentingPrintWriter;
@@ -109,12 +110,6 @@ public abstract class Instruction implements ValueGenerator {
     /*pkg*/ boolean mayInvolve64BitSlots() {
     	return false;
     }
-    
-    /**
-     * Normalize the instruction so that it treats 64 bits types as single
-     * stack slots rather than 2.
-     */
-    /*pkg*/ void normalize() {}
     
     static class Nop extends Instruction {
         Nop() {
@@ -351,13 +346,11 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "storeVar " + varIndex + " (" + type + ")" );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.setLocal( varIndex, type );
-			frameAfter.pop( );
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            return frame.popStore( frame.stack[0], varIndex );
+        }
     }
 
     static class PushElement extends Instruction {
@@ -401,15 +394,12 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "storeElement (" + type + ")" );		
     	}
 
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( ); //index
-			frameAfter.pop( ); //array			
-			frameAfter.pop( ); //value
-		}
-}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            return frame.pop( 3 );
+        }
+    }
 
     static class Convert extends Instruction {
         PrimitiveType fromType;
@@ -431,13 +421,11 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "convert " + fromType + " --> " + toType );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( ); //from
-			frameAfter.push( toType );
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            return frame.popPush( 1, new Value( this, toType, list.nextValueName() ));
+        }
 	}
 
     static class CheckCast extends Instruction {
@@ -637,18 +625,11 @@ public abstract class Instruction implements ValueGenerator {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "newArray (" + type.dimensionCount + ")" + type );		
     	}
-    	    	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			for( int i = 0; i < type.dimensionCount; i++ ) {
-				frameAfter.pop( );				
-			}
 
-			frameAfter.push( type );
-		}    	
+        @Override
+        protected Frame compute() {
+            return frame.popPush( type.dimensionCount, new Value( this, type, list.nextValueName() ) );
+        }
     }
 
     static class Switch extends Instruction implements LabelTargetter {
@@ -764,14 +745,12 @@ public abstract class Instruction implements ValueGenerator {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "storeField " + fieldDesc );		
     	}
-    	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( ); //value
-			frameAfter.pop( ); //instance
-		}
+        
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            return frame.pop( 2 );
+        }
     }
 
     static class PushStaticField extends Instruction {
@@ -815,12 +794,11 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "storeStaticField " + fieldDesc );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.pop( );
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            return frame.pop( 1 );
+        }
     }
 
     static class InvokeVirtual extends Instruction {
@@ -840,21 +818,19 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "invokeVirtual " + methodDesc );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			int count = methodDesc.signature.paramTypes.length;
-			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( );
-			}
-			frameAfter.pop( ); //instance
-			
-			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( (ValueType) methodDesc.type );
-			}
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            int popCount = 1 + methodDesc.signature.paramTypes.length;
+            
+            if( methodDesc.type == VoidType.VOID ) {
+                return frame.pop( popCount );
+            }
+            
+            return frame.popPush( 
+                popCount, 
+                new Value( this, (ValueType) methodDesc.type, list.nextValueName() ) );
+        }
     }
 
     static class InvokeSpecial extends Instruction {
@@ -874,21 +850,19 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "invokeSpecial " + methodDesc );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			int count = methodDesc.signature.paramTypes.length;
-			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( );
-			}
-			frameAfter.pop( ); //instance
-			
-			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( (ValueType) methodDesc.type );
-			}
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            int popCount = 1 + methodDesc.signature.paramTypes.length;
+            
+            if( methodDesc.type == VoidType.VOID ) {
+                return frame.pop( popCount );
+            }
+            
+            return frame.popPush( 
+                popCount, 
+                new Value( this, (ValueType) methodDesc.type, list.nextValueName() ) );
+        }
     }
 
     static class InvokeStatic extends Instruction {
@@ -908,20 +882,19 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println( "invokeStatic " + methodDesc );		
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			int count = methodDesc.signature.paramTypes.length;
-			for( int i = 0; i < count; i++ ) {
-				frameAfter.pop( );
-			}
-			
-			if( methodDesc.type != VoidType.VOID ) {
-				frameAfter.push( (ValueType) methodDesc.type );
-			}
-		}
+        /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
+        @Override
+        protected Frame compute() {
+            int popCount = methodDesc.signature.paramTypes.length;
+            
+            if( methodDesc.type == VoidType.VOID ) {
+                return frame.pop( popCount );
+            }
+            
+            return frame.popPush( 
+                popCount, 
+                new Value( this, (ValueType) methodDesc.type, list.nextValueName() ) );
+        }
     }
 
     static class Branch extends Instruction implements LabelTargetter {
@@ -970,13 +943,11 @@ public abstract class Instruction implements ValueGenerator {
 		}
 
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
+        protected Frame compute() {
 
 			switch( type ) {
 				case UNCONDITIONAL:
-					return;
+					return frame;
 					
 				case IF_EQUAL_TO_ZERO:
 				case IF_NOT_EQUAL_TO_ZERO:
@@ -986,8 +957,7 @@ public abstract class Instruction implements ValueGenerator {
 				case IF_LESS_OR_EQUAL_TO_ZERO:
 				case IF_NULL:
 				case IF_NOT_NULL:
-					frameAfter.pop( );
-					return;
+					return frame.pop( 1 );
 					
 				case IF_EQUAL:
 				case IF_NOT_EQUAL:
@@ -997,11 +967,9 @@ public abstract class Instruction implements ValueGenerator {
 				case IF_LESS_OR_EQUAL:
 				case IF_SAME_OBJECT:
 				case IF_NOT_SAME_OBJECT:
-					frameAfter.pop( );
-					frameAfter.pop( );
-					return;
+					return frame.pop( 2 );
 			    
-				default: break;
+				default: throw new RuntimeException();
 			}
 		}
 
@@ -1030,13 +998,11 @@ public abstract class Instruction implements ValueGenerator {
     	public void dump(IndentingPrintWriter ipw) {
     		ipw.println( "incrementVar " + varIndex + " by " + value );		
     	}
-    	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			frameAfter.setLocal( varIndex, PrimitiveType.INT );
-		}
+
+        @Override
+        protected Frame compute() {
+            return frame; //is this right - is it really the same value ?
+        }
     }
 
     static class Pop extends Instruction {
@@ -1057,39 +1023,22 @@ public abstract class Instruction implements ValueGenerator {
     	}
     	
 		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			//64 bit type requires a double pop
-			if( count == 1 && list.hasBeenNormalized ) {
-				ValueType vt = before.peek( 0 );
-				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-					frameAfter.pop( 2 );
-					return;
-				}				
-			}
-			
-			frameAfter.pop( count );
-		}
+        protected Frame compute() {
+		    ValueType top = frame.stack[0].getValue().type();
+		    
+		    //if the list is not yet normalized and the top type is 64-bit then
+		    //normalize this instruction 
+		    if( count == 2 && ! list.hasBeenNormalized && PrimitiveType.is64Bit( top )) {
+		        count = 1;
+		    }
+		    
+            return frame.pop( count );
+        }
 		
 		@Override
 		/*pkg*/ boolean mayInvolve64BitSlots() {
 	    	return count == 2;
 	    }
-
-		/** @see org.javaswf.j2avm.model.code.Instruction#normalize() */
-		@Override
-		void normalize() {
-			//if popping two slots and the stack top is a 64 bit type then
-			//normalize to popping 1
-			if( count == 2 ) {
-				ValueType vt = frameBefore.peek( 0 );
-				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-					count = 1;
-				}
-			}
-		}
     }
 
     static class Swap extends Instruction {
@@ -1135,62 +1084,54 @@ public abstract class Instruction implements ValueGenerator {
     		ipw.println();
     	}
     	
-		@Override
-		protected void execute( Frame before ) {
-			frameBefore = before;
-			frameAfter  = new Frame( before );
-			
-			int c = count;
-			int s = skip;
-			
-			//if normalized and item to be skipped or duped is a 64 bit type
-			//then need to use 2 slots
-			if( list.hasBeenNormalized ) { 
-				if( count == 1 ) {
-					ValueType vt = frameBefore.peek( 0 );
-					if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-						c = 2;
-					}
-				}
-				
-				if( skip == 1 ) {
-					ValueType vt = frameBefore.peek( c );
-					if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-						s = 2;
-					}
-				}
-			}			
-			
-			frameAfter.dup( c, s );
-		}
+        @Override
+        protected Frame compute() {
+            Slot dup1  = frame.stack[0];
+            Slot dup2  = null;
+            Slot skip1 = null;
+            Slot skip2 = null;
+
+            int stackIndex = 1;
+
+            //if the list is not yet normalized and the top type is 64-bit then
+            //normalize the dup count 
+            if( count == 2 && ! list.hasBeenNormalized && PrimitiveType.is64Bit( dup1.getValue().type() )) {
+                count = 1;
+            }
+            else if( count == 2 ) {
+                dup2 = frame.stack[ stackIndex++ ];
+            }
+            
+            if( skip > 0 ) skip1 = frame.stack[ stackIndex++ ];
+            
+            //if the list is not yet normalized and the skip type is 64-bit then
+            //normalize the skip count 
+            if( skip == 2 && ! list.hasBeenNormalized && PrimitiveType.is64Bit( skip1.getValue().type() )) {
+                skip = 1;
+            }
+            else if( skip == 2 ) {
+                skip2 = frame.stack[ stackIndex ];
+            }            
+            
+            int popCount = 1 + ((dup2  != null)? 1 :0) 
+                             + ((skip1 != null)? 1 :0)
+                             + ((skip2 != null)? 1 :0);
+            
+            List<Slot> slots = new ArrayList<Slot>();
+            slots.add( dup1 );
+            if( dup2  != null ) slots.add( dup2  );
+            if( skip1 != null ) slots.add( skip1 );
+            if( skip2 != null ) slots.add( skip2 );
+            slots.add( dup1 );
+            if( dup2 != null ) slots.add( dup2 );
+            
+            return frame.popPush( popCount, slots.toArray( new Slot[ slots.size() ]));
+        }
 		
 		@Override
 		/*pkg*/ boolean mayInvolve64BitSlots() {
 	    	return count == 2 || skip == 2;
 	    }
-		
-		/** @see org.javaswf.j2avm.model.code.Instruction#normalize() */
-		@Override
-		void normalize() {
-
-			//if skipping two slots and the item to be skipped is a 64 bit type then
-			//normalize to skipping 1
-			if( skip == 2 ) {
-				ValueType vt = frameBefore.peek( count );
-				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-					skip = 1;
-				}
-			}
-
-			//if duping two slots and the stack top is a 64 bit type then
-			//normalize to duping 1
-			if( count == 2 ) {
-				ValueType vt = frameBefore.peek( 0 );
-				if( vt == PrimitiveType.LONG || vt == PrimitiveType.DOUBLE ) {
-					count = 1;
-				}
-			}
-		}
     }
 
     static class BinaryOp extends Instruction {

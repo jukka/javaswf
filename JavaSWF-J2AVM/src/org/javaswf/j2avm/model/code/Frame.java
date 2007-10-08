@@ -1,13 +1,12 @@
 package org.javaswf.j2avm.model.code;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
-import org.javaswf.j2avm.model.attributes.AttributeName;
-import org.javaswf.j2avm.model.attributes.CodeAttribute;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
@@ -50,6 +49,14 @@ public class Frame {
     }
 
     /**
+     * Create an empty stack with the given locals.
+     */
+    private Frame( Slot[] locals ) {
+        this.stack  = new Slot[ 0 ];
+        this.locals = locals;     
+    }
+    
+    /**
      * Create a frame with the given stack size and max locals
      */
     public Frame( int stackSize, int maxLocals ) {
@@ -70,35 +77,65 @@ public class Frame {
      * extra slot on the top of the stack
      */
     public Frame push( Slot s ) {
-    	Frame f = new Frame( stack.length + 1, locals.length );
-    	System.arraycopy( stack , 0, f.stack , 1, stack.length  );
-    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
-    	f.stack[0] = s;
-    	return f;
+    	return popPush( 0, s );
     }
 
+    /**
+     * Create a new frame that has all the same slots as this frame but with
+     * an item popped off the stack and the given value stored at the given
+     * local var index.
+     */
+    public Frame popStore( Value value, int index ) {
+        return popStore( new Slot( value ), index );
+    }
+    
+    /**
+     * Create a new frame that has all the same slots as this frame but with
+     * an item popped off the stack and the given slot stored at the given
+     * local var index.
+     */
+    public Frame popStore( Slot s, int index ) {
+        int maxVars = Math.max( locals.length, index + 1 );
+        
+        Frame f = new Frame( stack.length - 1, maxVars );
+        System.arraycopy( stack , 1, f.stack , 0, stack.length - 1 );
+        System.arraycopy( locals, 0, f.locals, 0, locals.length );
+        f.locals[index] = s;
+        return f;
+    }
+    
     /**
      * Create a new frame that has all the same slots as this one except that
      * the given number of slots are popped from the stack and the new value
      * is pushed.
      */
     public Frame popPush( int popCount, Value value ) {    	
-    	Frame f = new Frame( stack.length + 1 - popCount, locals.length );
-    	System.arraycopy( stack , 0, f.stack , 1, stack.length - popCount  );
-    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
-    	f.stack[0] = new Slot( value );
-    	return f;    	
+    	return popPush( popCount, new Slot( value ));
     }
 
+    /**
+     * Create a new frame that has all the same slots as this one except that
+     * the given number of slots are popped from the stack and the given slots
+     * are pushed (in order, with top at the front).
+     */
+    public Frame popPush( int popCount, Slot...values ) {
+        int pushCount = values.length;
+        int delta     = pushCount - popCount;    //change in stack size
+        int keepCount = stack.length - popCount; //num slots to keep
+        
+        Frame f = new Frame( stack.length + delta, locals.length );
+        System.arraycopy( stack , popCount, f.stack , pushCount, keepCount );
+        System.arraycopy( values, 0       , f.stack , 0        , pushCount );
+        System.arraycopy( locals, 0       , f.locals, 0        , locals.length );
+        return f;       
+    }
+    
     /**
      * Create a new frame that has all the same slots as this one except that
      * the given number of slots are popped from the stack.
      */
     public Frame pop( int popCount ) {    	
-    	Frame f = new Frame( stack.length - popCount, locals.length );
-    	System.arraycopy( stack , 0, f.stack , 0, stack.length - popCount  );
-    	System.arraycopy( locals, 0, f.locals, 0, locals.length );
-    	return f;    	
+    	return popPush( popCount );    	
     }
 
     /**
@@ -121,29 +158,37 @@ public class Frame {
     public void dump( IndentingPrintWriter ipw ) {
    	 	ipw.print( "[" );
     	
-   	 	boolean first = false;
+   	 	boolean first = true;
     	for( Slot slot : locals ) {
     		if( first ) first = false;
     		else ipw.print( "|" );
     		
-			if     ( slot            == null ) ipw.print( "-" );
+			if     ( slot            == null ) ipw.print( "_" );
 			else if( slot.getValue() == null ) ipw.print( "-" );
 			else                               ipw.print( slot.getValue() );
 		}
     	
    	    ipw.print( "] " );
    	    
-   	    first = false;
+   	    first = true;
    	    for( Slot slot : stack ) {
     		if( first ) first = false;
     		else ipw.print( "|" );
 
-			if     ( slot            == null ) ipw.print( "-" );
+			if     ( slot            == null ) ipw.print( "_" );
 			else if( slot.getValue() == null ) ipw.print( "-" );
 			else                               ipw.print( slot.getValue() );
 		}
      	
      	ipw.println();
+    }
+    
+    @Override
+    public String toString() {
+        StringWriter sw = new StringWriter();         
+        IndentingPrintWriter ipw = new IndentingPrintWriter( sw );
+        dump( ipw );
+        return sw.toString();
     }
     
     /**
@@ -174,6 +219,7 @@ public class Frame {
     	for( int j = 0; j < maxLocals; j++ ) {
     		Value[] vals = new Value[ frames.size() ];
     		
+    		int k = 0;
         	for( Frame frame : frames ) {
         		Slot s = ( frame.locals.length > j ) ? 
         				      frame.locals[j] :
@@ -182,6 +228,8 @@ public class Frame {
                 //if any frame has no value in this slot then leave the slot
         	    //empty and go to the next slot
         	    if( s == null || s.getValue() == null ) continue slotLoop;
+        	    
+        	    vals[k++] = s.getValue();
         	}
         	
         	Value merged = Value.merge( vals );
@@ -192,62 +240,34 @@ public class Frame {
     }
     
     /**
-     * Make a frame for the beginning of an instance method or constructor
-     */
-    private static Frame instanceMethod( MethodModel method ) {
-
-    	Frame f = new Frame();
-
-    	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
-    	if( code != null ) {    	
-	    	f.locals[0] = new Slot( new Value( method, method.owner.type, "this" ));
-	    	setLocals( method, f, method.signature.paramTypes, 1 );
-    	}
-    	
-        return f;        
-    }
-
-    /**
      * Make a frame for the start of the given method
      */
     public static Frame forMethod( MethodModel method ) {
-    	if( method.flags.contains( MethodFlag.MethodIsStatic ) ) {
-    		return staticMethod( method );
+        List<Slot> locals = makeLocals( method );       
+
+        //add "this" as first local var for instance method
+        if( ! method.flags.contains( MethodFlag.MethodIsStatic ) ) {
+            locals.add( 0, new Slot( new Value( method, method.owner.type, "this" )));
     	}
     	
-    	return instanceMethod( method );
+        return new Frame( locals.toArray( new Slot[ locals.size() ] ) );        
     }
     
-    /**
-     * Make a frame for the beginning of a static method.
-     */
-    private static Frame staticMethod( MethodModel method ) {
-    	Frame f = new Frame();    	
+    private static List<Slot> makeLocals( MethodModel method ) {
+        ValueType[] paramTypes = method.signature.paramTypes;
+        List<Slot> slots = new ArrayList<Slot>();
 
-    	CodeAttribute code = (CodeAttribute) method.attributes.get( AttributeName.Code );
-    	if( code != null ) setLocals( method, f, method.signature.paramTypes, 0 );
-        return f;        
+        for( int i = 0; i < paramTypes.length; i++ ) {
+            Value v = new Value( method, paramTypes[i], "p" + (i+1) );
+            slots.add( new Slot( v ) );
+            if( PrimitiveType.is64Bit( paramTypes[i] ) ) {
+                slots.add( null );
+            }
+        }
+        
+        return slots;
     }
-
-    private static void setLocals( MethodModel method, Frame f, ValueType[] paramTypes, int local ) {
-    	Value[] params = new Value[ paramTypes.length ];
-    	for( int i = 0; i < params.length; i++ ) {
-			params[i] = new Value( method, paramTypes[i], "p" + (i+1) );
-		}
-    	
-    	for( int i = 0; i < params.length; i++ ) {
-			f.locals[local] = new Slot( params[i] );
-			
-			if( paramTypes[i] == PrimitiveType.LONG 
-			 || paramTypes[i] == PrimitiveType.DOUBLE ) {
-				local += 2;
-			}
-			else {
-				local++;
-			}
-		}    	
-    }
-
+    
 	/** @see java.lang.Object#equals(java.lang.Object) */
 	@Override
 	public boolean equals( Object obj ) {

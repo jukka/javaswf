@@ -78,7 +78,7 @@ public class Value {
 		
 		Value a = null;
 		boolean allSame = true;
-		for( Value value : values ) {
+		for( Value value : values ) { 
 			if( value == null ) return null;
 			if( a == null ) a = value;
 			if( a != value ) allSame = false;			
@@ -96,6 +96,7 @@ public class Value {
 			name += "+" + b.name;
 		}
 		
-		return new Value( gen, common, name );
+		Value newVal = new Value( gen, common, name ); 
+		return newVal;
 	}
 }

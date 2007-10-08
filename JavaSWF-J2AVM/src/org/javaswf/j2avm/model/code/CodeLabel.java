@@ -49,6 +49,22 @@ public class CodeLabel extends Instruction {
 		return new InstructionCursor( list, next );
 	}
 	
+	/**
+	 * Get the incoming arcs (from other instructions) to this label.
+	 */
+	public Set<Instruction> incomingArcs() {
+	    Set<Instruction> incoming = new HashSet<Instruction>();
+	    if( prev != null && prev.flowsToNext() ) incoming.add( prev );
+	    
+	    for( LabelTargetter targetter : targetters ) {
+	        if( targetter instanceof Instruction ) {
+	            incoming.add( (Instruction) targetter );
+	        }
+	    }
+	    
+	    return incoming;	    
+	}
+	
     /**
      * @see org.javaswf.j2avm.model.code.Instruction#accept(org.javaswf.j2avm.model.code.Instructions)
      */

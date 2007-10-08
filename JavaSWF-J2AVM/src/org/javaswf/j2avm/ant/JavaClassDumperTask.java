@@ -34,16 +34,17 @@ public class JavaClassDumperTask extends TaskWithAClass {
 		InputStream in = loader.getResourceAsStream( 
 		                        	className.replace( '.', '/' ) + ".class" );
 		
-		ClassModel model = new ClassModel( in );		
-		
 		try {
-			FileWriter writer = new FileWriter( dumpFile );
+		    ClassModel model = new ClassModel( in );		
+
+		    FileWriter writer = new FileWriter( dumpFile );
 			IndentingPrintWriter ipw = new IndentingPrintWriter( writer );
 			model.dump( ipw );
 			ipw.flush();
 			writer.close();
-		} catch( IOException ioe ) {
-			throw new BuildException( ioe );
+		} catch( Exception ex ) {
+		    ex.printStackTrace();
+			throw new BuildException( ex );
 		}
     }
 }

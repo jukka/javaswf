@@ -43,6 +43,7 @@ public class ObjectType extends ObjectOrArrayType {
     private static String abbrev( String name ) {
     	if( name.equals( "java.lang.String"    ) ) return "$";
     	if( name.equals( "java.lang.Throwable" ) ) return "T";
+        if( name.equals( "java.lang.Exception" ) ) return "E";
 
     	return "O";
     }

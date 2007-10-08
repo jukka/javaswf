@@ -95,7 +95,7 @@ public final class MethodModel extends Model implements ValueGenerator {
         //normalize the instructions (single slots for long and double)
         CodeAttribute code = attribute( CodeAttribute.class );
         if( code != null ) {        	
-        	code.instructions.normalize( this );
+        	code.instructions.determineFrames( this );
         }
 	}
 	
