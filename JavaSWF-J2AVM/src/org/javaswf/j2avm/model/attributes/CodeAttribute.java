@@ -131,10 +131,10 @@ public class CodeAttribute extends AttributeModel {
         out.println();
 
         for( Instruction i : instructions ) {
-        	Frame frame = i.frame();
-        	if( frame != null ) {
-        		frame.dump( out );
-        	}
+//        	Frame frame = i.frame();
+//        	if( frame != null ) {
+//        		frame.dump( out );
+//        	}
         	
             i.dump( out );
         }

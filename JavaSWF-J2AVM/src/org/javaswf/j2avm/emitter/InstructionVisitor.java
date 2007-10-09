@@ -344,9 +344,9 @@ public class InstructionVisitor extends InstructionListWalker {
         avm2Code.append( op, nameForMethod( methodDesc.signature.name ), argCount );        
 	}
 
-    /** @see org.javaswf.j2avm.model.code.InstructionListWalker#newObject(org.javaswf.j2avm.model.types.ObjectType) */
+    /** @see org.javaswf.j2avm.model.code.InstructionListWalker#newObject(ObjectType, ValueType...) */
 	@Override
-	public void newObject( ObjectType type ) {
+	public void newObject( ObjectType type, ValueType...paramTypes ) {
 		//TODO: this needs to be coordinated with the constructor call
         AVM2QName typeName = qnameForJavaType( type, abc );
 
