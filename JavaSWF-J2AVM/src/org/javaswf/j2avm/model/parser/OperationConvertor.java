@@ -339,7 +339,7 @@ public class OperationConvertor {
     public void handle_INVOKESPECIAL   ( MethodDescriptor methodDesc ) { instructions.invokeSpecial( methodDesc ); }   
     public void handle_INVOKESTATIC    ( MethodDescriptor methodDesc ) { instructions.invokeStatic( methodDesc ); }    
     public void handle_INVOKEINTERFACE ( MethodDescriptor methodDesc, int argCount, Object dummy ) { instructions.invokeVirtual( methodDesc ); }                          
-    public void handle_NEW             ( ObjectType type ) { instructions.newObject( type ); }             
+    public void handle_NEW             ( ObjectType type ) { instructions.newObject( type, (ValueType[]) null ); }             
     public void handle_NEWARRAY        ( ArrayType type ) { instructions.newArray( type ); }        
     public void handle_ANEWARRAY       ( ValueType type ) { instructions.newArray( new ArrayType( type, 1 )); }       
     public void handle_ARRAYLENGTH     ( ) { instructions.unaryOp( ARRAY_LENGTH, PrimitiveType.INT ); }     

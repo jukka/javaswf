@@ -129,9 +129,9 @@ public class InstructionsWrapper {
 		return this;
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#newObject(org.javaswf.j2avm.model.types.ObjectType) */
-	public InstructionsWrapper newObject( ObjectType type ) {
-		instructions.newObject( type );
+	/** @see org.javaswf.j2avm.model.code.Instructions#newObject(ObjectType, ValueType...) */
+	public InstructionsWrapper newObject( ObjectType type, ValueType... paramTypes ) {
+		instructions.newObject( type, paramTypes );
 		return this;
 	}
 

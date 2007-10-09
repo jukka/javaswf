@@ -2,9 +2,11 @@ package org.javaswf.j2avm.model.code;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.javaswf.j2avm.model.MethodModel;
@@ -284,9 +286,51 @@ public class InstructionList implements Iterable<Instruction> {
         hasBeenNormalized = true;
     }
     
+    /**
+     * Refactors newObject + invokeSpecial combinations into 
+     * newObject(with paramTypes)
+     */
+    private class NewObjectRefactorer {
+    	final Instruction.NewObject newObject;
+    	Instruction.InvokeSpecial   invoke;    //the constructor call
+    	Instruction.Dup             dup;       //optional dup after the newObject
+    	
+    	NewObjectRefactorer( Instruction.NewObject newObject ) {
+    		this.newObject = newObject;
+    	}
+    	
+    	void refactor() {
+    		if( dup != null ) {
+				if( dup.skip != 0 || dup.count != 1 ) {
+					throw new RuntimeException( "Unhandled NewObject corner case" );
+				}
+			
+				dup.remove();
+    		}
+
+    		newObject.paramTypes = invoke.methodDesc.signature.paramTypes;
+
+			newObject.remove();			
+			insert( newObject, invoke, invoke.next() );
+			invoke.remove();
+
+			//if new object is not used then discard it
+    		if( dup == null ) {
+    			insert( new Instruction.Pop(1), newObject, newObject.next() );
+    		}    		
+    	}
+    }
+    
+    /**
+     * Determines instruction frames
+     */
     private class FrameBuilder {
     	LinkedList<IncomingFrame>    queue    = new LinkedList<IncomingFrame>();
     	LinkedList<ExceptionHandler> handlerQ = new LinkedList<ExceptionHandler>();
+
+    	//map to gather the newObjects to be refactored
+    	Map<Instruction.NewObject, NewObjectRefactorer> newObjects = 
+    		new HashMap<Instruction.NewObject, NewObjectRefactorer>();
     	
     	FrameBuilder( MethodModel method ) {
         	Frame frame1 = Frame.forMethod( method );
@@ -297,7 +341,10 @@ public class InstructionList implements Iterable<Instruction> {
         	}
     	}
     	
-    	void build() {
+    	/**
+    	 * Process instructions and then exception handlers
+    	 */
+    	public void build() {
     		processQueue();
     		
     		//add the exception handlers and process
@@ -308,14 +355,50 @@ public class InstructionList implements Iterable<Instruction> {
         		
         		processQueue();
     		}
+    		
+    		for( NewObjectRefactorer newObj : newObjects.values() ) {
+    			newObj.refactor();
+    		}
     	}
     	
-    	void processQueue() {
+    	/**
+    	 * Process all instructions in the queue
+    	 */
+    	private void processQueue() {
     		while( ! queue.isEmpty() ) {
-        		IncomingFrame infr = queue.removeFirst();
-        		Instruction   insn = infr.insn;
+        		IncomingFrame infr  = queue.removeFirst();
+        		Instruction   insn  = infr.insn;
+        		Frame         frame = infr.incoming;
     			
-        		Frame newFrame = insn.compute( infr.incoming );
+        		//gather new objects and associated dups and constructor calls
+        		if( insn instanceof Instruction.NewObject ) {
+        			Instruction.NewObject newObj = (Instruction.NewObject) insn;
+        			newObjects.put( newObj, new NewObjectRefactorer( newObj ));
+        		}
+        		else if( insn instanceof Instruction.Dup ) {
+        			ValueGenerator vg = frame.stack[0].getValue().creator();
+        			
+        			if( vg instanceof Instruction.NewObject ) { 
+		    			Instruction.NewObject newObj = (Instruction.NewObject) vg;
+		    			Instruction.Dup dup = (Instruction.Dup) insn;
+		    			newObjects.get( newObj ).dup = dup;
+        			}
+        		}
+        		else if( insn instanceof Instruction.InvokeSpecial ) {
+        			Instruction.InvokeSpecial invoke = (Instruction.InvokeSpecial) insn;
+        			
+        			if( invoke.methodDesc.signature.name.equals( MethodModel.CONSTRUCTOR_NAME ) ) {
+        				int argCount = invoke.methodDesc.signature.paramTypes.length;
+        				ValueGenerator vg = frame.stack[argCount].getValue().creator();
+        				
+            			if( vg instanceof Instruction.NewObject ) { 
+    		    			Instruction.NewObject newObj = (Instruction.NewObject) vg;
+    		    			newObjects.get( newObj ).invoke = invoke;
+            			}	
+        			}
+        		}
+        		
+        		Frame newFrame = insn.compute( frame );
     			Collection<Instruction> subseqs = insn.subsequents();
     			
     			for( Instruction i : subseqs ) {
@@ -376,8 +459,6 @@ public class InstructionList implements Iterable<Instruction> {
 				}
     		}
     	}
-    	
-
     }    
     
     private class IncomingFrame {

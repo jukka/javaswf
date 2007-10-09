@@ -99,44 +99,8 @@ public abstract class InstructionListWalker implements Instructions {
 
     //=======================================================================
     
-	/** @see org.javaswf.j2avm.model.code.Instructions#addDouble() */
-	public void addDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#addFloat() */
-	public void addFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#addInt() */
-	public void addInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#addLong() */
-	public void addLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#andInt() */
-	public void andInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#andLong() */
-	public void andLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#arrayLength() */
-	public void arrayLength() {
+	/** @see org.javaswf.j2avm.model.code.Instructions#binaryOp(org.javaswf.j2avm.model.code.BinOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
+	public void binaryOp( BinOpType type, PrimitiveType resultType ) {
 		// to be overridden
 		
 	}
@@ -153,50 +117,8 @@ public abstract class InstructionListWalker implements Instructions {
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareDouble(boolean) */
-	public void compareDouble( boolean nanG ) {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareFloat(boolean) */
-	public void compareFloat( boolean nanG ) {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#compareLong() */
-	public void compareLong() {
-		// to be overridden
-		
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#convert(org.javaswf.j2avm.model.types.PrimitiveType, org.javaswf.j2avm.model.types.PrimitiveType) */
 	public void convert( PrimitiveType fromType, PrimitiveType toType ) {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divDouble() */
-	public void divDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divFloat() */
-	public void divFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divInt() */
-	public void divInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#divLong() */
-	public void divLong() {
 		// to be overridden
 		
 	}
@@ -261,80 +183,20 @@ public abstract class InstructionListWalker implements Instructions {
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#multDouble() */
-	public void multDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multFloat() */
-	public void multFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multInt() */
-	public void multInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#multLong() */
-	public void multLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negDouble() */
-	public void negDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negFloat() */
-	public void negFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negInt() */
-	public void negInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#negLong() */
-	public void negLong() {
-		// to be overridden
-		
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#newArray(org.javaswf.j2avm.model.types.ArrayType) */
 	public void newArray( ArrayType type ) {
 		// to be overridden
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#newObject(org.javaswf.j2avm.model.types.ObjectType) */
-	public void newObject( ObjectType type ) {
+	/** @see org.javaswf.j2avm.model.code.Instructions#newObject(org.javaswf.j2avm.model.types.ObjectType, org.javaswf.j2avm.model.types.ValueType[]) */
+	public void newObject( ObjectType type, ValueType... paramTypes ) {
 		// to be overridden
 		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.Instructions#nop() */
 	public void nop() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#orInt() */
-	public void orInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#orLong() */
-	public void orLong() {
 		// to be overridden
 		
 	}
@@ -411,54 +273,6 @@ public abstract class InstructionListWalker implements Instructions {
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#remDouble() */
-	public void remDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remFloat() */
-	public void remFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remInt() */
-	public void remInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#remLong() */
-	public void remLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#shiftLeftInt() */
-	public void shiftLeftInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#shiftLeftLong() */
-	public void shiftLeftLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#signedShiftRightInt() */
-	public void signedShiftRightInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#signedShiftRightLong() */
-	public void signedShiftRightLong() {
-		// to be overridden
-		
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#storeElement(org.javaswf.j2avm.model.types.ValueType) */
 	public void storeElement( ValueType type ) {
 		// to be overridden
@@ -483,30 +297,6 @@ public abstract class InstructionListWalker implements Instructions {
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#subDouble() */
-	public void subDouble() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subFloat() */
-	public void subFloat() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subInt() */
-	public void subInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#subLong() */
-	public void subLong() {
-		// to be overridden
-		
-	}
-
 	/** @see org.javaswf.j2avm.model.code.Instructions#swap() */
 	public void swap() {
 		// to be overridden
@@ -525,27 +315,9 @@ public abstract class InstructionListWalker implements Instructions {
 		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.Instructions#unsignedShiftRightInt() */
-	public void unsignedShiftRightInt() {
+	/** @see org.javaswf.j2avm.model.code.Instructions#unaryOp(org.javaswf.j2avm.model.code.UnaryOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
+	public void unaryOp( UnaryOpType type, PrimitiveType resultType ) {
 		// to be overridden
 		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#unsignedShiftRightLong() */
-	public void unsignedShiftRightLong() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#xorInt() */
-	public void xorInt() {
-		// to be overridden
-		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.Instructions#xorLong() */
-	public void xorLong() {
-		// to be overridden
-		
-	}    
+	}   
 }

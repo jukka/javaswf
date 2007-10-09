@@ -237,10 +237,10 @@ public class InstructionCursor implements Instructions {
     }
 
     /**
-     * @see org.javaswf.j2avm.model.code.Instructions#newObject(org.javaswf.j2avm.model.types.ObjectType)
+     * @see org.javaswf.j2avm.model.code.Instructions#newObject(ObjectType, ValueType...)
      */
-    public void newObject(ObjectType type) {
-        add( new NewObject( type ) );
+    public void newObject(ObjectType type, ValueType...paramTypes ) {
+        add( new NewObject( type, paramTypes ) );
     }
 
     /**

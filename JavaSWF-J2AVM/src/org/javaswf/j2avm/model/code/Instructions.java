@@ -138,9 +138,10 @@ public interface Instructions {
      * Create a new object
      * 
      * @param type the class to instantiate
+     * @param paramTypes the constructor signature
      */
-    public void newObject( ObjectType type );
-
+    public void newObject( ObjectType type, ValueType...paramTypes );
+    
     /**
      * Create a new array.  All dimensions are initialized.
      * 

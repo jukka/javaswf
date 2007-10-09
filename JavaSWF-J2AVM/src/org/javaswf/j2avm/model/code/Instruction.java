@@ -587,25 +587,50 @@ public abstract class Instruction implements ValueGenerator {
 
     static class NewObject extends Instruction {
         ObjectType type;
+        ValueType[] paramTypes; //null if this instruction has not been aggregated
 
-        NewObject(ObjectType type) {
+        NewObject(ObjectType type, ValueType... paramTypes) {
             this.type = type;
+            this.paramTypes = paramTypes;
         }
 
         public void accept(Instructions visitor) {
-            visitor.newObject( type );
+            visitor.newObject( type, paramTypes );
         }
         
     	/** @see org.javaswf.j2avm.model.code.Instruction#dump(org.epistem.io.IndentingPrintWriter) */
     	@Override
     	public void dump(IndentingPrintWriter ipw) {
-    		ipw.println( "newObject " + type );		
+    		String params;
+    		
+    		if( paramTypes != null ) {
+    			StringBuilder buff = new StringBuilder();
+    			buff.append( "(" );
+    			
+    			boolean first = true;
+    			for( ValueType vt : paramTypes ) {
+    				if( first ) first = false;
+    				else buff.append( "," );
+    				
+    				buff.append( vt.name );
+    			}
+    			
+    			buff.append( ")" );
+    			params = buff.toString();
+    		}
+    		else {
+    			params = "";
+    		}
+    		
+    		ipw.println( "newObject " + type + params );		
     	}
     	
 		/** @see org.javaswf.j2avm.model.code.Instruction#compute() */
 		@Override
 		protected Frame compute() {
-			return frame.push( new Value( this, type, "new_" + list.nextValueName() ) );
+			int paramCount = ( paramTypes == null ) ? 0 : paramTypes.length;
+			
+			return frame.popPush( paramCount, new Value( this, type, "new_" + list.nextValueName() ) );
 		}
     }
 
@@ -853,15 +878,16 @@ public abstract class Instruction implements ValueGenerator {
         /** @see org.javaswf.j2avm.model.code.Instruction#compute() */
         @Override
         protected Frame compute() {
+        	
             int popCount = 1 + methodDesc.signature.paramTypes.length;
-            
+          
             if( methodDesc.type == VoidType.VOID ) {
                 return frame.pop( popCount );
             }
             
             return frame.popPush( 
                 popCount, 
-                new Value( this, (ValueType) methodDesc.type, list.nextValueName() ) );
+                new Value( this, (ValueType) methodDesc.type, list.nextValueName()));
         }
     }
 
