@@ -37,7 +37,8 @@ public class Frame {
 		}
 
     	for( int i = 0; i < locals.length; i++ ) {
-			locals[i] = new Slot( toCopy.locals[i].getValue() );
+    		Slot s = toCopy.locals[i];
+			locals[i] =  (s!=null) ? new Slot( s.getValue() ) : null;
 		}
     }
     

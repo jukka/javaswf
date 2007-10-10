@@ -2,7 +2,7 @@ package org.javaswf.j2avm.targets;
 
 import org.javaswf.j2avm.TranslationTarget;
 
-import com.anotherbigidea.flash.avm2.ABC;
+import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 import com.anotherbigidea.flash.avm2.model.AVM2Class;
 
 /**
@@ -18,10 +18,9 @@ public class TargetABCFile implements TranslationTarget {
 		
 	}
 
-	/** @see org.javaswf.j2avm.TranslationTarget#insertABC() */
-	public ABC insertABC() {
+	/** @see org.javaswf.j2avm.TranslationTarget#insertABC(AVM2ABCFile) */
+	public void insertABC( AVM2ABCFile abc ) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/** @see org.javaswf.j2avm.TranslationTarget#setMainClass(com.anotherbigidea.flash.avm2.model.AVM2Class) */

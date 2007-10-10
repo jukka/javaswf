@@ -30,8 +30,8 @@ import java.util.Set;
 
 import org.javaswf.j2avm.TranslationContext;
 import org.javaswf.j2avm.TranslationStep;
-import org.javaswf.j2avm.abc.TranslatedABC;
-import org.javaswf.j2avm.abc.TranslatedClass;
+import org.javaswf.j2avm.abc.TargetABC;
+import org.javaswf.j2avm.abc.ClassTranslation;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.model.FieldModel;
 import org.javaswf.j2avm.model.MethodModel;
@@ -64,8 +64,8 @@ import com.anotherbigidea.flash.avm2.model.AVM2StandardNamespace;
  */
 public class AVM2ClassEmitter implements TranslationStep {
     
-    private final TranslatedABC abc;
-    private TranslatedClass avm2Class;
+    private final TargetABC abc;
+    private ClassTranslation avm2Class;
     private ClassModel javaClass;
     private TranslationContext context;
     private AVM2ABCFile abcFile;
@@ -73,7 +73,7 @@ public class AVM2ClassEmitter implements TranslationStep {
     /**
      * @param abc the target ABC file data
      */
-    public AVM2ClassEmitter( TranslatedABC abc ) {
+    public AVM2ClassEmitter( TargetABC abc ) {
         this.abc     = abc;
         this.abcFile = abc.abcFile;
     }
@@ -91,12 +91,9 @@ public class AVM2ClassEmitter implements TranslationStep {
         //TODO: deal with interfaces, enums and annotations
         
         //TODO: enqueue superclass for translation
+                
+        avm2Class = abc.forJavaClass( classModel );
         
-        
-        avm2Class = abc.newClass( classModel.type.name, 
-        		                  classModel.superclass.name, 
-        		                  classModel.flags.contains( ClassFlag.IsFinal ), 
-        		                  false ); //not interface - TODO
         
         //initialization script for the class
         emitClassInitializationScript();

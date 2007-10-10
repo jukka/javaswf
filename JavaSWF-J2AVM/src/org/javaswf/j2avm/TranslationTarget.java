@@ -1,6 +1,6 @@
 package org.javaswf.j2avm;
 
-import com.anotherbigidea.flash.avm2.ABC;
+import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 import com.anotherbigidea.flash.avm2.model.AVM2Class;
 
 /**
@@ -15,9 +15,9 @@ import com.anotherbigidea.flash.avm2.model.AVM2Class;
 public interface TranslationTarget {
 
     /**
-     * Return an interface to receive ABC data to be inserted into the target.
+     * Insert ABC data into the target.
      */
-    public ABC insertABC();
+    public void insertABC( AVM2ABCFile abc );
     
     /**
      * Set the main class to be instantiated or linked to the 

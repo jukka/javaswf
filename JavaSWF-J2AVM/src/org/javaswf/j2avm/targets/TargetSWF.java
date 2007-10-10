@@ -38,16 +38,9 @@ public class TargetSWF implements TranslationTarget {
 		}
    	}
 
-	/** @see org.javaswf.j2avm.TranslationTarget#insertABC() */
-	public ABC insertABC() {
-		return new AVM2ABCBuilder() {
-			/** @see com.anotherbigidea.flash.avm2.model.io.AVM2ABCBuilder#done() */
-			@Override
-			public void done() {			
-				super.done();
-				addABC( file, "j2avm", true );
-			}			
-		};
+	/** @see org.javaswf.j2avm.TranslationTarget#insertABC(AVM2ABCFile) */
+	public void insertABC( AVM2ABCFile abc ) {
+		addABC( abc, "j2avm", true );
 	}
 
 	/** @see org.javaswf.j2avm.TranslationTarget#setMainClass(com.anotherbigidea.flash.avm2.model.AVM2Class) */

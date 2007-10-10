@@ -1,21 +1,23 @@
 package org.javaswf.j2avm.emitter;
 
-import static org.javaswf.j2avm.emitter.EmitterUtils.*;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import static org.javaswf.j2avm.emitter.EmitterUtils.nameForField;
+import static org.javaswf.j2avm.emitter.EmitterUtils.nameForMethod;
+import static org.javaswf.j2avm.emitter.EmitterUtils.nameForPrivateMethod;
+import static org.javaswf.j2avm.emitter.EmitterUtils.qnameForJavaType;
 
 import org.javaswf.j2avm.TranslationContext;
-import org.javaswf.j2avm.abc.TranslatedABC;
-import org.javaswf.j2avm.abc.TranslatedClass;
+import org.javaswf.j2avm.abc.ClassTranslation;
+import org.javaswf.j2avm.abc.TargetABC;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.code.BinOpType;
 import org.javaswf.j2avm.model.code.BranchType;
 import org.javaswf.j2avm.model.code.CodeLabel;
 import org.javaswf.j2avm.model.code.Instruction;
 import org.javaswf.j2avm.model.code.InstructionListWalker;
+import org.javaswf.j2avm.model.code.UnaryOpType;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectType;
@@ -23,15 +25,6 @@ import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.Signature;
 import org.javaswf.j2avm.model.types.ValueType;
 import org.javaswf.j2avm.model.types.VoidType;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.analysis.Analyzer;
-import org.objectweb.asm.tree.analysis.AnalyzerException;
-import org.objectweb.asm.tree.analysis.BasicInterpreter;
-import org.objectweb.asm.tree.analysis.Frame;
 
 import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
@@ -44,8 +37,8 @@ import com.anotherbigidea.flash.avm2.model.AVM2QName;
 public class InstructionVisitor extends InstructionListWalker {
 
     private final AVM2Code           avm2Code;
-    private final TranslatedABC      abc;
-    private final TranslatedClass    avm2Class;
+    private final TargetABC      abc;
+    private final ClassTranslation    avm2Class;
     private final TranslationContext context;
     private final MethodModel        methodModel;
     private final ClassModel         classModel;
@@ -57,8 +50,8 @@ public class InstructionVisitor extends InstructionListWalker {
      * @param abc the target ABC file
      * @param avm2Class the target AVM2 class
      */
-    InstructionVisitor( AVM2Code avm2code, TranslatedABC abc, 
-    		            TranslatedClass avm2Class, TranslationContext context,
+    InstructionVisitor( AVM2Code avm2code, TargetABC abc, 
+    		            ClassTranslation avm2Class, TranslationContext context,
     		            ClassModel classModel, MethodModel methodModel ) {
         this.avm2Code  = avm2code;
         this.abc       = abc;
@@ -114,22 +107,69 @@ public class InstructionVisitor extends InstructionListWalker {
 		//TODO: implement other type conversions
 	}
 
-	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#addInt() */
+	
+	
+	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#binaryOp(org.javaswf.j2avm.model.code.BinOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
 	@Override
-	public void addInt() {
-		avm2Code.append( Operation.OP_add_i );
+	public void binaryOp( BinOpType type, PrimitiveType resultType ) {
+		switch( type ) {
+			case ADD:
+				if( resultType.isIntType ) {
+					avm2Code.append( Operation.OP_add_i );
+					return;
+				}		
+				//TODO:
+				break;
+				
+			case MULTIPLY:
+				if( resultType.isIntType ) {
+					avm2Code.append( Operation.OP_multiply_i );
+					return;
+				}		
+				//TODO:
+				break;
+
+			case SUBTRACT:
+				if( resultType.isIntType ) {
+					avm2Code.append( Operation.OP_subtract_i );
+					return;
+				}		
+				//TODO:
+				break;
+				
+			//TODO:
+			case DIVIDE:
+			case REMAINDER:
+			case SHIFT_LEFT:
+			case SHIFT_RIGHT_SIGNED:
+			case SHIFT_RIGHT_UNSIGNED:
+			case AND:
+			case OR:
+			case XOR:
+			case COMPARE:
+			case COMPARE_G:
+			case COMPARE_L: 
+		
+			default: break;
+		}
+		
+		throw new RuntimeException( "Unhandled Binary Op" );
 	}
 
-	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#multInt() */
+	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#unaryOp(org.javaswf.j2avm.model.code.UnaryOpType, org.javaswf.j2avm.model.types.PrimitiveType) */
 	@Override
-	public void multInt() {
-		avm2Code.append( Operation.OP_multiply_i );
-	}
-
-	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#subInt() */
-	@Override
-	public void subInt() {
-		avm2Code.append( Operation.OP_subtract_i );
+	public void unaryOp( UnaryOpType type, PrimitiveType resultType ) {
+		switch( type ) {
+			case ARRAY_LENGTH:
+				avm2Code.append( Operation.OP_getproperty, nameForField( "length" )); 
+				return;
+				
+			//TODO:	
+			case NEGATE: 
+			default: break;
+		}
+		
+		throw new RuntimeException( "Unhandled Unary Op" );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#dup(int, int) */
@@ -155,12 +195,6 @@ public class InstructionVisitor extends InstructionListWalker {
 	@Override
 	public void swap() {
 		avm2Code.append( Operation.OP_swap );
-	}
-
-	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#arrayLength() */
-	@Override
-	public void arrayLength() {
-        avm2Code.append( Operation.OP_getproperty, nameForField( "length" )); 
 	}
 
 	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#methodReturn(org.javaswf.j2avm.model.types.JavaType) */
@@ -288,22 +322,18 @@ public class InstructionVisitor extends InstructionListWalker {
         int argCount = methodDesc.signature.paramTypes.length;
         Signature sig = methodDesc.signature;
         
+        /* Constructor calls are either to the super constructor or to 
+         * another constructor of this same class. 
+         * Calls to constructors of other objects should have been refactored
+         * into newObject operations previously.
+         * Since AVM2 does not support constructor overloading there cannot
+         * be a call to another constructor of this same class and a prior
+         * translation step is required to refactor the constructor structure.
+         */
         if( MethodModel.CONSTRUCTOR_NAME.equals( sig.name ) ) { //constructor call            
-            if( methodDesc.owner.equals( classModel.superclass )) {
-            	//call to the super-constructor
-                avm2Code.append( Operation.OP_constructsuper, argCount );
-                
-                //TODO: could this be a call to construct an instance of the
-                //      superclass, rather than to the super within self
-                //      constructor ?
-            }
-            else {
-                //call to a constructor that is not the superclass.
-                
-                //TODO: for now skip this and just pop the object
-                avm2Code.append( Operation.OP_pop );                        
-            }
-                                
+        	//call to the super-constructor
+            avm2Code.append( Operation.OP_constructsuper, argCount );
+                                                
         } else { //super call or private call
             
         	MethodModel m = context.methodFor( methodDesc );
@@ -317,7 +347,13 @@ public class InstructionVisitor extends InstructionListWalker {
                 
             }
             else { //super call
+                Operation op = (m.returnType == VoidType.VOID) ?
+                        Operation.OP_callsupervoid :
+                        Operation.OP_callsuper;
+
+                //TODO: 
                 
+                avm2Code.append( op, nameForPrivateMethod( methodDesc.signature.name ), argCount );
             }
             
             //TODO:

@@ -3,7 +3,7 @@ package org.javaswf.j2avm;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.javaswf.j2avm.abc.TranslatedABC;
+import org.javaswf.j2avm.abc.TargetABC;
 import org.javaswf.j2avm.emitter.AVM2ClassEmitter;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.steps.AVMGetterSetterRewriter;
@@ -84,7 +84,7 @@ public final class J2AVM {
         ); 
     }
     
-    private final TranslatedABC       abc      = new TranslatedABC();
+    private final TargetABC       abc      = new TargetABC();
     private final TranslationPipeline pipeline = new TranslationPipeline();
     
     private final TranslationContext context;

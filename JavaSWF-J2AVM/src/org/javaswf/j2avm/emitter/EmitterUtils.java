@@ -1,18 +1,16 @@
 package org.javaswf.j2avm.emitter;
 
-import java.util.List;
-
 import org.javaswf.j2avm.TranslationContext;
-import org.javaswf.j2avm.abc.TranslatedABC;
+import org.javaswf.j2avm.abc.TargetABC;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.Signature;
 import org.javaswf.j2avm.model.types.VoidType;
-import org.objectweb.asm.tree.MethodNode;
 
 import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
 import com.anotherbigidea.flash.avm2.model.AVM2QName;
@@ -30,7 +28,7 @@ public class EmitterUtils {
      * Get the AVM2 QName corresponding to a Java type
      */
     public static AVM2QName qnameForJavaType( JavaType type,
-    		                                  TranslatedABC abc ) {
+    		                                  TargetABC abc ) {
 
     	if( type == VoidType.VOID         ) return AVM2StandardName.TypeVoid.qname; 
         if( type == PrimitiveType.BYTE    ) return AVM2StandardName.TypeInt.qname;
@@ -81,6 +79,15 @@ public class EmitterUtils {
         return new AVM2QName( AVM2Namespace.privateNamespace, name ); 
     }
 
+    public static AVM2QName nameForMethod( MethodModel method ) {
+    	
+    	if( method.flags.contains( MethodFlag.MethodIsProtected ) ) {
+    		
+    	}
+    	
+    }
+     
+    
     
     /**
      * Determine whether a method is an override.
