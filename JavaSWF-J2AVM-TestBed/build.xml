@@ -81,8 +81,8 @@
 
     <!-- Compile the comparative actionscript -->
     <target name="compile-test-as">
-        <exec dir="as" executable="/Languages/Flash/flex3sdk_b1_061107/bin/mxmlc" >
-            <arg value="-as3=true -o Test.swf -sp=. test/Test.as"/>
+        <exec dir="as" executable="/Applications/Adobe Flex Builder 3/sdks/3.0.0/bin/mxmlc" >
+            <arg line="-as3=true -o Test.swf -sp=. test/Test.as"/>
         </exec>
     </target>
 	

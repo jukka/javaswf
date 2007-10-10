@@ -24,7 +24,7 @@ package test {
             field.text = "Hello World";
         }
         
-        private function drawSquare( g:Graphics, x:int, y:int ):void {
+        protected function drawSquare( g:Graphics, x:int, y:int ):void {
             g.beginFill( 0xffff80 );
             g.lineStyle( 2, 0 );
             g.moveTo( x, y );

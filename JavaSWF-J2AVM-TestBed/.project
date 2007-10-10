@@ -10,8 +10,21 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.asdt.compiler.ASBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.asdt.core.ASNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>AppleExtensions</name>
+			<type>2</type>
+			<location>/System/Library/Java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

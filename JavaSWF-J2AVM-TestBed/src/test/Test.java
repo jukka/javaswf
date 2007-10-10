@@ -25,7 +25,7 @@ public class Test extends MovieClip {
         field.setAutoSize( TextFieldAutoSize.LEFT );
 
         StyleSheet style = new StyleSheet();
-        style.parseCSS( ".foo { font-size: 24px }" );
+        style.parseCSS( ".foo { font-size: 24px; color: #ff0000 }" );
         field.setStyleSheet( style );
 
         field.setHtmlText( "<span class='foo'>agile sucks</span>" );
@@ -33,7 +33,7 @@ public class Test extends MovieClip {
     
     private void drawSquare(Graphics g, int x, int y) {
         g.beginFill( 0x8080ff );
-        g.lineStyle( 2, 0xff0000 );
+        g.lineStyle( 2, 0x008800 );
         g.moveTo( x, y );
         g.lineTo( x + 100, y );
         g.lineTo( x + 100, y + 100 );
