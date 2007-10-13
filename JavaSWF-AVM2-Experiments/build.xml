@@ -1,0 +1,49 @@
+<project name="AVM2 Tests and Experiments" basedir="." >
+	
+	<property name="mxmlc" value="/Applications/Adobe Flex Builder 3/sdks/3.0.0/bin/mxmlc"/>
+	
+	<path id="javaswf">
+		<pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
+        <pathelement location="../EpistemCommon/eclipse-build"/>
+        <pathelement location="../JavaSWF-AVM2/eclipse-build"/>
+	</path>
+		
+	<macrodef name="mxmlc">
+        <attribute name="dir" default="."/>
+        <attribute name="as"  default=""/>
+        <attribute name="out" default=""/>
+	    <sequential>
+            <exec dir="@{dir}" executable="${mxmlc}" >
+                <arg line="-as3=true -o @{out} -sp=. @{as}"/>
+            </exec>
+	    </sequential>
+	</macrodef>
+	
+    <!-- Dump the Flex compiled test.swf -->
+    <target name="dump-generated-swf">
+        <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+              classpathref="javaswf" >
+            <arg value="generated/test.swf"/>
+            <arg value="out=generated/test.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+        </java>
+    </target>
+
+    <!-- Dump the Flex compiled test.swf -->
+	<target name="dump-flex-test-swf">
+		<java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+			  classpathref="javaswf" >
+            <arg value="Test.swf"/>
+            <arg value="out=Test.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+		</java>
+	</target>
+
+    <!-- Compile the comparative actionscript -->
+    <target name="compile-test-as">
+    	<mxmlc dir="as" as="test/Test.as" out="../Test.swf" />
+    </target>
+	
+</project>
