@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.emitter;
+package org.javaswf.j2avm.abc;
 
 import com.anotherbigidea.flash.avm2.Operation;
 import static com.anotherbigidea.flash.avm2.Operation.*;

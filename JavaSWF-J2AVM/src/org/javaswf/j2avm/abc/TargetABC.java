@@ -3,14 +3,11 @@ package org.javaswf.j2avm.abc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.javaswf.j2avm.TranslationContext;
 import org.javaswf.j2avm.TranslationTarget;
 import org.javaswf.j2avm.model.ClassModel;
 
-import com.anotherbigidea.flash.avm2.NamespaceKind;
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
-import com.anotherbigidea.flash.avm2.model.AVM2Class;
-import com.anotherbigidea.flash.avm2.model.AVM2Namespace;
-import com.anotherbigidea.flash.avm2.model.AVM2QName;
 
 /**
  * Represents the target ABC data.
@@ -19,6 +16,10 @@ import com.anotherbigidea.flash.avm2.model.AVM2QName;
  */
 public class TargetABC {
 
+	public TargetABC( TranslationContext context ) {
+		this.context = context;
+	}
+		
     /**
      * Write the ABC data to the given target.
      */
@@ -37,7 +38,7 @@ public class TargetABC {
     	ClassTranslation ct = translatedClasses.get( className );
     	
     	if( ct == null ) {
-    		ct = new ClassTranslation( javaClass );
+    		ct = new ClassTranslation( this, javaClass );
     		translatedClasses.put( className, ct );
     	}
     	
@@ -54,15 +55,12 @@ public class TargetABC {
     	return translatedClasses.get( className );
     }
     
-    public final AVM2ABCFile abcFile = new AVM2ABCFile();
+    /*pkg*/ final AVM2ABCFile abcFile = new AVM2ABCFile();    
+	/*pkg*/ final TranslationContext context;
     
     /**
      * Map of Java class name to AVM2 class
      */
     private final Map<String, ClassTranslation> translatedClasses = 
         new HashMap<String, ClassTranslation>();    
-    
-    //java class name to avm2 class name
-    private final Map<String, AVM2QName> translatedClassNames =
-        new HashMap<String, AVM2QName>();
 }

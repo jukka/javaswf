@@ -25,6 +25,7 @@ public final class J2AVM {
     public J2AVM( ClassLoader loader, TranslationTarget target ) {
         this.target  = target;
         this.context = new TranslationContext( loader );
+        this.abc     = new TargetABC( context );
         addDefaultSteps();
     }
     
@@ -84,7 +85,7 @@ public final class J2AVM {
         ); 
     }
     
-    private final TargetABC       abc      = new TargetABC();
+    private final TargetABC           abc;
     private final TranslationPipeline pipeline = new TranslationPipeline();
     
     private final TranslationContext context;

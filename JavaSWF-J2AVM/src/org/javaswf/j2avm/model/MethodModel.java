@@ -59,6 +59,16 @@ public final class MethodModel extends Model implements ValueGenerator {
 	}
 	
 	/**
+	 * Determine the visibility of the method
+	 */
+	public Visibility visibility() {
+		if( flags.contains( MethodFlag.MethodIsPublic    )) return Visibility.PUBLIC;
+		if( flags.contains( MethodFlag.MethodIsProtected )) return Visibility.PROTECTED;	
+		if( flags.contains( MethodFlag.MethodIsPrivate   )) return Visibility.PRIVATE;
+		return Visibility.PACKAGE;
+	}
+	
+	/**
 	 * Parse a method
 	 */
 	/*pkg*/ MethodModel( ClassModel owner, DataInput in, ConstantPool pool ) throws IOException {
@@ -119,5 +129,27 @@ public final class MethodModel extends Model implements ValueGenerator {
     	}
     	
     	ipw.println();
+    }
+    
+    /**
+     * Determine whether a method is an override. This is computed each time
+     * since methods added to a superclass may change this flag.
+     * 
+     * @return true if the method overrides a super method
+     */
+    public boolean isOverride() {
+
+        for( ClassModel superclass = owner.superclass(); 
+             superclass != null;
+             superclass = superclass.superclass() ) {
+        	
+            for( Signature superSig : superclass.methods.keySet() ) {
+                if( superSig.equals( signature )) {
+                    return true; //found matching method signature
+                }
+            }
+        }
+        
+        return false;
     }
 }

@@ -43,6 +43,16 @@ public final class FieldModel extends Model {
 	}
 	
 	/**
+	 * Determine the visibility of the field
+	 */
+	public Visibility visibility() {
+		if( flags.contains( FieldFlag.FieldIsPublic    )) return Visibility.PUBLIC;
+		if( flags.contains( FieldFlag.FieldIsProtected )) return Visibility.PROTECTED;	
+		if( flags.contains( FieldFlag.FieldIsPrivate   )) return Visibility.PRIVATE;
+		return Visibility.PACKAGE;
+	}
+	
+	/**
 	 * Parse a field
 	 */
 	/*pkg*/ FieldModel( ClassModel owner, DataInput in, ConstantPool pool ) throws IOException {

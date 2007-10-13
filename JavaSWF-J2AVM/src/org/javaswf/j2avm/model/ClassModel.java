@@ -24,6 +24,11 @@ import org.javaswf.j2avm.model.types.Signature;
 public final class ClassModel extends Model {
 	
 	/**
+	 * The factory that created this model
+	 */
+	public final ModelFactory factory;
+	
+	/**
 	 * The class type
 	 */
 	public final ObjectType type;
@@ -47,20 +52,35 @@ public final class ClassModel extends Model {
     public final int minorVersion;
     
     /**
+     * Extend this class in order to make a new class
+     * 
+     * @param name the fully qualified new class name
+     * @param flags the new class flags
+     */
+    public ClassModel extend( String name, Collection<ClassFlag> flags ) {
+    	return new ClassModel( factory, new ObjectType( name ), 
+    			               this.type, majorVersion, minorVersion, flags );
+    }
+    
+    /**
      * @param type the class type
      * @param superclass the superclass - null if none
      * @param majorVersion the class major version
      * @param minorVersion the class minor version
      * @param flags the class flags
      */
-    public ClassModel( ObjectType type, ObjectType superclass, 
-    	               int majorVersion, int minorVersion,
-    	               Collection<ClassFlag> flags ) {
+    private ClassModel( ModelFactory factory,
+    		            ObjectType type, ObjectType superclass, 
+    	                int majorVersion, int minorVersion,
+    	                Collection<ClassFlag> flags ) {
+    	this.factory      = factory;
     	this.type         = type;
     	this.superclass   = superclass;
     	this.majorVersion = majorVersion;
     	this.minorVersion = minorVersion;
     	this.flags        = flags;
+    	
+    	factory.register( this );
     }
     
     /**
@@ -68,7 +88,8 @@ public final class ClassModel extends Model {
      * 
      * @param in the class data - will be closed after parsing
      */
-    public ClassModel( InputStream instream ) {
+    /*pkg*/ ClassModel( ModelFactory factory, InputStream instream ) {
+    	this.factory = factory;
     	
     	DataInput in = new DataInputStream( instream );
     	
@@ -130,7 +151,16 @@ public final class ClassModel extends Model {
         	}
         }
     }
-        
+     
+    /**
+     * Find the superclass model
+     * @return null if there is no superclass
+     */
+    public ClassModel superclass() {
+    	if( superclass == null ) return null;
+    	return factory.modelForName( superclass.name );
+    }
+    
     /**
      * Dump the model
      */

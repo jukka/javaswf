@@ -1,13 +1,10 @@
-package org.javaswf.j2avm.emitter;
+package org.javaswf.j2avm.abc;
 
 import static org.javaswf.j2avm.emitter.EmitterUtils.nameForField;
 import static org.javaswf.j2avm.emitter.EmitterUtils.nameForMethod;
 import static org.javaswf.j2avm.emitter.EmitterUtils.nameForPrivateMethod;
-import static org.javaswf.j2avm.emitter.EmitterUtils.qnameForJavaType;
 
 import org.javaswf.j2avm.TranslationContext;
-import org.javaswf.j2avm.abc.ClassTranslation;
-import org.javaswf.j2avm.abc.TargetABC;
 import org.javaswf.j2avm.model.ClassModel;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
@@ -37,8 +34,9 @@ import com.anotherbigidea.flash.avm2.model.AVM2QName;
 public class InstructionVisitor extends InstructionListWalker {
 
     private final AVM2Code           avm2Code;
-    private final TargetABC      abc;
-    private final ClassTranslation    avm2Class;
+    private final TargetABC          abc;
+    private final ClassTranslation   classTrans;
+    private final MethodTranslation  methodTrans;
     private final TranslationContext context;
     private final MethodModel        methodModel;
     private final ClassModel         classModel;
@@ -50,23 +48,22 @@ public class InstructionVisitor extends InstructionListWalker {
      * @param abc the target ABC file
      * @param avm2Class the target AVM2 class
      */
-    InstructionVisitor( AVM2Code avm2code, TargetABC abc, 
-    		            ClassTranslation avm2Class, TranslationContext context,
-    		            ClassModel classModel, MethodModel methodModel ) {
-        this.avm2Code  = avm2code;
-        this.abc       = abc;
-        this.avm2Class = avm2Class;
-        this.context   = context;
-        
-        this.classModel  = classModel;
-        this.methodModel = methodModel;        
+    InstructionVisitor( MethodTranslation methodTrans ) {
+    	this.methodTrans = methodTrans;
+    	this.classTrans  = methodTrans.clazz;
+        this.classModel  = classTrans.javaClass;
+        this.methodModel = methodTrans.method;        
+
+        this.avm2Code  = new AVM2Code( methodTrans.avmMethod.methodBody.instructions );
+        this.abc       = classTrans.abc;
+        this.context   = abc.context;        
     }
 
     /** @see org.javaswf.j2avm.model.code.InstructionListWalker#pushField(org.javaswf.j2avm.model.FieldDescriptor) */
 	@Override
 	public void pushField( FieldDescriptor fieldDesc ) {
         avm2Code.append( Operation.OP_getproperty, nameForField( fieldDesc.name ));
-        avm2Code.append( Operation.OP_coerce,  qnameForJavaType( fieldDesc.type, abc ));
+        avm2Code.append( Operation.OP_coerce, ClassTranslation.qnameForJavaType( fieldDesc.type ));        
 	}
 
 	/** @see org.javaswf.j2avm.model.code.InstructionListWalker#storeField(org.javaswf.j2avm.model.FieldDescriptor) */
@@ -383,11 +380,12 @@ public class InstructionVisitor extends InstructionListWalker {
     /** @see org.javaswf.j2avm.model.code.InstructionListWalker#newObject(ObjectType, ValueType...) */
 	@Override
 	public void newObject( ObjectType type, ValueType...paramTypes ) {
-		//TODO: this needs to be coordinated with the constructor call
-        AVM2QName typeName = qnameForJavaType( type, abc );
+		if( paramTypes == null ) throw new IllegalArgumentException( "paramTypes cannot be null" );
+		
+		AVM2QName typeName = ClassTranslation.qnameForJavaType( type );
 
         avm2Code.append( Operation.OP_findpropstrict, typeName );
-        avm2Code.append( Operation.OP_constructprop , typeName, 0 );
+        avm2Code.append( Operation.OP_constructprop , typeName, paramTypes.length );
         avm2Code.append( Operation.OP_coerce        , typeName );
 	}
 

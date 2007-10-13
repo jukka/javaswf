@@ -1,6 +1,6 @@
 package org.javaswf.j2avm.emitter.concerns;
 
-import org.javaswf.j2avm.emitter.AVM2Code;
+import org.javaswf.j2avm.abc.AVM2Code;
 
 /**
  * Collection of all methods relating to support of translating longs.
