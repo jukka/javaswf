@@ -41,7 +41,7 @@ public class Template {
 	 * @param out the target for the template output
 	 * @param model the model to pass to the Freemarker template
 	 */
-	public void process( Writer out, Object model ) throws IOException, TemplateException {
+	public void process( Writer out, Object model ) throws Exception {
         template.process( model, out);
         out.flush();
 	}

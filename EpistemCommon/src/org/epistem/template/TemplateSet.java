@@ -17,6 +17,7 @@ public class TemplateSet {
 	private final Map<String, Template> cache = new HashMap<String, Template>();
 	private final Class<?> relativeClass;
 	private final String   templateSuffix;
+	private boolean bypassCache = false;
 	
 	/**
 	 * @param relativeClass the class that templates are relative to
@@ -28,6 +29,14 @@ public class TemplateSet {
 		this.relativeClass  = relativeClass;
 	}
 
+	/**
+	 * Bypass the cache for each request
+	 * @param bypass true to bypass
+	 */
+	public void bypassCache( boolean bypass ) {
+		this.bypassCache = bypass;
+	}
+	
 	/**
 	 * Use the default Freemarker template suffix.
 	 * 
@@ -46,9 +55,13 @@ public class TemplateSet {
 	 */
 	public Template get( String name ) throws IOException {
 		
+		if( bypassCache ) {
+			return new Template( relativeClass, name + templateSuffix );
+		}
+		
 		Template template = cache.get( name );
 		if( template == null ) {
-			template = new Template( relativeClass, name + templateSuffix );
+			template = 
 			cache.put( name, template );
 		}
 		
