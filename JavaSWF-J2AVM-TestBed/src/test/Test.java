@@ -6,7 +6,7 @@ import flash.text.StyleSheet;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 
-public class Test extends MovieClip {
+public class Test extends InterInter {
     public Test() {
         drawTest();
     }
@@ -25,11 +25,15 @@ public class Test extends MovieClip {
         field.setAutoSize( TextFieldAutoSize.LEFT );
 
         StyleSheet style = new StyleSheet();
-        style.parseCSS( ".foo { font-size: 24px; color: #ff0000 }" );
+        style.parseCSS( super.getCSS() );
         field.setStyleSheet( style );
 
         field.setHtmlText( "<span class='foo'>agile sucks</span>" );
     }
+    
+	public String getCSS() {
+		return ".foo { font-size: 24px; color: #ff0000 }";
+	}
     
     private void drawSquare(Graphics g, int x, int y) {
         g.beginFill( 0x8080ff );

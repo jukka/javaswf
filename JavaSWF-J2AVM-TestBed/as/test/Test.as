@@ -4,7 +4,7 @@ package test {
     import flash.errors.*;
     import flash.text.*;
 
-    public class Test extends MovieClip {
+    public class Test extends InterInter {
         
         public function Test() {
             drawTest();
@@ -21,10 +21,20 @@ package test {
             addChild( field );
             field.x = 10;
             field.y = 120;
-            field.text = "Hello World";
+            field.autoSize = TextFieldAutoSize.LEFT;
+    
+            var style:StyleSheet = new StyleSheet();
+            style.parseCSS( super.getCSS() );
+            field.styleSheet = style;
+    
+            field.htmlText = "<span class='foo'>agile sucks</span>";
         }
         
-        protected function drawSquare( g:Graphics, x:int, y:int ):void {
+        public override function getCSS():String {
+            return ".foo { font-size: 24px; color: #ff0000 }";
+        }
+        
+        protected static function drawSquare( g:Graphics, x:int, y:int ):void {
             g.beginFill( 0xffff80 );
             g.lineStyle( 2, 0 );
             g.moveTo( x, y );

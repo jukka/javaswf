@@ -1,7 +1,7 @@
 signature: CWS
-header: version=9 length=1237 width=10000 height=7500 rate=24 frame-count=1
+header: version=9 length=1809 width=10000 height=7500 rate=24 frame-count=1
 file-attributes has-metadata allow-as3 use-network
-Tag 77 length=458
+Tag 77 length=459
     00000000 3c 72 64 66 3a 52 44 46 20 78 6d 6c 6e 73 3a 72 <rdf:RDF xmlns:r
     00000010 64 66 3d 27 68 74 74 70 3a 2f 2f 77 77 77 2e 77 df='http://www.w
     00000020 33 2e 6f 72 67 2f 31 39 39 39 2f 30 32 2f 32 32 3.org/1999/02/22
@@ -27,23 +27,67 @@ Tag 77 length=458
     00000160 6b 6e 6f 77 6e 3c 2f 64 63 3a 63 72 65 61 74 6f known</dc:creato
     00000170 72 3e 3c 64 63 3a 6c 61 6e 67 75 61 67 65 3e 45 r><dc:language>E
     00000180 4e 3c 2f 64 63 3a 6c 61 6e 67 75 61 67 65 3e 3c N</dc:language><
-    00000190 64 63 3a 64 61 74 65 3e 4f 63 74 20 39 2c 20 32 dc:date>Oct 9, 2
-    000001a0 30 30 37 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 72 007</dc:date></r
-    000001b0 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e 3c df:Description><
-    000001c0 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- -- /rdf:RDF>.      
+    00000190 64 63 3a 64 61 74 65 3e 4f 63 74 20 31 31 2c 20 dc:date>Oct 11, 
+    000001a0 32 30 30 37 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 2007</dc:date></
+    000001b0 72 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e rdf:Description>
+    000001c0 3c 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- </rdf:RDF>.     
 ---------------
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(134,156,167)
 serial number:
   00000000 01 00 00 00 00 00 00 00 02 00 9d cc 02 00 00 00 ................
-  00000010 00 00 58 62 74 86 15 01 00 00 -- -- -- -- -- -- ..Xbt.....      
+  00000010 00 00 02 b9 46 90 15 01 00 00 -- -- -- -- -- -- ....F.....      
 
 frame-label test_Test
 ABC File 'frame1' lazy-initialization
 abc-file {
-  [0] sealed class test.Test {
+  [1] sealed class test.InterInter {
+    extends Qname:PackageNamespace(test)::Intermediate
+    protected-namespace ProtectedNamespace(test:InterInter)
+
+    constructor: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [0] sealed class test.Intermediate {
     extends Qname:PackageNamespace(flash.display)::MovieClip
-    protected-namespace ProtectedNamespace(test:Test)
+    protected-namespace ProtectedNamespace(test:Intermediate)
 
     constructor: method  {
       flags:
@@ -60,8 +104,6 @@ abc-file {
               pushscope
               getlocal0
               constructsuper 0
-              findpropstrict Qname:PackageNamespace()::drawTest
-              callpropvoid Qname:PackageNamespace()::drawTest 0
               returnvoid
 
       }
@@ -85,7 +127,157 @@ abc-file {
       }
     }
 
-    Qname:ProtectedNamespace(test:Test)::drawSquare [?] method  {
+    Qname:PackageNamespace()::getCSS [?] method  {
+      flags:
+      return-type: Qname:PackageNamespace()::String
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              pushstring ".foo { font-size: 24px; color: #00ff00 }"
+              returnvalue
+
+      }
+    }
+  }
+
+  [2] sealed class test.Test {
+    extends Qname:PackageNamespace(test)::InterInter
+    protected-namespace ProtectedNamespace(test:Test)
+
+    constructor: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              findpropstrict Qname:PackageNamespace()::drawTest
+              callpropvoid Qname:PackageNamespace()::drawTest 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:PackageNamespace()::getCSS [?] override method  {
+      flags:
+      return-type: Qname:PackageNamespace()::String
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal0
+              pushscope
+              pushstring ".foo { font-size: 24px; color: #ff0000 }"
+              returnvalue
+
+      }
+    }
+    Qname:PackageNamespace()::drawTest [?] method  {
+      flags:
+      return-type: Qname:PackageNamespace()::void
+      parameters (
+      )
+      body {
+        max-stack    : 5
+        max-registers: 5
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal0
+              pushscope
+              getlex Qname:PackageNamespace()::graphics
+              coerce Qname:PackageNamespace(flash.display)::Graphics
+              setlocal1
+              pushbyte 0
+              setlocal2
+              jump 32
+        14  : label
+              findpropstrict Qname:StaticProtectedNamespace(test:Test)::drawSquare
+              getlocal1
+              pushbyte 10
+              getlocal2
+              pushbyte 110
+              multiply
+              add
+              pushbyte 10
+              callpropvoid Qname:StaticProtectedNamespace(test:Test)::drawSquare 3
+              inclocal_i 2
+        32  : getlocal2
+              pushbyte 5
+              iflt 14
+              findpropstrict Qname:PackageNamespace(flash.text)::TextField
+              constructprop Qname:PackageNamespace(flash.text)::TextField 0
+              coerce Qname:PackageNamespace(flash.text)::TextField
+              setlocal3
+              findpropstrict Qname:PackageNamespace()::addChild
+              getlocal3
+              callpropvoid Qname:PackageNamespace()::addChild 1
+              getlocal3
+              pushbyte 10
+              setproperty Qname:PackageNamespace()::x
+              getlocal3
+              pushbyte 120
+              setproperty Qname:PackageNamespace()::y
+              getlocal3
+              getlex Qname:PackageNamespace(flash.text)::TextFieldAutoSize
+              getproperty Qname:PackageNamespace()::LEFT
+              setproperty Qname:PackageNamespace()::autoSize
+              findpropstrict Qname:PackageNamespace(flash.text)::StyleSheet
+              constructprop Qname:PackageNamespace(flash.text)::StyleSheet 0
+              coerce Qname:PackageNamespace(flash.text)::StyleSheet
+              dup
+              setlocal 4
+              getlocal0
+              callsuper Qname:PackageNamespace()::getCSS 0
+              callpropvoid Qname:PackageNamespace()::parseCSS 1
+              getlocal3
+              getlocal 4
+              setproperty Qname:PackageNamespace()::styleSheet
+              getlocal3
+              pushstring "<span class=\'foo\'>agile sucks</span>"
+              setproperty Qname:PackageNamespace()::htmlText
+              returnvoid
+
+      }
+    }
+    static Qname:StaticProtectedNamespace(test:Test)::drawSquare [2] final method  {
       flags:
       return-type: Qname:PackageNamespace()::void
       parameters (
@@ -96,8 +288,8 @@ abc-file {
       body {
         max-stack    : 4
         max-registers: 4
-        max-scope    : 11
-        scope-depth  : 10
+        max-scope    : 12
+        scope-depth  : 11
 
               getlocal0
               pushscope
@@ -142,55 +334,99 @@ abc-file {
 
       }
     }
-    Qname:PackageNamespace()::drawTest [?] method  {
+  }
+
+   script {
+    Qname:PackageNamespace(test)::Intermediate [?] class = Qname:PackageNamespace(test)::Intermediate
+
+    script method  {
       flags:
-      return-type: Qname:PackageNamespace()::void
+      return-type: *
       parameters (
       )
       body {
-        max-stack    : 5
-        max-registers: 4
-        max-scope    : 11
-        scope-depth  : 10
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 9
+        scope-depth  : 1
 
               getlocal0
               pushscope
-              getlex Qname:PackageNamespace()::graphics
-              coerce Qname:PackageNamespace(flash.display)::Graphics
-              setlocal1
-              pushbyte 0
-              setlocal2
-              jump 32
-        14  : label
-              findpropstrict Qname:ProtectedNamespace(test:Test)::drawSquare
-              getlocal1
-              pushbyte 10
-              getlocal2
-              pushbyte 110
-              multiply
-              add
-              pushbyte 10
-              callpropvoid Qname:ProtectedNamespace(test:Test)::drawSquare 3
-              inclocal_i 2
-        32  : getlocal2
-              pushbyte 5
-              iflt 14
-              findpropstrict Qname:PackageNamespace(flash.text)::TextField
-              constructprop Qname:PackageNamespace(flash.text)::TextField 0
-              coerce Qname:PackageNamespace(flash.text)::TextField
-              setlocal3
-              findpropstrict Qname:PackageNamespace()::addChild
-              getlocal3
-              callpropvoid Qname:PackageNamespace()::addChild 1
-              getlocal3
-              pushbyte 10
-              setproperty Qname:PackageNamespace()::x
-              getlocal3
-              pushbyte 120
-              setproperty Qname:PackageNamespace()::y
-              getlocal3
-              pushstring "Hello World"
-              setproperty Qname:PackageNamespace()::text
+              findpropstrict Multiname:{ PackageNamespace(test) }::Intermediate
+              getlex Qname:PackageNamespace()::Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              newclass Qname:PackageNamespace(test)::Intermediate
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(test)::Intermediate
+              returnvoid
+
+      }
+    }
+  }
+
+   script {
+    Qname:PackageNamespace(test)::InterInter [?] class = Qname:PackageNamespace(test)::InterInter
+
+    script method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(test) }::InterInter
+              getlex Qname:PackageNamespace()::Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(test)::Intermediate
+              pushscope
+              getlex Qname:PackageNamespace(test)::Intermediate
+              newclass Qname:PackageNamespace(test)::InterInter
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(test)::InterInter
               returnvoid
 
       }
@@ -208,7 +444,7 @@ abc-file {
       body {
         max-stack    : 2
         max-registers: 1
-        max-scope    : 9
+        max-scope    : 11
         scope-depth  : 1
 
               getlocal0
@@ -228,8 +464,14 @@ abc-file {
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
-              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              getlex Qname:PackageNamespace(test)::Intermediate
+              pushscope
+              getlex Qname:PackageNamespace(test)::InterInter
+              pushscope
+              getlex Qname:PackageNamespace(test)::InterInter
               newclass Qname:PackageNamespace(test)::Test
+              popscope
+              popscope
               popscope
               popscope
               popscope
