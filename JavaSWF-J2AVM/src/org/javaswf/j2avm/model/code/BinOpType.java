@@ -1,5 +1,6 @@
 package org.javaswf.j2avm.model.code;
 
+
 /**
  * The types of binary operation
  *  
@@ -21,5 +22,4 @@ public enum BinOpType {
 	COMPARE,
 	COMPARE_G,
 	COMPARE_L
-	
 }
