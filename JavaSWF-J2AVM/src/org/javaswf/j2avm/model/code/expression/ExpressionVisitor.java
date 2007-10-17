@@ -1,8 +1,7 @@
 package org.javaswf.j2avm.model.code.expression;
 
-import java.beans.MethodDescriptor;
-
 import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -15,7 +14,7 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public interface Expressions {
+public interface ExpressionVisitor {
 
     /** Visit a Constant Int */
     public void visitConstantInt( int value );

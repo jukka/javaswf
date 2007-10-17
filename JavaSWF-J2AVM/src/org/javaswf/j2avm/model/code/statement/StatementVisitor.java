@@ -55,19 +55,27 @@ public interface StatementVisitor {
     /**
      * Visit a switch statement
      * 
+     * @param value the value to match on
      * @param defaultTarget the default target
      * @param cases the cases in ascending order of case value
      */
-    //FIXME: aggregate the case blocks
-    public void visitSwitch( LabelStatement defaultTarget, SortedSet<SwitchCase> cases );
+    public void visitSwitch( Expression value, 
+    		                 LabelStatement defaultTarget, 
+    		                 SortedSet<SwitchCase> cases );
     
     /**
-     * Visit a synchronized block
+     * Visit the start of a synchronized block
      * 
      * @param object the object to sync on
-     * @param block the body of the synchronized block
      */
-    public void visitSync( Expression object, StatementBlock block );
+    public void visitMonitorEnter( Expression object );
+    
+    /**
+     * Visit the end of a synchronized block
+     * 
+     * @param object the object to sync on
+     */
+    public void visitMonitorExit( Expression object );    
     
     /**
      * Visit an increment statement
@@ -75,8 +83,5 @@ public interface StatementVisitor {
      * @param varIndex the variable to increment
      * @param increment the increment value
      */
-    public void increment( int varIndex, Expression increment );
-    
-    
-    public void tryCatch( StatementBlock tryBlock ); //FIXME
+    public void visitIncrement( int varIndex, Expression increment );
 }

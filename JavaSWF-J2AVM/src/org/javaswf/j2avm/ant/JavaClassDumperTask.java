@@ -2,12 +2,11 @@ package org.javaswf.j2avm.ant;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.tools.ant.BuildException;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.ClassModel;
+import org.javaswf.j2avm.model.ModelFactory;
 
 /**
  * ANT task to dump a Java class
@@ -30,12 +29,10 @@ public class JavaClassDumperTask extends TaskWithAClass {
     public void execute() throws BuildException {
 
         if( dumpFile == null ) throw new BuildException( "File to dump to is missing" );
+        ModelFactory fact = new ModelFactory( loader );
         
-		InputStream in = loader.getResourceAsStream( 
-		                        	className.replace( '.', '/' ) + ".class" );
-		
 		try {
-		    ClassModel model = new ClassModel( in );		
+		    ClassModel model = fact.modelForName( className );		
 
 		    FileWriter writer = new FileWriter( dumpFile );
 			IndentingPrintWriter ipw = new IndentingPrintWriter( writer );

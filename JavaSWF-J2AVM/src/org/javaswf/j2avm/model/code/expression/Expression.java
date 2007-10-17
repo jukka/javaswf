@@ -7,8 +7,14 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public abstract class Expression {
+public abstract class Expression extends ExpressionContainer {
 
+	/*pkg*/ ExpressionContainer parent;
+	
+	protected Expression( Expression...children ) {
+		super( children );
+	}
+	
     /**
      * Get the type of this expression
      * 
@@ -19,11 +25,5 @@ public abstract class Expression {
     /**
      * Accept a visitor.
      */
-    public abstract void accept( Expressions visitor );
-    
-    /**
-     * Visit all the child expressions in evaluation order.
-     */
-    public abstract void visitChildren( Expressions visitor );
-    
+    public abstract void accept( ExpressionVisitor visitor );
 }
