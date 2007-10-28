@@ -40,20 +40,25 @@ public class EnclosingMethodAttribute extends AttributeModel {
         if( nameTypeIndex != 0 ) {
             ConstantPool.NameAndTypeEntry nameType = 
                 (ConstantPool.NameAndTypeEntry) pool.getEntry( nameTypeIndex );
+                        
+            String     sigS  = nameType.getTypeEntry().value;    		
+            int closingParen = sigS.indexOf(")");
+            String ptypes    = sigS.substring( 1, closingParen );
+            String retTypeS  = sigS.substring( closingParen + 1 );
             
-            String methodSig   = pool.getUTF8Value( nameType.typeIndex );
-            String methodName  = pool.getUTF8Value( nameType.nameIndex );
+            String   ret    = ConstantPool.decodeTypeName( retTypeS );
+            String[] params = ConstantPool.readTypes( ptypes );
+
+            JavaType retType = JavaType.fromName( ret );
             
-            String[] types = ConstantPool.readSignature( methodSig );
-            JavaType retType = JavaType.fromName( types[0] );
-            
-            ValueType[] paramTypes = new ValueType[ types.length - 1 ];
+            ValueType[] paramTypes = new ValueType[ params.length ];
             for (int i = 0; i < paramTypes.length; i++) {
-                paramTypes[i] = ValueType.fromName( types[i+1] );
+                paramTypes[i] = ValueType.fromName( params[i] );
             }
             
-            Signature sig = new Signature( methodName, paramTypes );
-            enclosingMethod = new MethodDescriptor( enclosingClass, sig, retType );
+            String    methodName = nameType.getNameEntry().value;
+            Signature sig        = new Signature( methodName, paramTypes );
+            enclosingMethod      = new MethodDescriptor( enclosingClass, sig, retType );
         }
         
         return new EnclosingMethodAttribute( enclosingClass, enclosingMethod );

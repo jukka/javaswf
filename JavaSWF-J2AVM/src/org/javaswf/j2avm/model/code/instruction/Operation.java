@@ -1,11 +1,7 @@
-package org.javaswf.j2avm.model.parser;
+package org.javaswf.j2avm.model.code.instruction;
 
-import static org.javaswf.j2avm.model.parser.OperationArgument.*;
+import static org.javaswf.j2avm.model.code.instruction.OperationArgument.*;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,22 +37,11 @@ public enum Operation {
     LDC             ( 0x12, CONSTANT_INDEX ),             
     LDC_W           ( 0x13, WIDE_CONSTANT_INDEX ),           
     LDC2_W          ( 0x14, WIDE_CONSTANT_INDEX ),          
-    
-    @CanBeWide 
     ILOAD           ( 0x15, VAR_INDEX ),           
-    
-    @CanBeWide 
     LLOAD           ( 0x16, VAR_INDEX ),           
-    
-    @CanBeWide 
     FLOAD           ( 0x17, VAR_INDEX ),           
-    
-    @CanBeWide 
     DLOAD           ( 0x18, VAR_INDEX ),           
-    
-    @CanBeWide 
     ALOAD           ( 0x19, VAR_INDEX ),           
-
     ILOAD_0         ( 0x1a ),         
     ILOAD_1         ( 0x1b ),         
     ILOAD_2         ( 0x1c ),         
@@ -85,22 +70,11 @@ public enum Operation {
     BALOAD          ( 0x33 ),          
     CALOAD          ( 0x34 ),          
     SALOAD          ( 0x35 ),  
-    
-    @CanBeWide 
     ISTORE          ( 0x36, VAR_INDEX ),          
-    
-    @CanBeWide 
     LSTORE          ( 0x37, VAR_INDEX ),          
-    
-    @CanBeWide 
     FSTORE          ( 0x38, VAR_INDEX ),          
-    
-    @CanBeWide 
     DSTORE          ( 0x39, VAR_INDEX ),          
-    
-    @CanBeWide 
     ASTORE          ( 0x3a, VAR_INDEX ),          
-    
     ISTORE_0        ( 0x3b ),        
     ISTORE_1        ( 0x3c ),        
     ISTORE_2        ( 0x3d ),        
@@ -174,10 +148,7 @@ public enum Operation {
     LOR             ( 0x81 ),             
     IXOR            ( 0x82 ),            
     LXOR            ( 0x83 ),            
-    
-    @CanBeWide 
     IINC            ( 0x84, VAR_INDEX, BYTE_VALUE ),            
-    
     I2L             ( 0x85 ),             
     I2F             ( 0x86 ),             
     I2D             ( 0x87 ),             
@@ -198,7 +169,7 @@ public enum Operation {
     FCMPG           ( 0x96 ),           
     DCMPL           ( 0x97 ),           
     DCMPG           ( 0x98 ),           
-    IFEQ            ( 0x99, OFFSET ),            
+    IFEQ            ( 0x99, OFFSET ),                
     IFNE            ( 0x9a, OFFSET ),            
     IFLT            ( 0x9b, OFFSET ),            
     IFGE            ( 0x9c, OFFSET ),            
@@ -212,14 +183,11 @@ public enum Operation {
     IF_ICMPLE       ( 0xa4, OFFSET ),       
     IF_ACMPEQ       ( 0xa5, OFFSET ),       
     IF_ACMPNE       ( 0xa6, OFFSET ),       
-    GOTO            ( 0xa7, OFFSET ),            
+    GOTO            ( 0xa7, OFFSET ),                
     JSR             ( 0xa8, OFFSET ),
-    
-    @CanBeWide
     RET             ( 0xa9, VAR_INDEX ),
-    
-    TABLESWITCH     ( 0xaa, ALIGN32, OFFSET_TABLE ),     
-    LOOKUPSWITCH    ( 0xab, ALIGN32, OFFSET_LOOKUP ),    
+    TABLESWITCH     ( 0xaa, ALIGN32, OFFSET_TABLE ),    
+    LOOKUPSWITCH    ( 0xab, ALIGN32, OFFSET_LOOKUP ),
     IRETURN         ( 0xac ),         
     LRETURN         ( 0xad ),         
     FRETURN         ( 0xae ),         
@@ -249,7 +217,7 @@ public enum Operation {
     IFNONNULL       ( 0xc7, OFFSET ),       
     GOTO_W          ( 0xc8, OFFSET32 ),          
     JSR_W           ( 0xc9, OFFSET32 );
-
+    
     /** The opcode */
     public final int opcode;
     
@@ -288,11 +256,4 @@ public enum Operation {
             ops.put( op.opcode, op );
         }
     }
-    
-    /**
-     * Annotation on an operation that can be wide.
-     */
-    @Target( ElementType.FIELD )
-    @Retention( RetentionPolicy.RUNTIME )
-    public @interface CanBeWide {}
 }

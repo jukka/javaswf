@@ -14,9 +14,7 @@ public class BranchStatement extends Statement implements LabelTargetter {
 	protected final LabelStatement target;
 	
 	BranchStatement( LabelStatement target, Expression expression ) {
-		super( (expression == null) ? 
-				   new Expression[0] : 
-				   new Expression[] { expression });
+		super( expression );
 		
 		this.target = target;
 		
@@ -24,14 +22,19 @@ public class BranchStatement extends Statement implements LabelTargetter {
 	}
 	
 	BranchStatement( LabelStatement target ) {
-		this( target, null );
+		this.target = target;		
+		target.targetters.add( this );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		if( children.length == 1 ) visitor.visitBranch( target, children[0] );
-		else                       visitor.visitBranch( target );		
+		if( expressions.childCount() == 1 ) {
+			visitor.visitBranch( target, child( 0 ) );
+		}
+		else {
+			visitor.visitBranch( target );		
+		}
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.LabelTargetter#release() */

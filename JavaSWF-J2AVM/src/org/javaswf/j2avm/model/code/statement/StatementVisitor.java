@@ -2,6 +2,7 @@ package org.javaswf.j2avm.model.code.statement;
 
 import java.util.SortedSet;
 
+import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.code.expression.Expression;
 
 /**
@@ -37,6 +38,40 @@ public interface StatementVisitor {
      * @param expression the expression to evaluate
      */
     public void visitExpression( Expression expression );
+    
+    /**
+     * Visit a variable assignment
+     * 
+     * @param varName the variable
+     * @param value   the value to assign
+     */
+    public void visitVariableAssignment( String varName, Expression value );
+    
+    /**
+     * Visit an array element assignment
+     * 
+     * @param array the array object
+     * @param index the element index
+     * @param value the value to assign
+     */
+    public void visitElementAssignment( Expression array, Expression index, Expression value );
+    
+    /**
+     * Visit a field assignment
+     * 
+     * @param field the field
+     * @param instance the instance object
+     * @param value the value to assign
+     */
+    public void visitFieldAssignment( FieldDescriptor field, Expression instance, Expression value );
+    
+    /**
+     * Visit a static field assignment
+     * 
+     * @param field the field
+     * @param value the value to assign
+     */
+    public void visitStaticFieldAssignment( FieldDescriptor field, Expression value );
     
     /**
      * Visit a method return
@@ -80,8 +115,8 @@ public interface StatementVisitor {
     /**
      * Visit an increment statement
      * 
-     * @param varIndex the variable to increment
+     * @param varName the variable to increment
      * @param increment the increment value
      */
-    public void visitIncrement( int varIndex, Expression increment );
+    public void visitIncrement( String varName, Expression increment );
 }

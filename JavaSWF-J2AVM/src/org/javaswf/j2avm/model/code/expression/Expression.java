@@ -9,12 +9,10 @@ import org.javaswf.j2avm.model.types.ValueType;
  */
 public abstract class Expression extends ExpressionContainer {
 
-	/*pkg*/ ExpressionContainer parent;
-	
 	protected Expression( Expression...children ) {
 		super( children );
 	}
-	
+		
     /**
      * Get the type of this expression
      * 
@@ -26,4 +24,11 @@ public abstract class Expression extends ExpressionContainer {
      * Accept a visitor.
      */
     public abstract void accept( ExpressionVisitor visitor );
+    	
+	static Expression[] merge( Expression e, Expression[] ee ) {
+		Expression[] merged = new Expression[ ee.length + 1 ];
+		merged[0] = e;
+		System.arraycopy( ee, 0, merged, 1, ee.length );
+		return merged;
+	}	
 }

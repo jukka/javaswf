@@ -100,13 +100,7 @@ public final class MethodModel extends Model implements ValueGenerator {
         int numAttrs = in.readUnsignedShort();       
         for (int i = 0; i < numAttrs; i++) {
         	AttributeModel.parseAttr( attributes, in, pool );
-        }
-        
-        //normalize the instructions (single slots for long and double)
-        CodeAttribute code = attribute( CodeAttribute.class );
-        if( code != null ) {        	
-        	code.instructions.determineFrames( this );
-        }
+        }        
 	}
 	
     /**

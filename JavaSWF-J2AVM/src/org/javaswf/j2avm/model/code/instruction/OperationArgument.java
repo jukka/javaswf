@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.parser;
+package org.javaswf.j2avm.model.code.instruction;
 
 import java.io.DataInput;
 import java.io.IOException;
@@ -6,11 +6,10 @@ import java.io.IOException;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.parser.ConstantPool;
+import org.javaswf.j2avm.model.parser.SwitchOffsets;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
-import org.javaswf.j2avm.model.types.ObjectType;
-import org.javaswf.j2avm.model.types.Signature;
-import org.javaswf.j2avm.model.types.ValueType;
 
 
 /**
@@ -107,49 +106,12 @@ public enum OperationArgument {
             
             case FIELD_INDEX: {
                 int index = in.readUnsignedShort();
-                
-                ConstantPool.FieldRefEntry fieldRef = 
-                    (ConstantPool.FieldRefEntry) cpool.getEntry(index);
-                
-                ConstantPool.NameAndTypeEntry nameType = 
-                    (ConstantPool.NameAndTypeEntry)
-                        cpool.getEntry( fieldRef.nameAndTypeIndex );
-                
-                String fieldClass = cpool.getClassName( fieldRef.classIndex );
-                String fieldType  = cpool.getTypeName ( nameType.typeIndex );
-                String fieldName  = cpool.getUTF8Value( nameType.nameIndex );
-                
-                return new FieldDescriptor( new ObjectType( fieldClass ), 
-                		                    fieldName,
-                		                    ValueType.fromName( fieldType ));
+                return cpool.getField( index );
             }
             
             case METHOD_INDEX: {
                 int index = in.readUnsignedShort();
-                
-                ConstantPool.MethodRefEntry methodRef =
-                    (ConstantPool.MethodRefEntry) cpool.getEntry( index );
-                
-                ConstantPool.NameAndTypeEntry nameType = 
-                    (ConstantPool.NameAndTypeEntry)
-                        cpool.getEntry( methodRef.nameAndTypeIndex );
-
-                String methodClass = cpool.getClassName( methodRef.classIndex );
-                String methodSig   = cpool.getUTF8Value( nameType.typeIndex );
-                String methodName  = cpool.getUTF8Value( nameType.nameIndex );
-                
-                String[] types = ConstantPool.readSignature( methodSig );
-                JavaType retType = JavaType.fromName( types[0] );
-                
-                ValueType[] paramTypes = new ValueType[ types.length - 1 ];
-                for (int i = 0; i < paramTypes.length; i++) {
-                    paramTypes[i] = ValueType.fromName( types[i+1] );
-                }
-                
-                Signature sig = new Signature( methodName, paramTypes );
-                
-                return new MethodDescriptor( new ObjectType( methodClass ), 
-                		                     sig, retType );
+                return cpool.getMethod( index );
             }
                 
             case CLASS_INDEX: {

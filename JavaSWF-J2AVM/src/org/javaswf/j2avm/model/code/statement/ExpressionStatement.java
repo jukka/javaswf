@@ -19,6 +19,6 @@ public final class ExpressionStatement extends Statement {
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitExpression( children[0] );		
+		visitor.visitExpression( child(0) );		
 	}
 }

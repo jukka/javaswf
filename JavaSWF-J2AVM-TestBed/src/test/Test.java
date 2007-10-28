@@ -18,6 +18,7 @@ public class Test extends InterInter {
             drawSquare( g, 10 + i * 110, 10 );
         }
         
+        synchronized( g ) {
         TextField field = new TextField();
         addChild( field );
         field.setX( 10 );
@@ -27,8 +28,8 @@ public class Test extends InterInter {
         StyleSheet style = new StyleSheet();
         style.parseCSS( super.getCSS() );
         field.setStyleSheet( style );
-
         field.setHtmlText( "<span class='foo'>agile sucks</span>" );
+        }
     }
     
 	public String getCSS() {

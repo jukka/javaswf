@@ -19,6 +19,6 @@ public final class ThrowStatement extends Statement {
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitThrow( children[0] );
+		visitor.visitThrow( child(0) );
 	}
 }

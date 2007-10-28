@@ -61,7 +61,7 @@ public class TemplateSet {
 		
 		Template template = cache.get( name );
 		if( template == null ) {
-			template = 
+			template = new Template( relativeClass, name + templateSuffix );
 			cache.put( name, template );
 		}
 		

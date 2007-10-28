@@ -3,9 +3,7 @@ package org.javaswf.j2avm.model.types;
 /**
  * An array type.
  * 
- * An array can have an array element type, but this is only useful when
- * a NewArray instruction is only initializing the dimensions in the outer
- * array and not the element array.
+ * An array should not have an array element type.
  *
  * @author nickmain
  */
@@ -26,8 +24,10 @@ public final class ArrayType extends ObjectOrArrayType {
      */
     public ArrayType( ValueType type, int dimCount ) {
         this( makeName( type.name, dimCount ), type, dimCount );
+        
+        if( type instanceof ArrayType ) throw new RuntimeException( "element type cannot be an array type" );
     }
-
+    
     private ArrayType( String name, ValueType type, int dimCount ) {
     	super( name, "A" );
         elementType    = type;
@@ -37,6 +37,16 @@ public final class ArrayType extends ObjectOrArrayType {
     private static String makeName( String name, int dimCount ) {
         while( dimCount-- > 0 ) name += "[]";
         return name;
+    }
+    
+    /**
+     * Get the type of the first dimension - the type that is accessed via
+     * a single index
+     */
+    public ValueType firstDimType() {
+    	if( dimensionCount == 1 ) return elementType;
+    	
+    	return new ArrayType( elementType, dimensionCount - 1 );
     }
     
     /** Whether a type name is an array type */

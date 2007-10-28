@@ -1,9 +1,6 @@
-import java.io.InputStream;
-
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.ClassModel;
-
-
+import org.javaswf.j2avm.model.ModelFactory;
 
 public class Test implements Cloneable {
 
@@ -32,9 +29,9 @@ public class Test implements Cloneable {
 	
 	public static void main( String[] args ) {
 		
-		InputStream in = Test.class.getClassLoader().getResourceAsStream( "Test.class" );
+		ModelFactory factory = new ModelFactory( Test.class.getClassLoader() );
 		
-		ClassModel model = new ClassModel( in );
+		ClassModel model = factory.modelForName( "Test" );
 		
 		IndentingPrintWriter ipw = IndentingPrintWriter.SYSOUT;
 		

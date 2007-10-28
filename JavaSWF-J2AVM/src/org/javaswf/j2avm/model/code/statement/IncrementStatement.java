@@ -11,16 +11,16 @@ import org.javaswf.j2avm.model.code.expression.Expression;
  * @author nickmain
  */
 public final class IncrementStatement extends Statement {
-	private final int varIndex;
+	private final String varName;
 	
-	IncrementStatement( Expression expression, int varIndex ) {
+	IncrementStatement( Expression expression, String varName ) {
 		super( expression );
-		this.varIndex  = varIndex;
+		this.varName  = varName;
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitIncrement( varIndex, children[0] );
+		visitor.visitIncrement( varName, child(0) );
 	}
 }

@@ -1,23 +1,28 @@
 package org.javaswf.j2avm.model.attributes;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.epistem.io.IndentingPrintWriter;
-import org.javaswf.j2avm.model.code.ExceptionHandler;
-import org.javaswf.j2avm.model.code.Frame;
-import org.javaswf.j2avm.model.code.Instruction;
-import org.javaswf.j2avm.model.code.InstructionCursor;
-import org.javaswf.j2avm.model.code.InstructionList;
+import org.javaswf.j2avm.model.code.expression.ExpressionBuilder;
+import org.javaswf.j2avm.model.code.instruction.InstructionParser;
+import org.javaswf.j2avm.model.code.instruction.InstructionResolver;
+import org.javaswf.j2avm.model.code.statement.LabelStatement;
+import org.javaswf.j2avm.model.code.statement.StatementCursor;
+import org.javaswf.j2avm.model.code.statement.StatementList;
+import org.javaswf.j2avm.model.code.statement.StatementPrinter;
+import org.javaswf.j2avm.model.code.statement.TryCatch;
 import org.javaswf.j2avm.model.parser.ConstantPool;
-import org.javaswf.j2avm.model.parser.OperationConvertor;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
+import org.javaswf.j2avm.model.types.VoidType;
 
 
 /**
@@ -33,8 +38,8 @@ public class CodeAttribute extends AttributeModel {
     public int maxStack;
     public int maxLocals;
     
-    /** The instructions - may be empty for a native or abstract method */
-    public final InstructionList instructions = new InstructionList();
+    /** The statements - may be empty for a native or abstract method */
+    public final StatementList statements = new StatementList();
     
     public CodeAttribute() {
         super( AttributeName.Code.name() );
@@ -48,31 +53,28 @@ public class CodeAttribute extends AttributeModel {
      */
     public static CodeAttribute dummyFor( JavaType returnType ) {
 		CodeAttribute code = new CodeAttribute();
-		InstructionCursor cur = code.instructions.cursorAtStart();
+		StatementCursor cur = code.statements.cursorAtStart();
+		
+		if( returnType == VoidType.VOID ) {
+			cur.insert().voidReturn();			
+		}
 		
 		//return null for non-primitive methods
-		if( returnType instanceof ObjectOrArrayType ) {
-			cur.pushNull();
+		else if( returnType instanceof ObjectOrArrayType ) {
+			cur.insert().returnValue( ExpressionBuilder.constantNull() );
 		}
-		else if( returnType == PrimitiveType.BYTE 
-			  || returnType == PrimitiveType.BOOLEAN
-			  || returnType == PrimitiveType.SHORT
-			  || returnType == PrimitiveType.CHAR
-			  || returnType == PrimitiveType.INT ) {
-			
-			cur.pushInt( 0 );
+		else if(((PrimitiveType) returnType).isIntType ) {			
+			cur.insert().returnValue( ExpressionBuilder.constantInt( 0 ) );
 		}
 		else if( returnType == PrimitiveType.LONG ) {
-			cur.pushLong( 0L );					
+			cur.insert().returnValue( ExpressionBuilder.constantLong( 0L ) );
 		}
 		else if( returnType == PrimitiveType.FLOAT ) {
-			cur.pushFloat( 0f );
+			cur.insert().returnValue( ExpressionBuilder.constantFloat( 0f ) );
 		}
 		else if( returnType == PrimitiveType.DOUBLE ) {
-			cur.pushDouble( 0.0 );
+			cur.insert().returnValue( ExpressionBuilder.constantDouble( 0.0 ) );
 		}
-		
-		cur.methodReturn( returnType );
 		
 		return code;
     }
@@ -87,10 +89,10 @@ public class CodeAttribute extends AttributeModel {
         int codeSize = in.readInt();
         byte[] bytecode = new byte[ codeSize ];
         in.readFully( bytecode );
-
-        //parse the bytecode
-    	OperationConvertor convertor = new OperationConvertor( code.instructions, pool, bytecode );
-    	convertor.convert();
+        
+        InstructionResolver resolver = new InstructionResolver( pool, code.statements );
+        InstructionParser   parser   = new InstructionParser();
+        parser.parseInstructions( new DataInputStream( new ByteArrayInputStream( bytecode )), codeSize, resolver );
         
         //exception handlers
         int handlerCount = in.readUnsignedShort();
@@ -99,15 +101,16 @@ public class CodeAttribute extends AttributeModel {
             int end     = in.readUnsignedShort();
             int handler = in.readUnsignedShort();
             int type    = in.readUnsignedShort();
-            
+
             ObjectType exType = (type != 0) ? 
                 new ObjectType( pool.getClassName( type ) ) :
                 null;
-                
-            code.instructions.addHandler( convertor.labelAtOffset( start ), 
-				                          convertor.labelAtOffset( end ), 
-				                          convertor.labelAtOffset( handler ), 
-				                          exType );
+
+        	LabelStatement startLabel   = code.statements.label( start );
+        	LabelStatement endLabel     = code.statements.label( end );
+        	LabelStatement handlerLabel = code.statements.label( handler );
+        	
+        	code.statements.addHandler( startLabel, endLabel, exType, handlerLabel );
         }
         
         //attributes
@@ -115,6 +118,8 @@ public class CodeAttribute extends AttributeModel {
         for (int i = 0; i < attrCount; i++) {
         	AttributeModel.parseAttr( code.attributes, in, pool );            
         }
+        
+        resolver.positionLabels();
         
         return code;
     }
@@ -130,23 +135,26 @@ public class CodeAttribute extends AttributeModel {
         out.println( "max locals: " + maxLocals );
         out.println();
 
-        for( Instruction i : instructions ) {
-//        	Frame frame = i.frame();
-//        	if( frame != null ) {
-//        		frame.dump( out );
-//        	}
-        	
-            i.dump( out );
-        }
-        
-        if( instructions.hasExceptionHandlers() ) {
+        StatementPrinter sp = new StatementPrinter( out );
+        StatementCursor  sc = statements.cursorAtStart();
+        while( sc.visitNext( sp ) );
+                
+        if( statements.hasExceptionHandlers() ) {
             out.println();
             out.println( "handlers {" );
             out.indent();
 
-            for( Iterator<ExceptionHandler> it = instructions.handlers(); 
-                 it.hasNext(); ) {
-				it.next().dump( out );				
+            for( Iterator<TryCatch> it = statements.handlers(); it.hasNext(); ) {
+				TryCatch tc = it.next();
+				out.print( "try( " );
+				out.print( tc.tryStart.name );
+				out.print( " .. " );
+				out.print( tc.tryEnd.name );
+				out.print( " ) catch ( " );
+				out.print( tc.exceptionType.name );
+				out.print( " ) goto " );
+				out.print( tc.handlerStart.name );
+				out.println();
 			}
 
             out.unindent();

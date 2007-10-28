@@ -19,13 +19,49 @@ public final class StatementCursor {
 	}
 	
 	/**
+	 * Get the previous statement.
+	 * 
+	 * @return null if the cursor is at the start of the list or the list is 
+	 *         empty
+	 */
+	public Statement prev() {
+		return prev;
+	}
+	
+	/**
+	 * Jump to just after the given label
+	 * @param label a LabelStatement or label name
+	 */
+	public void jumpTo( Object label ) {
+		if( label instanceof LabelStatement ) {
+			prev = (LabelStatement) label;
+			return;
+		}
+		
+		prev = list.labelForName( label );		
+	}
+	
+	/**
 	 * Visit the next Statement and position the cursor after it.
 	 * 
 	 * @param visitor the visitor to be accepted by the next statement
 	 * @return true if the visit took place, false if there is no next statement
 	 */
 	public boolean visitNext( StatementVisitor visitor ) {
-		return false; //FIXME
+		Statement next = null;
+		
+		if( prev == null ) {
+			next = list.first;
+		}
+		else {
+			next = prev.next;
+		}
+		
+		if( next == null ) return false;
+		
+		next.accept( visitor );
+		prev = next;
+		return true;
 	}
 	
 	/**
@@ -33,10 +69,18 @@ public final class StatementCursor {
 	 * of this cursor is advanced each time a statement is inserted. 
 	 */
 	public Statements insert() {
-		return new Statements( this );
+		return new Statements() {
+			@Override protected void insert( Statement s ) {
+				StatementCursor.this.insert( s  );		
+			}
+			@Override protected LabelStatement labelForName( Object name ) {
+				return list.label( name );
+			}		
+		};
 	}
 	
 	/*pkg*/ void insert( Statement s ) {
-		//FIXME
+		list.insert( s, prev );
+		prev = s;						
 	}
 }

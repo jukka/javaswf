@@ -27,7 +27,7 @@ public final class SwitchStatement extends BranchStatement {
 	/** @see org.javaswf.j2avm.model.code.statement.BranchStatement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitSwitch( children[0], target, cases );
+		visitor.visitSwitch( child(0), target, cases );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.BranchStatement#release() */

@@ -8,7 +8,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.types.JavaType;
+import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.types.Signature;
+import org.javaswf.j2avm.model.types.ValueType;
 
 /**
  * A Java Class Constant Pool.
@@ -338,23 +343,50 @@ public class ConstantPool {
     }
     
     /**
-     * Read a signature
-     * @param sig the (param-types)ret-type string
-     * @return [0] = return type, [1 to n] = param types
+     * Get a field descriptor
      */
-    public static String[] readSignature( String sig ) {
+    public FieldDescriptor getField( int index ) {
+		ConstantPool.FieldRefEntry f = (ConstantPool.FieldRefEntry) getEntry( index ); 
+		
+		ObjectType owner = new ObjectType( getClassName( f.classIndex ) );
+		ValueType  type  = ValueType.fromName( f.getNameAndTypeEntry().getTypeEntry().value );
+		FieldDescriptor fd = new FieldDescriptor( 
+				                 owner, 
+				                 f.getNameAndTypeEntry().getNameEntry().value, 
+				                 type );
+		
+		return fd;
+    }
+    
+    /**
+     * Get a method descriptor
+     * 
+     * @param index the MethodRefEntry index
+     */
+    public MethodDescriptor getMethod( int index ) {
+        ConstantPool.MethodRefEntry m = (ConstantPool.MethodRefEntry) getEntry( index );        
+		ConstantPool.NameAndTypeEntry nt = m.getNameAndTypeEntry();
+
+		ObjectType owner = new ObjectType( getClassName( m.classIndex ) );
+        String     sig   = nt.getTypeEntry().value;
+		
         int closingParen = sig.indexOf(")");
-        String paramTypes = sig.substring( 1, closingParen );
-        String retType    = sig.substring( closingParen + 1 );
+        String ptypes    = sig.substring( 1, closingParen );
+        String retType   = sig.substring( closingParen + 1 );
         
         String   ret    = decodeTypeName( retType );
-        String[] params = readTypes( paramTypes );
-        String[] types  = new String[ params.length + 1 ];
+        String[] params = readTypes( ptypes );
+
+		JavaType type = JavaType.fromName( ret );
+
+		ValueType[] paramTypes = new ValueType[ params.length ];
+        for (int i = 0; i < paramTypes.length; i++) {
+            paramTypes[i] = ValueType.fromName( params[i] );
+        }
         
-        types[0] = ret;
-        System.arraycopy( params, 0, types, 1, params.length );
-        
-        return types;
+		Signature s = new Signature( nt.getNameEntry().value, paramTypes );
+		
+        return new MethodDescriptor( owner, s, type );
     }
     
     /**

@@ -3,6 +3,7 @@ package org.javaswf.j2avm.model.code.statement;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.code.expression.Expression;
 
 /**
@@ -12,21 +13,47 @@ import org.javaswf.j2avm.model.code.expression.Expression;
  *
  * @author nickmain
  */
-public class Statements {
-
-	private final StatementCursor cursor;
+public abstract class Statements {
 	
-	/*pkg*/ Statements( StatementCursor cursor ) {
-		this.cursor = cursor;
+	/**
+	 * Listener interface for receiving insertion events
+	 */
+	public interface Listener {		
+		public void statementInserted( Statement s );
 	}
+	
+	private Listener listener;
+	
+	/**
+	 * Set the listener to receive insertion events
+	 * @param listener may be null to stop events
+	 */
+	public void setListener( Listener listener ) {
+		this.listener = listener;
+	}
+
+	/*pkg*/ void insert_( Statement s ) {		
+		insert( s );
+		if( listener != null ) listener.statementInserted( s );
+	}
+	
+	/**
+	 * Override to insert the given statement
+	 */
+	protected abstract void insert( Statement s );
+	
+	/**
+	 * Get or make a LabelStatement for the given name
+	 */
+	protected abstract LabelStatement labelForName( Object name );
 	
     /**
      * Insert a label.
      * 
      * @param name a unique name for the label
      */
-    public Statements label( String name )  {
-    	cursor.insert( new LabelStatement( name ) );
+    public final Statements label( Object name )  {
+    	insert_( new LabelStatement( name ) );
     	return this;
     }
     
@@ -35,10 +62,10 @@ public class Statements {
      * 
      * @param name the target label name
      */
-    public Statements branch( String name ) {
-    	LabelStatement label = cursor.list.labelForName( name );
+    public final Statements branch( Object name ) {
+    	LabelStatement label = labelForName( name );
     	BranchStatement branch = new BranchStatement( label );
-    	cursor.insert( branch );
+    	insert_( branch );
     	return this;
     }
     
@@ -48,10 +75,10 @@ public class Statements {
      * @param name the target label name
      * @param condition the condition for the branch
      */
-    public Statements branch( String name, Expression condition ) {
-    	LabelStatement label = cursor.list.labelForName( name );
+    public final Statements branch( Object name, Expression condition ) {
+    	LabelStatement label = labelForName( name );
     	BranchStatement branch = new BranchStatement( label, condition );
-    	cursor.insert( branch );    	
+    	insert_( branch );    	
     	return this;
     }
     
@@ -60,26 +87,73 @@ public class Statements {
      * 
      * @param expression the expression to evaluate
      */
-    public Statements expression( Expression expression ) {    	
-    	cursor.insert( new ExpressionStatement( expression ) );
+    public final Statements expression( Expression expression ) {    	
+    	insert_( new ExpressionStatement( expression ) );
     	return this;
     }
     
     /**
+     * Assign to a variable
+     * 
+     * @param varName the variable to assign
+     * @param value the value to assign
+     */
+    public final Statements assign( String varName, Expression value ) {
+    	insert_( new VariableAssignmentStatement( varName, value ) );
+    	return this;
+    }
+    
+    /**
+     * Assign to an array element
+     * 
+     * @param array the array object
+     * @param index the element index
+     * @param value the value to assign
+     */
+    public final Statements assign( Expression array, Expression index, Expression value ) {
+    	insert_( new ElementAssignmentStatement( array, index, value )  );
+    	return this;
+    }
+    
+    /**
+     * Assign to a static field
+     * 
+     * @param field the field
+     * @param value the value to assigns
+     */
+    public final Statements assign( FieldDescriptor field, Expression value ) {
+    	insert_( new StaticFieldAssignmentStatement( field, value ) );
+    	return this;
+    }
+    
+    /**
+     * Assign to a field
+     * 
+     * @param field    the field
+     * @param instance the instance object
+     * @param value    the value to assign
+     */
+    public final Statements assign( FieldDescriptor field, Expression instance, Expression value ) {
+    	insert_( new FieldAssignmentStatement( field, instance, value ) );
+    	return this;
+    }
+    
+    
+    /**
      * Insert a void method return
      */
-    public Statements voidReturn() {
-    	cursor.insert( new ReturnStatement( null ) );
+    public final Statements voidReturn() {
+    	insert_( new ReturnStatement() );
     	return this;
     }
 
     /**
      * Insert a method return
      * 
-     * @param expression the return value - null if the method is Statements
+     * @param expression the return value
      */
-    public Statements returnValue( Expression expression ) {
-    	cursor.insert( new ReturnStatement( expression ) );
+    public final Statements returnValue( Expression expression ) {
+    	insert_( new ReturnStatement( expression ) );
     	return this;
     }
 
@@ -89,8 +163,8 @@ public class Statements {
      * 
      * @param exception the exception to throw
      */
-    public Statements throwException( Expression exception ) {
-    	cursor.insert( new ThrowStatement( exception ) );
+    public final Statements throwException( Expression exception ) {
+    	insert_( new ThrowStatement( exception ) );
     	return this;    	
     }
     
@@ -100,7 +174,7 @@ public class Statements {
      * @param value the value to match on
      * @return a factory for the cases
      */
-    public Cases switchBranch( Expression value ) {    	
+    public final Cases switchBranch( Expression value ) {    	
     	return new Cases( value );
     }
     
@@ -109,8 +183,8 @@ public class Statements {
      * 
      * @param object the object to sync on
      */
-    public Statements monitorEnter( Expression object ) {
-    	cursor.insert( new MonitorEnterStatement( object ) );
+    public final Statements monitorEnter( Expression object ) {
+    	insert_( new MonitorEnterStatement( object ) );
     	return this;    	
     }
     
@@ -119,19 +193,19 @@ public class Statements {
      * 
      * @param object the object to sync on
      */
-    public Statements monitorExit( Expression object ) {
-    	cursor.insert( new MonitorExitStatement( object ) );
+    public final Statements monitorExit( Expression object ) {
+    	insert_( new MonitorExitStatement( object ) );
     	return this;    	
     }    
     
     /**
      * Insert an increment statement
      * 
-     * @param varIndex the variable to increment
+     * @param varName the variable to increment
      * @param increment the increment value
      */
-    public Statements increment( int varIndex, Expression increment ) {
-    	cursor.insert( new IncrementStatement( increment, varIndex ) );
+    public final Statements increment( String varName, Expression increment ) {
+    	insert_( new IncrementStatement( increment, varName ) );
 		return this;    	
 	}   
     
@@ -154,8 +228,8 @@ public class Statements {
     	 * @param caseValue the case value
     	 * @param target the target label name
     	 */
-    	public Cases switchCase( int caseValue, String target ) {
-    		LabelStatement label = cursor.list.labelForName( target );
+    	public final Cases switchCase( int caseValue, Object target ) {
+    		LabelStatement label = labelForName( target );
     		cases.add( new SwitchCase( caseValue, label ) );
     		return this;
     	}
@@ -166,9 +240,9 @@ public class Statements {
     	 * 
     	 * @param target the label name for the default target
     	 */
-    	public Statements defaultCase( String target ) {
-    		LabelStatement label = cursor.list.labelForName( target );
-    		cursor.insert( new SwitchStatement( 
+    	public final Statements defaultCase( Object target ) {
+    		LabelStatement label = labelForName( target );
+    		insert_( new SwitchStatement( 
     			value, label, 
     		    cases.toArray( new SwitchCase[ cases.size() ] )));
     		return Statements.this;

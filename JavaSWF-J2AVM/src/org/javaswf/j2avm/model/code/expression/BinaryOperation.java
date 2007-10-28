@@ -9,20 +9,27 @@ import org.javaswf.j2avm.model.types.PrimitiveType;
  */
 public enum BinaryOperation {
 
-	ADD,
-	SUBTRACT,
-	MULTIPLY,
-	DIVIDE,
-	REMAINDER,
-	SHIFT_LEFT,
-	SHIFT_RIGHT_SIGNED,
-	SHIFT_RIGHT_UNSIGNED,
-	AND,
-	OR,
-	XOR,
-	COMPARE,
-	COMPARE_G,
-	COMPARE_L;
+	ADD                  ( "+" ),
+	SUBTRACT             ( "-" ),
+	MULTIPLY             ( "*" ),
+	DIVIDE               ( "/" ),
+	REMAINDER            ( "%" ),
+	SHIFT_LEFT           ( "<<" ),
+	SHIFT_RIGHT_SIGNED   ( ">>" ),
+	SHIFT_RIGHT_UNSIGNED ( ">>>" ),
+	AND                  ( "&" ),
+	OR                   ( "|" ),
+	XOR                  ( "^" ),
+	COMPARE              ( "<=>" ),
+	COMPARE_G            ( "<G>" ),
+	COMPARE_L            ( "<L>" );
+	
+	/** The textual representation of the operation */
+	public final String text;
+	
+	private BinaryOperation( String text ) {
+		this.text = text;
+	}
 	
 	/**
 	 * Get the result type for this operation.

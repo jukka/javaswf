@@ -15,9 +15,9 @@ public class Driver {
 	public static void main( String[] args ) throws Exception {
 				
 		String[] files = {
-				"/Users/dmain/workspace-os/JavaSWF-J2AVM-TestBed/eclipse-build",
-				"/Users/dmain/workspace-os/JavaSWF-FlashRuntime/eclipse-build",
-				"/Users/dmain/workspace-os/JavaSWF-J2AVM/eclipse-build"
+			"/Users/dmain/workspace-os/JavaSWF-J2AVM-TestBed/eclipse-build",
+			"/Users/dmain/workspace-os/JavaSWF-FlashRuntime/eclipse-build",
+			"/Users/dmain/workspace-os/JavaSWF-J2AVM/eclipse-build"
 		};
 		
 		URL[] urls = new URL[ files.length ];

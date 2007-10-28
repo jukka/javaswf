@@ -13,11 +13,11 @@ public final class LabelStatement extends Statement {
 	final Set<LabelTargetter> targetters = new HashSet<LabelTargetter>();
 
     /**
-     * The unique (within method) name of the label.
+     * The toString-unique (within method) name of the label.
      */
-    public final String name;
+    public final Object name;
     
-    LabelStatement( String name ) {
+    LabelStatement( Object name ) {
         this.name = name;
     }
     
@@ -46,7 +46,13 @@ public final class LabelStatement extends Statement {
         final LabelStatement other = (LabelStatement) obj;
         if( name == null ) {
             if( other.name != null ) return false;
-        } else if( !name.equals( other.name ) ) return false;
+        } 
+        else if( !name.toString().equals( other.name.toString() ) ) return false;
         return true;
+    }
+    
+    @Override
+    public String toString() {
+    	return name.toString();
     }
 }

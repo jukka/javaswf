@@ -85,5 +85,16 @@
             <arg line="-as3=true -o Test.swf -sp=. test/Test.as"/>
         </exec>
     </target>
+
+    <!-- Dump the dataswf -->
+    <target name="dump-dataswf">
+        <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+              classpathref="javaswf" >
+            <arg value="/Users/dmain/Desktop/dataswf.swf"/>
+            <arg value="out=/Users/dmain/Desktop/dataswf.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+        </java>
+    </target>
 	
 </project>

@@ -50,7 +50,7 @@ public abstract class AttributeModel {
      * Parse an attribute and place it in the map
      */
     public static void parseAttr( Map<AttributeName,AttributeModel> attrMap,
-    		                       DataInput in, ConstantPool pool ) 
+    		                      DataInput in, ConstantPool pool ) 
     	throws IOException {
     	
         int    nameIndex = in.readUnsignedShort();

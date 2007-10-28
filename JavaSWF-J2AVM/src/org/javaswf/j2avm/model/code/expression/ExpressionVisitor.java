@@ -16,6 +16,21 @@ import org.javaswf.j2avm.model.types.ValueType;
  */
 public interface ExpressionVisitor {
 
+	/**
+	 * Visit the "this" value of the current method
+	 * 
+	 * @param thisType the value type
+	 */
+	public void visitThis( ObjectType thisType );
+	
+	/**
+	 * Visit an argument of the current method
+	 * 
+	 * @param argIndex the argument index (zero is first)
+	 * @param argType the argument type
+	 */
+	public void visitArgument( int argIndex, ValueType argType );
+	
     /** Visit a Constant Int */
     public void visitConstantInt( int value );
     
@@ -36,42 +51,7 @@ public interface ExpressionVisitor {
 
     /** Visit a Constant Null */
     public void visitConstantNull();
-    
-    
-    /**
-     * Visit an array assignment expression
-     * 
-     * @param array the array object
-     * @param index the array index
-     * @param value the value to store
-     */
-    public void visitElementAssignment( Expression array, Expression index, Expression value );
-    
-    /**
-     * Visit a variable assignment expression
-     * 
-     * @param varIndex the variable to set
-     * @param value the valueto store
-     */
-    public void visitVariableAssignment( int varIndex, Expression value );
-
-    /**
-     * Visit an instance field assignment expression
-     * 
-     * @param field the field to set
-     * @param instance the field instance
-     * @param value the value to store
-     */
-    public void visitInstanceField( FieldDescriptor field, Expression instance, Expression value );
-
-    /**
-     * Visit a static field assignment
-     * 
-     * @param field the field to set
-     * @param value the value to store
-     */
-    public void visitStaticFieldAssignment( FieldDescriptor field, Expression value );
-    
+        
     /**
      * Visit a conditional expression
      * 
@@ -140,19 +120,26 @@ public interface ExpressionVisitor {
     
     /**
      * Visit a new array expression
+     * 
      * @param type the new array type
      * @param dimSizes the sizes of the dimensions to be created
-     * @param initialValues the initial values (optional)
      */
-    public void visitNewArray( ArrayType type, Expression[] dimSizes, Expression...initialValues );
+    public void visitNewArray( ArrayType type, Expression[] dimSizes );
+    
+    /**
+     * An array initializer expression
+     * @param array the array to initialize
+     * @param values the initial values
+     */
+    public void visitArrayInitializer( Expression array, Expression...values );
     
     /**
      * Visit a variable
      * 
-     * @param index the variable value
+     * @param name the variable name
      * @param type the variable type
      */
-    public void visitVariable( int index, ValueType type );
+    public void visitVariable( String name, ValueType type );
     
     /**
      * Visit a cast 

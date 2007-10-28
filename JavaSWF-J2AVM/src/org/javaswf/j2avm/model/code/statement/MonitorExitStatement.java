@@ -16,6 +16,6 @@ public final class MonitorExitStatement extends Statement {
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitMonitorExit( children[0] );			
+		visitor.visitMonitorExit( child(0) );			
 	}
 }

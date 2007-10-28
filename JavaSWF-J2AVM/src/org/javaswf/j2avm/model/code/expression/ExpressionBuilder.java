@@ -1,8 +1,11 @@
 package org.javaswf.j2avm.model.code.expression;
 
+import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
+import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
 
@@ -11,8 +14,10 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public class ExpressionBuilder {
+public final class ExpressionBuilder {
 
+	private ExpressionBuilder() {} //prevent instantiation
+	
 	/**
 	 * An array length operation.
 	 * 
@@ -29,9 +34,9 @@ public class ExpressionBuilder {
 	 * @param instance the instance object
 	 * @param args the method args
 	 */
-	public static VirtualCallExpression virtualCall( MethodDescriptor method, 
-			                                         Expression instance, 
-			                                         Expression...args ) {
+	public static VirtualCallExpression call( MethodDescriptor method, 
+			                                  Expression instance, 
+			                                  Expression...args ) {
 		return new VirtualCallExpression( method, instance, args );
 	}
 	
@@ -123,11 +128,11 @@ public class ExpressionBuilder {
 	/**
 	 * A variable value
 	 * 
-	 * @param index the variable index
+	 * @param name the variable name
 	 * @param type the variable type
 	 */
-	public static VariableExpression variable( int index, ValueType type ) {
-		return new VariableExpression( index, type );
+	public static VariableExpression variable( String name, ValueType type ) {
+		return new VariableExpression( name, type );
 	}
 	
 	/**
@@ -180,5 +185,94 @@ public class ExpressionBuilder {
 	 */
 	public static NegateExpression negate( Expression value ) {
 		return new NegateExpression( value );
+	}
+	
+	/**
+	 * A static field read
+	 * 
+	 * @param field the field to access
+	 */
+	public static StaticFieldExpression staticField( FieldDescriptor field ) {
+		return new StaticFieldExpression( field );
+	}
+	
+	/**
+	 * An instance field read
+	 * 
+	 * @param field the field to access
+	 * @param instance the instance object
+	 */
+	public static InstanceFieldExpression field( FieldDescriptor field, Expression instance ) {
+		return new InstanceFieldExpression( field, instance );
+	}
+	
+	/**
+	 * An array element read.
+	 * 
+	 * @param array the array object
+	 * @param index the array index
+	 */
+	public static ElementExpression element( Expression array, Expression index ) {
+		return new ElementExpression( array, index );
+	}
+	
+	/**
+	 * A condition expression
+	 * 
+	 * @param condition the condition to evaluate
+	 * @param left the left operand
+	 * @param right the right operand
+	 */
+	public static ConditionExpression condition( Condition condition, 
+			                                     Expression left,
+			                                     Expression right ) {
+		return new ConditionExpression( condition, left, right );
+	}
+	
+	/**
+	 * A conditional expression
+	 * 
+	 * @param condition the controlling condition
+	 * @param ifTrue the value if the condition is true
+	 * @param ifFalse the value if the condition is false
+	 */
+	public static ConditionalExpression conditional( Expression condition,
+			                                         Expression ifTrue,
+			                                         Expression ifFalse ) {
+		return new ConditionalExpression( condition, ifTrue, ifFalse );
+	}
+	
+	/**
+	 * A new object expression
+	 * 
+	 * @param type the type to instantiate
+	 * @param paramTypes the constructor parameter types
+	 * @param args the constructor call arguments
+	 */
+	public static NewExpression newObject( ObjectType type, 
+			                               ValueType[] paramTypes, 
+			                               Expression...args ) {
+		return new NewExpression( type, paramTypes, args );
+	}
+	
+	/**
+	 * A new array
+	 * 
+	 * @param type the array type
+	 * @param dimSizes the dimension sizes
+	 */
+	public static NewArrayExpression newArray( ArrayType type,
+			                                   Expression...dimSizes ) {
+		return new NewArrayExpression( type, dimSizes );
+	}
+	
+	/**
+	 * An array initializer expression
+	 * 
+	 * @param array the array to initialize
+	 * @param values the initial values
+	 */
+	public static ArrayInitializerExpression initialize( Expression array, Expression...values ) {
+		return new ArrayInitializerExpression( array, values );
 	}
 }

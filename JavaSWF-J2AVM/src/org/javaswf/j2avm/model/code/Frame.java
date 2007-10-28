@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
+import org.javaswf.j2avm.model.code.instruction.Instruction;
 import org.javaswf.j2avm.model.flags.MethodFlag;
+import org.javaswf.j2avm.model.parser.ExceptionHandler;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
 

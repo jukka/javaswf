@@ -2,9 +2,8 @@ package org.epistem.template;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-
-import freemarker.template.TemplateException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base for code generators.  
@@ -20,42 +19,38 @@ public abstract class CodeGenerator {
 
 	private final TemplateSet templates = new TemplateSet( this.getClass() );
 	private final File targetDir;
+	private final Map<String, Object> model = new HashMap<String, Object>();
 	
 	/**
 	 * @param targetDir the target dir for generated files
 	 */
 	protected CodeGenerator( File targetDir ) {
 		this.targetDir = targetDir;
+		
+		model.put( "generator", this );
 	}
 	
 	/**
-	 * Get the given named template (cached)
-	 * 
-	 * @param name the template name without suffix.
-	 * @throws RuntimeException if the template could not be found or loaded
+	 * Add an item to the model
+	 * @param name the item name
+	 * @param item the item
 	 */
-	protected final Template template( String name ) {
-		try {
-			return templates.get( name );
-		} catch( IOException ioe ) {
-			throw new RuntimeException( ioe );
-		}
+	protected final void addToModel( String name, Object item ) {
+		model.put( name, item );
 	}
-
+	
 	/**
 	 * Generate a file.
 	 * 
 	 * @param filename the filename, within the target dir
-	 * @param template the template to use
-	 * @param model the model for the template
+	 * @param templateName the template to use
 	 */
-	protected final void generate( String   filename, 
-			                       Template template, 
-			                       Object   model ) 
-		throws IOException, TemplateException {
+	protected final void generate( String filename, String templateName ) 
+		throws Exception {
 		
 		File target = new File( targetDir, filename );
 		target.getParentFile().mkdirs();
+		Template template = templates.get( templateName );
 		
 		FileWriter writer = new FileWriter( target );
 		try {

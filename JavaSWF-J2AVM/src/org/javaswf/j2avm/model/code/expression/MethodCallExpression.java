@@ -29,11 +29,4 @@ public abstract class MethodCallExpression extends Expression {
 		if( method.type == VoidType.VOID ) return null;		
 		return (ValueType) method.type;
 	}
-	
-	private static Expression[] merge( Expression e, Expression[] ee ) {
-		Expression[] merged = new Expression[ ee.length + 1 ];
-		merged[0] = e;
-		System.arraycopy( ee, 0, merged, 1, ee.length );
-		return merged;
-	}
 }

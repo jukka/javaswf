@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.parser;
+package org.javaswf.j2avm.model.code.instruction;
 
 import java.util.Collections;
 import java.util.HashMap;

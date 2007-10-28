@@ -7,10 +7,19 @@ package org.javaswf.j2avm.model.code.expression;
  */
 public enum Condition {
 
-    IF_EQUAL,
-    IF_NOT_EQUAL,
-    IF_LESS_THAN,
-    IF_GREATER_THAN,
-    IF_GREATER_OR_EQUAL,
-    IF_LESS_OR_EQUAL
+    IF_EQUAL            ( "==" ),
+    IF_NOT_EQUAL        ( "!=" ),
+    IF_LESS_THAN        ( "<" ),
+    IF_GREATER_THAN     ( ">" ),
+    IF_GREATER_OR_EQUAL ( ">=" ),
+    IF_LESS_OR_EQUAL    ( "<=" );
+    
+    /**
+     * The textual representation of the condition
+     */
+    public final String text;
+    
+    private Condition( String text ) {
+    	this.text = text;
+    }
 }
