@@ -16,6 +16,10 @@ public final class ExpressionStatement extends Statement {
 		super( expression ); 
 	}
 
+    ExpressionStatement( int popCount ) {
+        super( new Expression[ popCount ] ); 
+    }
+	
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {

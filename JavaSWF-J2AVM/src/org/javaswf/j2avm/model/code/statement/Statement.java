@@ -2,7 +2,6 @@ package org.javaswf.j2avm.model.code.statement;
 
 import org.javaswf.j2avm.model.code.expression.Expression;
 import org.javaswf.j2avm.model.code.expression.ExpressionContainer;
-import org.javaswf.j2avm.model.code.expression.ExpressionVisitor;
 
 /**
  * Base for statements
@@ -15,6 +14,9 @@ public abstract class Statement {
 	/*pkg*/ Statement prev;
 	/*pkg*/ Statement next;
 	
+	/**
+	 * The child expressions (if any)
+	 */	
 	protected final ExpressionContainer expressions;
 	
 	protected Statement( Expression...children ) {
@@ -25,14 +27,14 @@ public abstract class Statement {
 	protected final Expression child( int index ) {
 		return expressions.child( index );
 	}
-	
-    /**
-     * Visit all the child expressions in evaluation order.
-     */
-    public final void visitChildren( ExpressionVisitor visitor ) {
-    	expressions.visitChildren( visitor );
-    }
     
+	/**
+	 * Get the expression container for child expressions
+	 */
+	public ExpressionContainer children() {
+	    return expressions;
+	}
+	
     /**
      * Move this statement to after another Statement
      * 
@@ -61,6 +63,20 @@ public abstract class Statement {
      */
     public final void remove() {
     	list.remove( this );
+    }
+    
+    /**
+     * Get the previous statement
+     */
+    public final Statement previous() {
+        return prev;
+    }
+
+    /**
+     * Get the next statement
+     */
+    public final Statement next() {
+        return next;
     }
     
     /**

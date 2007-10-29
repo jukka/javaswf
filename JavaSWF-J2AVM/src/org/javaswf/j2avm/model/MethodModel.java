@@ -8,6 +8,7 @@ import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
 import org.javaswf.j2avm.model.code.ValueGenerator;
+import org.javaswf.j2avm.model.code.instruction.StatementConstructor;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
@@ -101,6 +102,12 @@ public final class MethodModel extends Model implements ValueGenerator {
         for (int i = 0; i < numAttrs; i++) {
         	AttributeModel.parseAttr( attributes, in, pool );
         }        
+        
+        //--build statements
+        CodeAttribute code = code();
+        if( code != null ) {
+            new StatementConstructor( code.statements, this ).perform();
+        }
 	}
 	
     /**

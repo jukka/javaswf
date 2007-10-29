@@ -13,16 +13,27 @@ public class ExpressionContainer {
 	/*pkg*/ final Expression[] children;
 	/*pkg*/ ExpressionContainer parent;
 	
-	public ExpressionContainer( Expression...children ) {
-		this.children = children;
+	//count of valid (not undefined) expressions
+	private int count;
+	
+	public ExpressionContainer( Expression...ee ) {
+		this.children = new Expression[ ee.length ];
 		
-		for( int i = 0; i < children.length; i++ ) {
-			if( children[i] == null ) children[i] = new UndefinedExpression();
+		for( int i = 0; i < ee.length; i++ ) {		    
+		    set( i, ee[i] );
 		}
-		
-		for( Expression e : children ) {
-			if( e != null ) e.parent = this;
-		}
+	}
+	
+	private void set( int index, Expression e ) {
+	    if( e == null ) {
+            e = new UndefinedExpression();	        
+	    }
+	    else {
+	        count++;
+	    }
+	    
+	    e.parent = this;
+	    children[ index ] = e;
 	}
 	
 	/**
@@ -33,13 +44,21 @@ public class ExpressionContainer {
 	}
 	
 	/**
+	 * The count of valid expressions (not null or undefined)
+	 */
+	public int validCount() {
+	    return count;
+	}
+	
+	/**
 	 * Whether all the expressions are complete (there are no nulls or 
-	 * UndefinedExpressions).
+	 * undefined children) and their children are all complete.
 	 */
 	public final boolean isComplete() {
+		if( count != children.length ) return false;
 		for( Expression e : children ) {
-			if( e == null || e instanceof UndefinedExpression ) return false;
-		}
+            if( ! e.isComplete() ) return false;
+        }
 		
 		return true;
 	}
@@ -61,6 +80,30 @@ public class ExpressionContainer {
      */
     public final Expression child( int index ) {
     	return children[index];
+    }
+    
+    /**
+     * Set the last child that is undefined in the expression tree to the 
+     * given expression.
+     */
+    public final void setLastUndefinedChild( Expression e ) {
+        if( setLastUndefinedChild_( e ) ) return;
+        
+        throw new RuntimeException( "There were no undefined child expressions" );
+    }
+    
+    final boolean setLastUndefinedChild_( Expression e ) {
+        for( int i = children.length - 1; i >= 0; i-- ) {
+            if( children[i] instanceof UndefinedExpression ) {
+                set( i, e );
+                return true;
+            }
+            else {
+                if( children[i].setLastUndefinedChild_( e ) ) return true;
+            }
+        }
+        
+        return false;
     }
     
     /**

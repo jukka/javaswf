@@ -55,6 +55,7 @@ import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
 import org.javaswf.j2avm.model.types.ValueType;
+import org.javaswf.j2avm.model.types.VoidType;
 
 /**
  * Translator from Instructions to Expressions and Statements.
@@ -299,24 +300,33 @@ public final class InstructionResolver implements Instructions {
 		statements.assign( cpool.getField( fieldIndex ), null );
 	}
     
+	private void invoke( Expression e, MethodDescriptor md ) {
+	    if( md.type == VoidType.VOID ) {
+	        statements.expression( e );
+	    }
+	    else {
+	        insert( e );
+	    }	    
+	}
+	
     public void invokeinterface(int methodIndex, int count) {
-    	MethodDescriptor md = cpool.getMethod( methodIndex );    	
-    	insert( call( md, null, new Expression[ md.signature.paramTypes.length ] ) );
+    	MethodDescriptor md = cpool.getMethod( methodIndex );    	    	
+    	invoke( call( md, null, new Expression[ md.signature.paramTypes.length ] ), md );
     }
 
     public void invokespecial(int methodIndex) {
     	MethodDescriptor md = cpool.getMethod( methodIndex );    	
-    	insert( specialCall( md, null, new Expression[ md.signature.paramTypes.length ] ) );
+    	invoke( specialCall( md, null, new Expression[ md.signature.paramTypes.length ] ), md );
     }
 
     public void invokestatic(int methodIndex) {
     	MethodDescriptor md = cpool.getMethod( methodIndex );    	
-    	insert( staticCall( md, new Expression[ md.signature.paramTypes.length ] ) );
+    	invoke( staticCall( md, new Expression[ md.signature.paramTypes.length ] ), md );
     }
 
     public void invokevirtual(int methodIndex) {
     	MethodDescriptor md = cpool.getMethod( methodIndex );    	
-    	insert( call( md, null, new Expression[ md.signature.paramTypes.length ] ) );
+    	invoke( call( md, null, new Expression[ md.signature.paramTypes.length ] ), md );
     }
 
     public void goto_(int label)  { statements.branch( label ); }
@@ -366,16 +376,17 @@ public final class InstructionResolver implements Instructions {
 
     public void iinc(int localVar, int increment) { statements.increment( "local_"+localVar, constantInt( increment ) ); }
 
-    public void dup_x1()  { new StackOperationStatement( 0, 1, 1 ).append( statements ); }
-    public void dup_x2()  { new StackOperationStatement( 0, 1, 2 ).append( statements ); }
-    public void dup()     { new StackOperationStatement( 0, 1, 0 ).append( statements ); }
-    public void dup2_x1() { new StackOperationStatement( 0, 2, 1 ).append( statements ); }
-    public void dup2_x2() { new StackOperationStatement( 0, 2, 2 ).append( statements ); }
-    public void dup2()    { new StackOperationStatement( 0, 2, 0 ).append( statements ); }
-    public void pop()     { new StackOperationStatement( 1, 0, 0 ).append( statements ); }
-    public void pop2()    { new StackOperationStatement( 2, 0, 0 ).append( statements ); }
-    public void swap()    { new StackOperationStatement( 0, 0, 0 ).append( statements ); }
+    public void dup_x1()  { new StackOperationStatement( 1, 1 ).append( statements ); }
+    public void dup_x2()  { new StackOperationStatement( 1, 2 ).append( statements ); }
+    public void dup()     { new StackOperationStatement( 1, 0 ).append( statements ); }
+    public void dup2_x1() { new StackOperationStatement( 2, 1 ).append( statements ); }
+    public void dup2_x2() { new StackOperationStatement( 2, 2 ).append( statements ); }
+    public void dup2()    { new StackOperationStatement( 2, 0 ).append( statements ); }
+    public void swap()    { new StackOperationStatement( 0, 0 ).append( statements ); }
 
+    public void pop()     { new PopStatement( 1 ).append( statements ); }
+    public void pop2()    { new PopStatement( 1 ).append( statements ); }
+    
     public void dneg() { insert( negate( null ) ); }
     public void fneg() { insert( negate( null ) ); }
     public void ineg() { insert( negate( null ) ); }

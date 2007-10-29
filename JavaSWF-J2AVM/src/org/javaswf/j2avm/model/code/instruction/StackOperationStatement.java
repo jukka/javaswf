@@ -11,13 +11,11 @@ import org.javaswf.j2avm.model.types.ObjectType;
  */
 public final class StackOperationStatement extends IntermediateStatement {
 
-	final int popCount; //0-2
 	final int dupCount; //0-2
 	final int skipCount; //0-2
 	
-	StackOperationStatement( int popCount, int dupCount, int skipCount ) {
+	StackOperationStatement( int dupCount, int skipCount ) {
 		this.skipCount = skipCount;
-		this.popCount  = popCount;
 		this.dupCount  = dupCount;
 	}
 
@@ -25,8 +23,7 @@ public final class StackOperationStatement extends IntermediateStatement {
 	@Override
 	public void accept( StatementVisitor visitor ) {
 		String description = "swap";
-		if     ( popCount > 0 ) description = "pop " + popCount;
-		else if( dupCount > 0 ) description = "dup " + dupCount + " skip " + skipCount;
+		if( dupCount > 0 ) description = "dup " + dupCount + " skip " + skipCount;
 		
 		visitor.visitExpression( ExpressionBuilder.variable( description, ObjectType.OBJECT ) );		
 	}

@@ -42,20 +42,40 @@ public final class StatementCursor {
 	}
 	
 	/**
+	 * Get the next statement and advance beyond it
+	 * @return null if there are no more statements
+	 */
+	public Statement next() {
+        Statement next = getNext();
+        
+        if( next == null ) return null;
+        
+        prev = next;
+        return next;
+	}
+	
+	//get the next statement, do not advance
+	private Statement getNext() {
+        Statement next = null;
+        
+        if( prev == null ) {
+            next = list.first;
+        }
+        else {
+            next = prev.next;
+        }
+        
+        return next;	    
+	}
+	
+	/**
 	 * Visit the next Statement and position the cursor after it.
 	 * 
 	 * @param visitor the visitor to be accepted by the next statement
 	 * @return true if the visit took place, false if there is no next statement
 	 */
 	public boolean visitNext( StatementVisitor visitor ) {
-		Statement next = null;
-		
-		if( prev == null ) {
-			next = list.first;
-		}
-		else {
-			next = prev.next;
-		}
+		Statement next = next();
 		
 		if( next == null ) return false;
 		
