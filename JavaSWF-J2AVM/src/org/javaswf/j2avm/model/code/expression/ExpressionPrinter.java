@@ -71,8 +71,7 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 		 || e instanceof ConditionExpression
 		 || e instanceof ConvertExpression
 		 || e instanceof CastExpression
-		 || e instanceof InstanceOfExpression
-		 || e instanceof ConditionalExpression ) {
+		 || e instanceof InstanceOfExpression ) {
 			ipw.print( "(" );
 			e.accept( this );
 			ipw.print( ")" );			
@@ -97,15 +96,6 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 		ipw.print( condition.text );
 		ipw.print( " " );
 		printOpArg( right );
-	}
-
-	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitConditional(org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.expression.Expression) */
-	public void visitConditional( Expression condition, Expression ifTrue, Expression ifFalse ) {
-		printOpArg( condition );
-		ipw.print( " ? " );
-		printOpArg( ifTrue );
-		ipw.print( " : " );
-		printOpArg( ifFalse );		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitConstantClass(org.javaswf.j2avm.model.types.JavaType) */
@@ -250,6 +240,11 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitVariable(java.lang.String, org.javaswf.j2avm.model.types.ValueType) */
 	public void visitVariable( String name, ValueType type ) {
 		ipw.print( name );
+	}
+
+	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitException(org.javaswf.j2avm.model.types.ValueType) */
+	public void visitException( ValueType type ) {
+		ipw.print( "<caught-exception>" );		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitVirtualCall(org.javaswf.j2avm.model.MethodDescriptor, org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.expression.Expression[]) */

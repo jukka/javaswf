@@ -1,53 +1,27 @@
 package org.javaswf.j2avm.model.code.statement;
 
-import java.util.Set;
-
 import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
- * An exception handler.
+ * A try-catch statement
  * 
  * @author nickmain
  */
-public class TryCatch implements LabelTargetter {
+public final class TryCatch extends Statement {
 
-	/** The start of the try block */
-	public final LabelStatement tryStart;
-	
-	/** The end of the try block */
-	public final LabelStatement tryEnd;
-	
-	/** The start of the handler */
-	public final LabelStatement handlerStart;
+	/*pkg*/ final StatementBlock tryBlock   = new StatementBlock( this );
+	/*pkg*/ final StatementBlock catchBlock = new StatementBlock( this );
 	
 	/** The type of exception to catch */
 	public final ObjectType exceptionType;
 	
-    TryCatch( LabelStatement tryStart, 
-    		  LabelStatement tryEnd, 
-    		  LabelStatement handlerStart, 
-    		  ObjectType     exceptionType ) {
-    	this.tryStart      = tryStart;
-    	this.tryEnd        = tryEnd;
-    	this.handlerStart  = handlerStart;
+    TryCatch( ObjectType exceptionType ) {
     	this.exceptionType = exceptionType;
-
-		tryStart    .targetters.add( this );
-		tryEnd      .targetters.add( this );
-		handlerStart.targetters.add( this );		
     }
 
-	/** @see org.javaswf.j2avm.model.code.statement.LabelTargetter#release() */
-	public void release() {
-		tryStart    .targetters.remove( this );
-		tryEnd      .targetters.remove( this );
-		handlerStart.targetters.remove( this );		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.statement.LabelTargetter#targets(java.util.Set) */
-	public void targets( Set<LabelStatement> labels ) {
-		labels.add( tryStart );
-		labels.add( tryEnd );
-		labels.add( handlerStart );		
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
+	@Override
+	public void accept( StatementVisitor visitor ) {
+		visitor.visitTryCatch( exceptionType, tryBlock, catchBlock );
 	}
 }

@@ -51,6 +51,7 @@ public final class PrimitiveType extends ValueType {
     /**
      * Whether this type is a 64 bit type.
      */
+    @Override
     public boolean is64Bit() {
         return this == LONG || this == DOUBLE;
     }

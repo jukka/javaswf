@@ -131,8 +131,17 @@ public final class ExpressionBuilder {
 	 * @param name the variable name
 	 * @param type the variable type
 	 */
-	public static VariableExpression variable( String name, ValueType type ) {
-		return new VariableExpression( name, type );
+	public static SSAValueExpression variable( String name, ValueType type ) {
+		return new SSAValueExpression( name, type );
+	}
+
+	/**
+	 * A caught exception
+	 * 
+	 * @param type the exception type
+	 */
+	public static CaughtExceptionExpression exception( ObjectType type ) {
+		return new CaughtExceptionExpression( type );
 	}
 	
 	/**
@@ -227,19 +236,6 @@ public final class ExpressionBuilder {
 			                                     Expression left,
 			                                     Expression right ) {
 		return new ConditionExpression( condition, left, right );
-	}
-	
-	/**
-	 * A conditional expression
-	 * 
-	 * @param condition the controlling condition
-	 * @param ifTrue the value if the condition is true
-	 * @param ifFalse the value if the condition is false
-	 */
-	public static ConditionalExpression conditional( Expression condition,
-			                                         Expression ifTrue,
-			                                         Expression ifFalse ) {
-		return new ConditionalExpression( condition, ifTrue, ifFalse );
 	}
 	
 	/**

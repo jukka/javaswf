@@ -19,4 +19,10 @@ public abstract class IntermediateStatement extends Statement {
 	/*pkg*/ final void append( Statements statements ) {
 		insertVia( statements );
 	}
+	
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#isComplete() */
+	@Override
+	protected boolean isComplete() {
+		return false;  //an intermediate statement is never complete  
+	}
 }

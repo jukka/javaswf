@@ -4,6 +4,7 @@ import java.util.SortedSet;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.code.expression.Expression;
+import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
  * Visitor interface for statements
@@ -22,7 +23,7 @@ public interface StatementVisitor {
      * 
      * @param target the target label
      */
-    public void visitBranch( LabelStatement target );
+    public void visitUnconditionalBranch( LabelStatement target );
     
     /**
      * Visit a condition branch
@@ -30,7 +31,7 @@ public interface StatementVisitor {
      * @param target the branch target if the condition is true
      * @param condition the condition for the branch
      */
-    public void visitBranch( LabelStatement target, Expression condition );
+    public void visitConditionalBranch( LabelStatement target, Expression condition );
     
     /**
      * Visit an expression evaluation statement
@@ -119,4 +120,15 @@ public interface StatementVisitor {
      * @param increment the increment value
      */
     public void visitIncrement( String varName, Expression increment );
+
+    /**
+     * Visit the start of a try block
+     * 
+     * @param endLabel the end of the try block
+     * @param catch_ the exception handler
+     */
+    public void visitTry( LabelStatement endLabel, CatchStatement catch_ );
+    
+    //FIXME:
+    public void visitCatch( ObjectType exType );
 }

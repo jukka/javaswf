@@ -6,15 +6,15 @@ package org.javaswf.j2avm.model.code.expression;
 import org.javaswf.j2avm.model.types.ValueType;
 
 /**
- * A variable value
+ * A reference to an SSA value.
  *
  * @author nickmain
  */
-public final class VariableExpression extends Expression {  
+public final class SSAValueExpression extends Expression {  
 	private String    name; 
 	private ValueType type; 
 
-	/*pkg*/ public VariableExpression( String name, ValueType type ) {
+	/*pkg*/ SSAValueExpression( String name, ValueType type ) {
 		this.name = name;
 		this.type = type;
 	}

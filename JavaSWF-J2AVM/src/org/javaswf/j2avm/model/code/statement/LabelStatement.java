@@ -34,7 +34,7 @@ public final class LabelStatement extends Statement {
     public int hashCode() {
         return name.hashCode();
     }
-
+    
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -55,4 +55,18 @@ public final class LabelStatement extends Statement {
     public String toString() {
     	return name.toString();
     }
+
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#addedToList() */
+	@Override
+	protected void addedToList() {
+		String name = toString();
+		if( list.labels.containsKey( name ) ) throw new IllegalArgumentException( "duplicate label name " + name );
+		list.labels.put( name, this );		
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#removingFromList() */
+	@Override
+	protected void removingFromList() {
+		list.labels.remove( toString() );
+	}
 }

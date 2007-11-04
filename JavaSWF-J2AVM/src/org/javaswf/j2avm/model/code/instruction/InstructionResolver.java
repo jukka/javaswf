@@ -97,7 +97,7 @@ public final class InstructionResolver implements Instructions {
 			Integer offset = (Integer) label.name;
 			Statement s = statementByOffset.get( offset );
 			
-			label.moveBefore( s );
+			list.label( s, label.name );
 		}
     }
     
@@ -355,22 +355,22 @@ public final class InstructionResolver implements Instructions {
 		cases.defaultCase( defaultLabel );
     }
 
-    public void if_acmpeq(int label) { statements.branch( label, condition( IF_EQUAL           , null, null ) ); }
-    public void if_acmpne(int label) { statements.branch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
-    public void if_icmpeq(int label) { statements.branch( label, condition( IF_EQUAL           , null, null ) ); }
-    public void if_icmpge(int label) { statements.branch( label, condition( IF_GREATER_OR_EQUAL, null, null ) ); }
-    public void if_icmpgt(int label) { statements.branch( label, condition( IF_GREATER_THAN    , null, null ) ); }
-    public void if_icmple(int label) { statements.branch( label, condition( IF_LESS_OR_EQUAL   , null, null ) ); }
-    public void if_icmplt(int label) { statements.branch( label, condition( IF_LESS_THAN       , null, null ) ); }
-    public void if_icmpne(int label) { statements.branch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
-    public void ifeq(int label)      { statements.branch( label, condition( IF_EQUAL           , null, constantInt( 0 ) ) ); }
-    public void ifge(int label)      { statements.branch( label, condition( IF_GREATER_OR_EQUAL, null, constantInt( 0 ) ) ); }
-    public void ifgt(int label)      { statements.branch( label, condition( IF_GREATER_THAN    , null, constantInt( 0 ) ) ); }
-    public void ifle(int label)      { statements.branch( label, condition( IF_LESS_OR_EQUAL   , null, constantInt( 0 ) ) ); }
-    public void iflt(int label)      { statements.branch( label, condition( IF_LESS_THAN       , null, constantInt( 0 ) ) ); }
-    public void ifne(int label)      { statements.branch( label, condition( IF_NOT_EQUAL       , null, constantInt( 0 ) ) ); }
-    public void ifnonnull(int label) { statements.branch( label, condition( IF_NOT_EQUAL       , null, constantNull() ) ); }
-    public void ifnull(int label)    { statements.branch( label, condition( IF_EQUAL           , null, constantNull() ) ); }
+    public void if_acmpeq(int label) { statements.conditionalBranch( label, condition( IF_EQUAL           , null, null ) ); }
+    public void if_acmpne(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
+    public void if_icmpeq(int label) { statements.conditionalBranch( label, condition( IF_EQUAL           , null, null ) ); }
+    public void if_icmpge(int label) { statements.conditionalBranch( label, condition( IF_GREATER_OR_EQUAL, null, null ) ); }
+    public void if_icmpgt(int label) { statements.conditionalBranch( label, condition( IF_GREATER_THAN    , null, null ) ); }
+    public void if_icmple(int label) { statements.conditionalBranch( label, condition( IF_LESS_OR_EQUAL   , null, null ) ); }
+    public void if_icmplt(int label) { statements.conditionalBranch( label, condition( IF_LESS_THAN       , null, null ) ); }
+    public void if_icmpne(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
+    public void ifeq(int label)      { statements.conditionalBranch( label, condition( IF_EQUAL           , null, constantInt( 0 ) ) ); }
+    public void ifge(int label)      { statements.conditionalBranch( label, condition( IF_GREATER_OR_EQUAL, null, constantInt( 0 ) ) ); }
+    public void ifgt(int label)      { statements.conditionalBranch( label, condition( IF_GREATER_THAN    , null, constantInt( 0 ) ) ); }
+    public void ifle(int label)      { statements.conditionalBranch( label, condition( IF_LESS_OR_EQUAL   , null, constantInt( 0 ) ) ); }
+    public void iflt(int label)      { statements.conditionalBranch( label, condition( IF_LESS_THAN       , null, constantInt( 0 ) ) ); }
+    public void ifne(int label)      { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, constantInt( 0 ) ) ); }
+    public void ifnonnull(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, constantNull() ) ); }
+    public void ifnull(int label)    { statements.conditionalBranch( label, condition( IF_EQUAL           , null, constantNull() ) ); }
 
     public void nop() { statements.expression( constantNull() ); }
 

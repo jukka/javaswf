@@ -13,7 +13,7 @@ import org.javaswf.j2avm.model.types.ValueType;
  */
 public final class ArrayLengthExpression extends Expression {
 	
-	ArrayLengthExpression( Expression array ) {
+	/*pkg*/ ArrayLengthExpression( Expression array ) {
 		super( array ); 
 	}
 

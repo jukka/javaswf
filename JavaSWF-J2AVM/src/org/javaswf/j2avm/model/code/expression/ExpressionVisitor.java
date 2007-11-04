@@ -51,16 +51,7 @@ public interface ExpressionVisitor {
 
     /** Visit a Constant Null */
     public void visitConstantNull();
-        
-    /**
-     * Visit a conditional expression
-     * 
-     * @param condition the condition
-     * @param ifTrue the value if the condition is true
-     * @param ifFalse the value if the condition is false
-     */
-    public void visitConditional( Expression condition, Expression ifTrue, Expression ifFalse );
-    
+   
     /**
      * Visit an instance field read
      * 
@@ -140,6 +131,13 @@ public interface ExpressionVisitor {
      * @param type the variable type
      */
     public void visitVariable( String name, ValueType type );
+
+    /**
+     * Visit a caught exception
+     * 
+     * @param type the exception type
+     */
+    public void visitException( ValueType type );
     
     /**
      * Visit a cast 

@@ -83,6 +83,24 @@ public class ExpressionContainer {
     }
     
     /**
+     * Get the count of undefined expressions in the whole tree
+     */
+    public final int undefinedCount() {
+    	int count = 0;
+    	
+    	for( Expression e : children ) {
+    		if( e == null || e instanceof UndefinedExpression ) {
+    			count++;
+    		}
+    		else {
+    			count += e.undefinedCount();
+    		}
+    	}
+    	
+    	return count;
+    }
+    
+    /**
      * Set the last child that is undefined in the expression tree to the 
      * given expression.
      */
@@ -114,4 +132,11 @@ public class ExpressionContainer {
 		System.arraycopy( children, start, kids, 0, kids.length );		
 		return kids;
     }
+    
+	/**
+	 * Called when this container is being released from use
+	 */
+	public void release() {
+    }
+
 }

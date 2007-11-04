@@ -12,11 +12,5 @@ public interface LabelTargetter {
     /**
      * Get the target labels - placing them into the given set
      */
-    public void targets( Set<LabelStatement> labels );
-    
-    /**
-     * Release all the targets
-     */
-    public void release();
-	
+    public void targets( Set<LabelStatement> labels );	
 }

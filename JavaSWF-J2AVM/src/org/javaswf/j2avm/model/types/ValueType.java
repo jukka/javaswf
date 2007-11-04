@@ -23,4 +23,11 @@ public abstract class ValueType extends JavaType {
     	
         return (ValueType) JavaType.fromName( name );
     }
+    
+    /**
+     * Whether this type is a 64 bit type.
+     */
+    public boolean is64Bit() {
+        return false;
+    }
 }

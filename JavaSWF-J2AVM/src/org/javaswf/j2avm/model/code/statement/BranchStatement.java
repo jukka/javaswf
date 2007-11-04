@@ -5,41 +5,37 @@ import java.util.Set;
 import org.javaswf.j2avm.model.code.expression.Expression;
 
 /**
- * A branch statement
+ * Base for branch statements
  *
  * @author nickmain
  */
-public class BranchStatement extends Statement implements LabelTargetter {
+public abstract class BranchStatement extends Statement implements LabelTargetter {
 
-	protected final LabelStatement target;
+	protected final Object targetName;
+	protected LabelStatement target;
 	
-	BranchStatement( LabelStatement target, Expression expression ) {
+	BranchStatement( Object targetName ) {
+		this.targetName = targetName;		
+		target.targetters.add( this );
+	}
+
+	BranchStatement( Object targetName, Expression expression ) {
 		super( expression );
-		
-		this.target = target;
-		
-		target.targetters.add( this );
-	}
-	
-	BranchStatement( LabelStatement target ) {
-		this.target = target;		
-		target.targetters.add( this );
+		this.targetName = targetName;		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#addedToList() */
 	@Override
-	public void accept( StatementVisitor visitor ) {
-		if( expressions.childCount() == 1 ) {
-			visitor.visitBranch( target, child( 0 ) );
-		}
-		else {
-			visitor.visitBranch( target );		
-		}
+	protected void addedToList() {
+		target = list.labelForName( targetName );
+		target.targetters.add( this );
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.LabelTargetter#release() */
-	public void release() {
+	/** @see org.javaswf.j2avm.model.code.statement.Statement#removingFromList() */
+	@Override
+	protected void removingFromList() {
 		target.targetters.remove( this );
+		target = null;		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.LabelTargetter#targets(java.util.Set) */

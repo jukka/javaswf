@@ -7,19 +7,30 @@ package org.javaswf.j2avm.model.code.statement;
  */
 public class SwitchCase implements Comparable<SwitchCase> {
 
+	/*pkg*/ LabelStatement label;
+	
     /**
      * The case value
      */
     public final int caseValue;
     
     /**
-     * The target statement
+     * The target name
      */
-    public final LabelStatement target;
+    public final Object targetName;
     
-    SwitchCase( int caseValue, LabelStatement target ) {
-        this.caseValue = caseValue;
-        this.target    = target; 
+    /**
+     * Get the target label 
+     * 
+     * @return null if the switch is not part of a statement list
+     */
+    public LabelStatement label() {
+    	return label;
+    }
+    
+    SwitchCase( int caseValue, Object targetName ) {
+        this.caseValue  = caseValue;
+        this.targetName = targetName; 
     }
 
     /**
@@ -35,11 +46,11 @@ public class SwitchCase implements Comparable<SwitchCase> {
         
         SwitchCase other = (SwitchCase) obj;
         return caseValue == other.caseValue 
-            && target.equals( other.target );
+            && targetName.equals( other.targetName );
     }
 
     @Override
     public int hashCode() {        
-        return target.hashCode() * caseValue;
+        return targetName.hashCode() * caseValue;
     }
 }

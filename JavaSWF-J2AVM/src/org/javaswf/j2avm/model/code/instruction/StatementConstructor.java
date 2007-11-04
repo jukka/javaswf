@@ -2,13 +2,7 @@ package org.javaswf.j2avm.model.code.instruction;
 
 import java.util.LinkedList;
 
-import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
-import org.javaswf.j2avm.model.code.expression.Expression;
-import org.javaswf.j2avm.model.code.expression.ExpressionPrinter;
-import org.javaswf.j2avm.model.code.expression.VirtualCallExpression;
-import org.javaswf.j2avm.model.code.statement.ExpressionStatement;
-import org.javaswf.j2avm.model.code.statement.LabelStatement;
 import org.javaswf.j2avm.model.code.statement.Statement;
 import org.javaswf.j2avm.model.code.statement.StatementCursor;
 import org.javaswf.j2avm.model.code.statement.StatementList;
@@ -25,7 +19,7 @@ public class StatementConstructor {
     private final MethodModel   method;
     
     //queue of items to be resolved
-    private final LinkedList<Statement> agenda = new LinkedList<Statement>();
+    private final LinkedList<ConstructedCode> agenda = new LinkedList<ConstructedCode>();
     
     /**
      * @param list the statements to process in-place
@@ -44,53 +38,36 @@ public class StatementConstructor {
         //add all statements to the agenda
         StatementCursor cursor = list.cursorAtStart();
         Statement s;
-        while(( s = cursor.next()) != null ) {
-            
-            //skip pseudo-statements and labels
-            if( s instanceof IntermediateStatement || s instanceof LabelStatement ) continue;
-            
-            if( ! s.children().isComplete() ) {
-                agenda.addLast( s );
-            }
-        }
+        while(( s = cursor.next()) != null ) addToAgenda( s );
         
-        while( ! agenda.isEmpty() ) processAgenda();
-    }
-    
-    //process the first item on the agenda
-    private void processAgenda() {
-        Statement s = agenda.removeFirst();
-    
-        while( ! s.children().isComplete() ) {
+        //process the agenda
+        int count = 0;
+        int size  = agenda.size();
+        while( ! agenda.isEmpty() ) {
+        	ConstructedCode cc = agenda.removeFirst();
+            cc.construct( this ); 
             
-            //is the previous expression complete ?
-            Statement prev = s.previous();
-            if( prev == null ) throw new RuntimeException( "Incomplete statement and no prior expression" );
-            
-            if( prev instanceof UnassembledExpressionStatement ) {
-                Expression prevEx = ((UnassembledExpressionStatement) prev).wrappedExpression();
-                
-                //consume the expression if it is complete
-                if( prevEx.isComplete() ) {
-                    s.children().setLastUndefinedChild( prevEx );
-                    prev.remove();
-                }
-                
-                //if expression is not complete - add it to the agenda along with 
-                //the current statement
-                else {
-                    agenda.addLast( prev );
-                    agenda.addLast( s );
-                    return;
-                }
+            //if everything in the agenda has been processed and there was no
+            //decrease in the agenda size then we're in a loop and need to
+            //abort
+            if( agenda.size() < size ) {
+            	count = 0;
+            	size  = agenda.size();            	
             }
-            else if( prev instanceof  )
-            
             else {
-                return;
-                //FIXME:
+            	count++;
+            	if( count == size ) {
+            		System.err.println( "maxed out" );
+            		return;
+            	}
             }
         }
-        
     }
+    
+    /**
+     * Append an item to the processing agenda
+     */
+    /*pkg*/ void addToAgenda( ConstructedCode cc ) {
+    	agenda.addLast( cc );
+    }    
 }

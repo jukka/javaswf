@@ -6,6 +6,7 @@ import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.code.expression.Expression;
 import org.javaswf.j2avm.model.code.expression.ExpressionPrinter;
+import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
  * A statement visitor that prints textual representations.
@@ -22,16 +23,25 @@ public final class StatementPrinter implements StatementVisitor {
 		this.ep  = new ExpressionPrinter( ipw );
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitBranch(org.javaswf.j2avm.model.code.statement.LabelStatement, org.javaswf.j2avm.model.code.expression.Expression) */
-	public void visitBranch( LabelStatement target, Expression condition ) {
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitTryCatch(org.javaswf.j2avm.model.types.ObjectType, org.javaswf.j2avm.model.code.statement.StatementBlock, org.javaswf.j2avm.model.code.statement.StatementBlock) */
+	public void visitTryCatch( ObjectType exceptionType, StatementBlock tryBlock, StatementBlock catchBlock ) {
+		ipw.print( "try " );
+		tryBlock.accept( this );
+		ipw.print( " catch( " + exceptionType + " ) " );
+		catchBlock.accept( this );
+		ipw.println();
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitConditionalBranch(org.javaswf.j2avm.model.code.statement.LabelStatement, org.javaswf.j2avm.model.code.expression.Expression) */
+	public void visitConditionalBranch( LabelStatement target, Expression condition ) {
 		ipw.print( "if( " );
 		condition.accept( ep );
 		ipw.print( " ) goto " );
 		ipw.println( target.name );		
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitBranch(org.javaswf.j2avm.model.code.statement.LabelStatement) */
-	public void visitBranch( LabelStatement target ) {
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitUnconditionalBranch(org.javaswf.j2avm.model.code.statement.LabelStatement) */
+	public void visitUnconditionalBranch( LabelStatement target ) {
 		ipw.print( "goto " );
 		ipw.println( target.name );		
 	}
@@ -119,8 +129,8 @@ public final class StatementPrinter implements StatementVisitor {
 		ipw.print  ( "default: goto " );
 		ipw.println( defaultTarget.name );
 		
-		ipw.println( "}" );
 		ipw.unindent();		
+		ipw.println( "}" );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitThrow(org.javaswf.j2avm.model.code.expression.Expression) */
@@ -136,5 +146,19 @@ public final class StatementPrinter implements StatementVisitor {
 		ipw.print( " = " );
 		value.accept( ep );
 		ipw.println();		
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitBlockEnd() */
+	public void visitBlockEnd() {
+		ipw.unindent();
+		ipw.print( "}" );
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitBlockStart() */
+	public void visitBlockStart() {
+		ipw.println( "{" );
+		ipw.indent();		
 	}	
+	
+	
 }

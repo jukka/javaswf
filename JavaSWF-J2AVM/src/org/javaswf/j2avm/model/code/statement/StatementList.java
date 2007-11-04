@@ -1,27 +1,25 @@
 package org.javaswf.j2avm.model.code.statement;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
- * A list of statements and associated exception handlers.
+ * A list of statements
  *
  * @author nickmain
  */
 public final class StatementList {
-
-	private final List<TryCatch> handlers = new ArrayList<TryCatch>();
-	private final Map<String, LabelStatement> labels = new HashMap<String, LabelStatement>();
 	
 	protected Statement first;
 	protected Statement last;
 	private int count;
 	
+	private final Map<String, StaticValue> values = new HashMap<String, StaticValue>();
+	/*pkg*/ final Map<String, LabelStatement> labels = new HashMap<String, LabelStatement>();
+		
 	/**
 	 * Get a cursor positioned before the first statement in the list
 	 */
@@ -46,7 +44,7 @@ public final class StatementList {
 	/**
 	 * Get an iterator over all the labels in the list
 	 */
-	public Iterator<LabelStatement> labels() {
+	public final Iterator<LabelStatement> labels() {
 		return labels.values().iterator();
 	}
 	
@@ -75,7 +73,7 @@ public final class StatementList {
 	/** Place a statement in the list */
 	private void place( Statement s, Statement after ) {
 		s.prev = after;
-		s.next = ( after != null ) ? after.next : null;
+		s.next = ( after != null ) ? after.next : first;
 		
 		if( s.prev != null ) after.next = s;
 		else first = s;
@@ -91,18 +89,18 @@ public final class StatementList {
 		place( s, after );
 		count++;
 		
-		statementAdded( s );
+		s.addedToList();
 	}
 
 	/** Remove a statement */
 	final void remove( Statement s ) {
 		if( s.list != this ) return; //not in this list
 		
+		s.removingFromList();
+		
 		s.list = null;
 		pluck( s );
 		count--;
-		
-		statementRemoved( s );
 	}
 
 	/**
@@ -110,7 +108,7 @@ public final class StatementList {
 	 * 
 	 * @param name the label name
 	 */
-	public LabelStatement label( Object name ) {
+	public final LabelStatement label( Object name ) {
 		LabelStatement label = labels.get( name.toString() );
 		
 		if( label == null ) {
@@ -128,7 +126,7 @@ public final class StatementList {
 	 * @param name the label name
 	 * @return the new or existing label
 	 */
-	public LabelStatement label( Statement s, Object name ) {
+	public final LabelStatement label( Statement s, Object name ) {
 		
 		LabelStatement label = labels.get( name.toString() );
 		
@@ -144,51 +142,41 @@ public final class StatementList {
 	}
 	
 	/**
-	 * Whether there are any exception handlers
-	 */
-	public boolean hasExceptionHandlers() {
-		return ! handlers.isEmpty();
-	}
-	
-	/**
-	 * Get an iterator over the exception handlers
-	 */
-	public Iterator<TryCatch> handlers() {
-		return handlers.iterator();
-	}
-	
-	/**
-	 * Add a new exception handler
+	 * Add an exception handler
 	 * 
-	 * @param start the start of the try-block
-	 * @param end the end of the try-block
-	 * @param exceptionType the exception type to catch
+	 * @param tryStart label before start of covered statements
+	 * @param tryEnd label after covered statements
+	 * @param exType the type of exception to catch
 	 * @param handler the start of the handler code
+	 * @return the new try-catch statement
 	 */
-	public void addHandler( LabelStatement start, LabelStatement end,
-			                ObjectType exceptionType,
-			                LabelStatement handler ) {
-		handlers.add( new TryCatch( start, end, handler, exceptionType ));
-	}
-	
-	private void statementAdded( Statement s ) {
-		if( s instanceof LabelStatement ) {
-			LabelStatement label = (LabelStatement) s;
-			String name = label.toString();
-			if( labels.containsKey( name ) ) throw new IllegalArgumentException( "duplicate label name " + label.name );
-			labels.put( name, label );
+	public final TryCatch addExceptionHandler( Object tryStart, Object tryEnd,
+			                                   ObjectType exType, Object handler ) {
+		
+		TryCatch tryCatch = new TryCatch( exType );
+		StatementBlock tryBlock = tryCatch.tryBlock;
+		
+		LabelStatement start = labelForName( tryStart );
+		LabelStatement end   = labelForName( tryEnd );
+		LabelStatement hand  = labelForName( handler );		
+		
+		Statement next ;		
+		for( Statement s = start.next; s != end; s = next ) {
+			next = s.next;
+			remove( s );
+			tryBlock.insert( s, tryBlock.last );
 		}
+		
+		insert( tryCatch, start );
+		
+		//FIXME: 
+		
+		return tryCatch;
 	}
-	
-	private void statementRemoved( Statement s ) {
-		if( s instanceof LabelStatement ) {
-			LabelStatement label = (LabelStatement) s;
-			labels.remove( label.toString() );
-		}
-	}
+
 	
 	/** Get the label with the given name - throw up if not found */
-	/*pkg*/ LabelStatement labelForName( Object name ) {
+	/*pkg*/ final LabelStatement labelForName( Object name ) {
 		LabelStatement label = labels.get( name.toString() );
 		
 		if( label == null ) throw new IllegalArgumentException( "Label name not found: " + name );

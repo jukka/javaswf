@@ -64,20 +64,20 @@ public abstract class Statements {
      */
     public final Statements branch( Object name ) {
     	LabelStatement label = labelForName( name );
-    	BranchStatement branch = new BranchStatement( label );
+    	BranchStatement branch = new UnconditionalBranchStatement( label );
     	insert_( branch );
     	return this;
     }
     
     /**
-     * Insert a condition branch
+     * Insert a conditional branch
      * 
      * @param name the target label name
      * @param condition the condition for the branch
      */
-    public final Statements branch( Object name, Expression condition ) {
+    public final Statements conditionalBranch( Object name, Expression condition ) {
     	LabelStatement label = labelForName( name );
-    	BranchStatement branch = new BranchStatement( label, condition );
+    	BranchStatement branch = new ConditionalBranchStatement( label, condition );
     	insert_( branch );    	
     	return this;
     }
@@ -99,7 +99,7 @@ public abstract class Statements {
      * @param value the value to assign
      */
     public final Statements assign( String varName, Expression value ) {
-    	insert_( new VariableAssignmentStatement( varName, value ) );
+    	insert_( new StaticSingleAssignmentStatement( varName, value ) );
     	return this;
     }
     

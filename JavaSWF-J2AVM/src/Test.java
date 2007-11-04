@@ -24,7 +24,7 @@ public class Test implements Cloneable {
 	}
 	
 	private double dip() {
-		return 2.3;
+		return (System.currentTimeMillis() > 1000) ? (System.currentTimeMillis() + 2) : 2.3;
 	}
 	
 	public static void main( String[] args ) {

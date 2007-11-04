@@ -34,7 +34,7 @@ public final class UnassembledExpressionStatement extends IntermediateStatement 
 	 * @see org.javaswf.j2avm.model.code.statement.Statement#children()
 	 */
     @Override
-    public ExpressionContainer children() {
+    protected final ExpressionContainer children() {
         return child( 0 );
     }
 }
