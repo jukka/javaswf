@@ -30,6 +30,18 @@ public abstract class Expression extends ExpressionContainer {
 		merged[0] = e;
 		System.arraycopy( ee, 0, merged, 1, ee.length );
 		return merged;
+	}
+
+	/** @see org.javaswf.j2avm.model.code.expression.ExpressionContainer#addedToList() */
+	@Override
+	protected void addedToList() {
+		//empty
+	}
+
+	/** @see org.javaswf.j2avm.model.code.expression.ExpressionContainer#removingFromList() */
+	@Override
+	protected void removingFromList() {
+		//empty		
 	}	
-	
 }
+

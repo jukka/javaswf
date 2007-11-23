@@ -4,9 +4,10 @@ import java.util.SortedSet;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.code.expression.CaughtExceptionExpression;
 import org.javaswf.j2avm.model.code.expression.Expression;
 import org.javaswf.j2avm.model.code.expression.ExpressionPrinter;
-import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.code.expression.SSAValueExpression;
 
 /**
  * A statement visitor that prints textual representations.
@@ -23,14 +24,6 @@ public final class StatementPrinter implements StatementVisitor {
 		this.ep  = new ExpressionPrinter( ipw );
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitTryCatch(org.javaswf.j2avm.model.types.ObjectType, org.javaswf.j2avm.model.code.statement.StatementBlock, org.javaswf.j2avm.model.code.statement.StatementBlock) */
-	public void visitTryCatch( ObjectType exceptionType, StatementBlock tryBlock, StatementBlock catchBlock ) {
-		ipw.print( "try " );
-		tryBlock.accept( this );
-		ipw.print( " catch( " + exceptionType + " ) " );
-		catchBlock.accept( this );
-		ipw.println();
-	}
 
 	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitConditionalBranch(org.javaswf.j2avm.model.code.statement.LabelStatement, org.javaswf.j2avm.model.code.expression.Expression) */
 	public void visitConditionalBranch( LabelStatement target, Expression condition ) {
@@ -65,14 +58,6 @@ public final class StatementPrinter implements StatementVisitor {
 		ep.visitInstanceField( field, instance );
 		ipw.print( " = " );
 		value.accept( ep );
-		ipw.println();
-	}
-
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitIncrement(java.lang.String, org.javaswf.j2avm.model.code.expression.Expression) */
-	public void visitIncrement( String varName, Expression increment ) {
-		ipw.print( varName );
-		ipw.print( " += " );
-		increment.accept( ep );
 		ipw.println();
 	}
 
@@ -112,7 +97,7 @@ public final class StatementPrinter implements StatementVisitor {
 		ipw.println();				
 	}
 
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitSwitch(org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.statement.LabelStatement, java.util.SortedSet) */
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitSwitch(Expression, LabelStatement, SortedSet) */
 	public void visitSwitch( Expression value, LabelStatement defaultTarget, SortedSet<SwitchCase> cases ) {
 		ipw.print( "switch( " );
 		value.accept( ep );
@@ -123,11 +108,11 @@ public final class StatementPrinter implements StatementVisitor {
 			ipw.print  ( "case " );
 			ipw.print  ( switchCase.caseValue );
 			ipw.print  ( ": goto " );
-			ipw.println( switchCase.target.name );			
+			ipw.println( switchCase.label );			
 		}
 		
 		ipw.print  ( "default: goto " );
-		ipw.println( defaultTarget.name );
+		ipw.println( defaultTarget );
 		
 		ipw.unindent();		
 		ipw.println( "}" );
@@ -137,14 +122,6 @@ public final class StatementPrinter implements StatementVisitor {
 	public void visitThrow( Expression exception ) {
 		ipw.print( "throw " );
 		exception.accept( ep );
-		ipw.println();		
-	}
-
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitVariableAssignment(java.lang.String, org.javaswf.j2avm.model.code.expression.Expression) */
-	public void visitVariableAssignment( String varName, Expression value ) {
-		ipw.print( varName );
-		ipw.print( " = " );
-		value.accept( ep );
 		ipw.println();		
 	}
 
@@ -158,7 +135,33 @@ public final class StatementPrinter implements StatementVisitor {
 	public void visitBlockStart() {
 		ipw.println( "{" );
 		ipw.indent();		
+	}
+
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitSSAValue(java.lang.String, org.javaswf.j2avm.model.code.expression.Expression) */
+	public void visitSSAValue( String valueName, Expression value ) {
+		ipw.print( valueName );
+		ipw.print( " = " );
+		value.accept( ep );
+		ipw.println();		
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitTry(org.javaswf.j2avm.model.code.expression.CaughtExceptionExpression, org.javaswf.j2avm.model.code.statement.LabelStatement, org.javaswf.j2avm.model.code.statement.LabelStatement) */
+	public void visitTry( CaughtExceptionExpression exception, LabelStatement endLabel, LabelStatement handlerLabel ) {
+		ipw.println( "try-until " + endLabel + " : catch( " + exception.type() + " ) --> " + handlerLabel );		
+	}
+
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitPhi(java.lang.String, org.javaswf.j2avm.model.code.expression.SSAValueExpression[]) */
+	public void visitPhi( String valueName, SSAValueExpression... values ) {
+		ipw.print( "phi {" );
+		
+		for( int i = 0; i < values.length; i++ ) {
+			if( i > 0 ) ipw.print( "," );
+			ipw.print( " " );
+			values[i].accept( ep );
+		}
+		
+		ipw.println( " }" );
 	}	
-	
-	
 }
+ 

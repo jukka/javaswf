@@ -23,7 +23,7 @@ public final class InstanceOfExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
-		visitor.visitInstanceOf( type, children[0] );
+		visitor.visitInstanceOf( type, child(0) );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#type() */

@@ -2,12 +2,12 @@ package org.javaswf.j2avm.model.code.expression;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.code.statement.StaticSingleAssignmentStatement;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
-import org.javaswf.j2avm.model.types.ValueType;
 
 /**
  * Builder for expressions.  Static methods to allow static import.
@@ -64,6 +64,19 @@ public final class ExpressionBuilder {
 		return new StaticCallExpression( method, args );
 	}
 
+	/**
+	 * A conditional expression
+	 * 
+	 * @param condition the controlling condition
+	 * @param ifTrue the value if true
+	 * @param ifFalse the value if false
+	 */
+	public static ConditionalExpression conditional( Expression condition, 
+			                                         Expression ifTrue,
+			                                         Expression ifFalse ) {
+		return new ConditionalExpression( condition, ifTrue, ifFalse );
+	}
+	
 	/**
 	 * An integer constant
 	 * 
@@ -126,13 +139,12 @@ public final class ExpressionBuilder {
 	}
 
 	/**
-	 * A variable value
+	 * An SSA value reference
 	 * 
-	 * @param name the variable name
-	 * @param type the variable type
+	 * @param value the value to reference
 	 */
-	public static SSAValueExpression variable( String name, ValueType type ) {
-		return new SSAValueExpression( name, type );
+	public static SSAValueExpression value( StaticSingleAssignmentStatement value ) {
+		return new SSAValueExpression( value );
 	}
 
 	/**
@@ -242,13 +254,9 @@ public final class ExpressionBuilder {
 	 * A new object expression
 	 * 
 	 * @param type the type to instantiate
-	 * @param paramTypes the constructor parameter types
-	 * @param args the constructor call arguments
 	 */
-	public static NewExpression newObject( ObjectType type, 
-			                               ValueType[] paramTypes, 
-			                               Expression...args ) {
-		return new NewExpression( type, paramTypes, args );
+	public static NewExpression newObject( ObjectType type ) {
+		return new NewExpression( type );
 	}
 	
 	/**

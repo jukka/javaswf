@@ -22,14 +22,14 @@ public final class BinaryOpExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
-		visitor.visitBinaryOp( op, children[0], children[1] );
+		visitor.visitBinaryOp( op, child(0), child(1) );
 		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#type() */
 	@Override
 	public ValueType type() {
-		ValueType leftType = children[0].type();
+		ValueType leftType = child(0).type();
 		if( leftType instanceof PrimitiveType ) {
 			return op.type( (PrimitiveType) leftType ) ;
 		}

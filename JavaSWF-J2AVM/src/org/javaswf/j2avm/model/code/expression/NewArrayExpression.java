@@ -3,6 +3,8 @@
  */
 package org.javaswf.j2avm.model.code.expression;
 
+import java.util.Iterator;
+
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.ValueType;
 
@@ -22,6 +24,11 @@ public final class NewArrayExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
+		Expression[] children = new Expression[ childCount() ];
+		Iterator<Expression> cc = iterator();
+		for( int i = 0; i < children.length; i++ ) {
+			children[i] = cc.next();
+		}
 		visitor.visitNewArray( type, children );		
 	}
 

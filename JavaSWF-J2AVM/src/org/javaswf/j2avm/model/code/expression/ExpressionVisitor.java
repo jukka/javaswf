@@ -2,6 +2,7 @@ package org.javaswf.j2avm.model.code.expression;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.code.statement.StaticSingleAssignmentStatement;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -52,6 +53,15 @@ public interface ExpressionVisitor {
     /** Visit a Constant Null */
     public void visitConstantNull();
    
+    /**
+     * Visit a conditional expression
+     * 
+     * @param condition the controlling expression
+     * @param ifTrue the value if true
+     * @param ifFalse the value if false
+     */
+    public void visitConditional( Expression condition, Expression ifTrue, Expression ifFalse );
+    
     /**
      * Visit an instance field read
      * 
@@ -104,10 +114,8 @@ public interface ExpressionVisitor {
      * Visit a new object expression
      * 
      * @param type the type to create
-     * @param paramTypes the constructor signature
-     * @param args the constructor call arguments 
      */
-    public void visitNew( ObjectType type, ValueType[] paramTypes, Expression...args );
+    public void visitNew( ObjectType type );
     
     /**
      * Visit a new array expression
@@ -125,12 +133,11 @@ public interface ExpressionVisitor {
     public void visitArrayInitializer( Expression array, Expression...values );
     
     /**
-     * Visit a variable
+     * Visit an SSA value
      * 
-     * @param name the variable name
-     * @param type the variable type
+     * @param value the statement that defines the value
      */
-    public void visitVariable( String name, ValueType type );
+    public void visitSSAValue( StaticSingleAssignmentStatement value );
 
     /**
      * Visit a caught exception

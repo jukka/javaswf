@@ -49,6 +49,7 @@ import org.javaswf.j2avm.model.code.statement.Statement;
 import org.javaswf.j2avm.model.code.statement.StatementCursor;
 import org.javaswf.j2avm.model.code.statement.StatementList;
 import org.javaswf.j2avm.model.code.statement.Statements;
+import org.javaswf.j2avm.model.code.statement.StaticSingleAssignmentStatement;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -137,28 +138,34 @@ public final class InstructionResolver implements Instructions {
     public void aload_1() { aload( 1 ); }
     public void aload_2() { aload( 2 ); }
     public void aload_3() { aload( 3 ); }
-    public void aload(int localVar) { insert( variable( "local_"+localVar, ObjectType.OBJECT ) ); }
+    public void aload(int localVar) { pushVar( localVar ); }
     public void dload_0() { dload( 0 ); }
     public void dload_1() { dload( 1 ); }
     public void dload_2() { dload( 2 ); }
     public void dload_3() { dload( 3 );  }
-    public void dload(int localVar) { insert( variable( "local_"+localVar, PrimitiveType.DOUBLE ) ); }
+    public void dload(int localVar) { pushVar( localVar ); }
     public void fload_0() { fload( 0 ); }
     public void fload_1() { fload( 1 ); }
     public void fload_2() { fload( 2 ); }
     public void fload_3() { fload( 3 );  }
-    public void fload(int localVar) { insert( variable( "local_"+localVar, PrimitiveType.FLOAT ) ); }
+    public void fload(int localVar) { pushVar( localVar ); }
     public void iload_0() { iload( 0 ); }
     public void iload_1() { iload( 1 ); }
     public void iload_2() { iload( 2 ); }
     public void iload_3() { iload( 3 );  }
-    public void iload(int localVar) { insert( variable( "local_"+localVar, PrimitiveType.INT ) ); }
+    public void iload(int localVar) { pushVar( localVar ); }
     public void lload_0() { lload( 0 ); }
     public void lload_1() { lload( 1 ); }
     public void lload_2() { lload( 2 ); }
     public void lload_3() { lload( 3 );  }
-    public void lload(int localVar) { insert( variable( "local_"+localVar, PrimitiveType.LONG ) ); }
+    public void lload(int localVar) { pushVar( localVar ); }
 
+    private LocalVarAccessStatement pushVar( int localVar ) { 
+    	LocalVarAccessStatement s = new LocalVarAccessStatement( localVar ); 
+    	s.append( statements ); 
+    	return s;
+    }
+    
     public void arraylength() { insert( arrayLength( null ) ); }
 
     public void newarray(int primitiveType) { 
@@ -177,8 +184,8 @@ public final class InstructionResolver implements Instructions {
     }
     
     public void newObject(int classIndex) {
-    	ObjectType type = new ObjectType( cpool.getClassName( classIndex ) );
-    	new UninitializedObjectStatement( type ).append( statements );
+    	ObjectType ot = new ObjectType( cpool.getClassName( classIndex ) );     	
+    	insert( ExpressionBuilder.newObject( ot ));
     }
 
     public void areturn() { statements.returnValue( null ); }
@@ -193,28 +200,32 @@ public final class InstructionResolver implements Instructions {
     public void astore_1() { astore( 1 ); }
     public void astore_2() { astore( 2 ); }
     public void astore_3() { astore( 3 ); }
-    public void astore(int localVar) { statements.assign( "local_"+localVar, null ); }
+    public void astore(int localVar) { store( localVar ); }
     public void dstore_0() { dstore( 0 ); }
     public void dstore_1() { dstore( 1 ); }
     public void dstore_2() { dstore( 2 ); }
     public void dstore_3() { dstore( 3 ); }
-    public void dstore(int localVar) { statements.assign( "local_"+localVar, null ); }
+    public void dstore(int localVar) { store( localVar ); }
     public void fstore_0() { fstore( 0 ); }
     public void fstore_1() { fstore( 1 ); }
     public void fstore_2() { fstore( 2 ); }
     public void fstore_3() { fstore( 3 ); }
-    public void fstore(int localVar) { statements.assign( "local_"+localVar, null ); }
+    public void fstore(int localVar) { store( localVar ); }
     public void istore_0() { istore( 0 ); }
     public void istore_1() { istore( 1 ); }
     public void istore_2() { istore( 2 ); }
     public void istore_3() { istore( 3 ); }
-    public void istore(int localVar) { statements.assign( "local_"+localVar, null ); }
+    public void istore(int localVar) { store( localVar ); }
     public void lstore_0() { lstore( 0 ); }
     public void lstore_1() { lstore( 1 ); }
     public void lstore_2() { lstore( 2 ); }
     public void lstore_3() { lstore( 3 ); }
-    public void lstore(int localVar) { statements.assign( "local_"+localVar, null ); }
+    public void lstore(int localVar) { store( localVar ); }
 
+    private void store( int localVar ) {
+    	new LocalVarAssignmentStatement( localVar, null );
+    }
+    
     public void dconst_0()  { insert( constantDouble( 0.0 ) ); }
     public void dconst_1()  { insert( constantDouble( 1.0 ) ); }
     public void fconst_0()  { insert( constantFloat( 0f ) ); }
@@ -374,7 +385,15 @@ public final class InstructionResolver implements Instructions {
 
     public void nop() { statements.expression( constantNull() ); }
 
-    public void iinc(int localVar, int increment) { statements.increment( "local_"+localVar, constantInt( increment ) ); }
+    public void iinc(int localVar, int increment) {
+    	StaticSingleAssignmentStatement var = pushVar( localVar );
+    	new LocalVarAssignmentStatement( 
+    			localVar, 
+    			ExpressionBuilder.binaryOp( 
+    				ADD, 
+    				ExpressionBuilder.value( var ), 
+    				ExpressionBuilder.constantInt( increment ) ) );
+    }
 
     public void dup_x1()  { new StackOperationStatement( 1, 1 ).append( statements ); }
     public void dup_x2()  { new StackOperationStatement( 1, 2 ).append( statements ); }

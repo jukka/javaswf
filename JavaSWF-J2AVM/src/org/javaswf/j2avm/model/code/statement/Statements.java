@@ -63,8 +63,7 @@ public abstract class Statements {
      * @param name the target label name
      */
     public final Statements branch( Object name ) {
-    	LabelStatement label = labelForName( name );
-    	BranchStatement branch = new UnconditionalBranchStatement( label );
+    	BranchStatement branch = new UnconditionalBranchStatement( name );
     	insert_( branch );
     	return this;
     }
@@ -76,8 +75,7 @@ public abstract class Statements {
      * @param condition the condition for the branch
      */
     public final Statements conditionalBranch( Object name, Expression condition ) {
-    	LabelStatement label = labelForName( name );
-    	BranchStatement branch = new ConditionalBranchStatement( label, condition );
+    	BranchStatement branch = new ConditionalBranchStatement( name, condition );
     	insert_( branch );    	
     	return this;
     }
@@ -93,13 +91,13 @@ public abstract class Statements {
     }
     
     /**
-     * Assign to a variable
+     * Define an SSA value
      * 
-     * @param varName the variable to assign
-     * @param value the value to assign
+     * @param valueName the human-friendly name for the value
+     * @param value the value
      */
-    public final Statements assign( String varName, Expression value ) {
-    	insert_( new StaticSingleAssignmentStatement( varName, value ) );
+    public final Statements value( Expression value ) {
+    	insert_( new StaticSingleAssignmentStatement( value ) );
     	return this;
     }
     
@@ -197,18 +195,7 @@ public abstract class Statements {
     	insert_( new MonitorExitStatement( object ) );
     	return this;    	
     }    
-    
-    /**
-     * Insert an increment statement
-     * 
-     * @param varName the variable to increment
-     * @param increment the increment value
-     */
-    public final Statements increment( String varName, Expression increment ) {
-    	insert_( new IncrementStatement( increment, varName ) );
-		return this;    	
-	}   
-    
+ 
     /**
      * Factory for switch cases.  defaultCase() is called after all the
      * value cases and completes the switch statement.
@@ -229,8 +216,7 @@ public abstract class Statements {
     	 * @param target the target label name
     	 */
     	public final Cases switchCase( int caseValue, Object target ) {
-    		LabelStatement label = labelForName( target );
-    		cases.add( new SwitchCase( caseValue, label ) );
+    		cases.add( new SwitchCase( caseValue, target ) );
     		return this;
     	}
 
@@ -241,9 +227,8 @@ public abstract class Statements {
     	 * @param target the label name for the default target
     	 */
     	public final Statements defaultCase( Object target ) {
-    		LabelStatement label = labelForName( target );
     		insert_( new SwitchStatement( 
-    			value, label, 
+    			value, target, 
     		    cases.toArray( new SwitchCase[ cases.size() ] )));
     		return Statements.this;
     	}

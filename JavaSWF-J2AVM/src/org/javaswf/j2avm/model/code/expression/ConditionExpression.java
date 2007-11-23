@@ -22,7 +22,7 @@ public final class ConditionExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
-		visitor.visitCondition( condition, children[0], children[1] );		
+		visitor.visitCondition( condition, child(0), child(1));		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#type() */

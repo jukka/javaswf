@@ -3,8 +3,9 @@ package org.javaswf.j2avm.model.code.statement;
 import java.util.SortedSet;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.code.expression.CaughtExceptionExpression;
 import org.javaswf.j2avm.model.code.expression.Expression;
-import org.javaswf.j2avm.model.types.ObjectType;
+import org.javaswf.j2avm.model.code.expression.SSAValueExpression;
 
 /**
  * Visitor interface for statements
@@ -41,12 +42,12 @@ public interface StatementVisitor {
     public void visitExpression( Expression expression );
     
     /**
-     * Visit a variable assignment
+     * Visit an SSA value definition
      * 
-     * @param varName the variable
-     * @param value   the value to assign
+     * @param valueName the human-friendly value name
+     * @param value the value
      */
-    public void visitVariableAssignment( String varName, Expression value );
+    public void visitSSAValue( String valueName, Expression value );
     
     /**
      * Visit an array element assignment
@@ -112,23 +113,22 @@ public interface StatementVisitor {
      * @param object the object to sync on
      */
     public void visitMonitorExit( Expression object );    
-    
-    /**
-     * Visit an increment statement
-     * 
-     * @param varName the variable to increment
-     * @param increment the increment value
-     */
-    public void visitIncrement( String varName, Expression increment );
 
+    /**
+     * Visit a Phi statement - the merging of disparate SSA values that come
+     * from alternate execution paths.
+     * 
+     * @param valueName the new value name
+     * @param values the alternate values
+     */
+    public void visitPhi( String valueName, SSAValueExpression... values );
+    
     /**
      * Visit the start of a try block
      * 
+     * @param exception the exception that is to be caught
      * @param endLabel the end of the try block
-     * @param catch_ the exception handler
+     * @param handlerLabel the handler
      */
-    public void visitTry( LabelStatement endLabel, CatchStatement catch_ );
-    
-    //FIXME:
-    public void visitCatch( ObjectType exType );
+    public void visitTry( CaughtExceptionExpression exception, LabelStatement endLabel, LabelStatement handlerLabel );
 }

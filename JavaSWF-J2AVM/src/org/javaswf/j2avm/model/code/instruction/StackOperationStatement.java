@@ -2,7 +2,6 @@ package org.javaswf.j2avm.model.code.instruction;
 
 import org.javaswf.j2avm.model.code.expression.ExpressionBuilder;
 import org.javaswf.j2avm.model.code.statement.StatementVisitor;
-import org.javaswf.j2avm.model.types.ObjectType;
 
 /**
  * A pseudo-statement representing a stack altering operation.
@@ -25,6 +24,6 @@ public final class StackOperationStatement extends IntermediateStatement {
 		String description = "swap";
 		if( dupCount > 0 ) description = "dup " + dupCount + " skip " + skipCount;
 		
-		visitor.visitExpression( ExpressionBuilder.variable( description, ObjectType.OBJECT ) );		
+		visitor.visitExpression( ExpressionBuilder.constantString( description ) );		
 	}
 }

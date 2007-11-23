@@ -22,7 +22,7 @@ public final class CastExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
-		visitor.visitCast( type, children[0] );
+		visitor.visitCast( type, child(0) );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#type() */

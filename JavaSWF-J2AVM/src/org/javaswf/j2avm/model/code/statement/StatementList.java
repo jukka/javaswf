@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.javaswf.j2avm.model.types.ObjectType;
-
 /**
  * A list of statements
  *
@@ -17,9 +15,12 @@ public final class StatementList {
 	protected Statement last;
 	private int count;
 	
-	private final Map<String, StaticValue> values = new HashMap<String, StaticValue>();
+	/*pkg*/ int ssaValueIndex = 1;
+	
 	/*pkg*/ final Map<String, LabelStatement> labels = new HashMap<String, LabelStatement>();
-		
+	/*pkg*/ final Map<String, StaticSingleAssignmentStatement> ssaValues = 
+		new HashMap<String, StaticSingleAssignmentStatement>();
+			
 	/**
 	 * Get a cursor positioned before the first statement in the list
 	 */
@@ -89,14 +90,14 @@ public final class StatementList {
 		place( s, after );
 		count++;
 		
-		s.addedToList();
+		s.addToListed_internal();
 	}
 
 	/** Remove a statement */
 	final void remove( Statement s ) {
 		if( s.list != this ) return; //not in this list
 		
-		s.removingFromList();
+		s.removedFromList_internal();
 		
 		s.list = null;
 		pluck( s );
@@ -141,39 +142,14 @@ public final class StatementList {
 		return label;
 	}
 	
-	/**
-	 * Add an exception handler
-	 * 
-	 * @param tryStart label before start of covered statements
-	 * @param tryEnd label after covered statements
-	 * @param exType the type of exception to catch
-	 * @param handler the start of the handler code
-	 * @return the new try-catch statement
-	 */
-	public final TryCatch addExceptionHandler( Object tryStart, Object tryEnd,
-			                                   ObjectType exType, Object handler ) {
+	/** Get the SSA value with the given name - throw up if not found */
+	/*pkg*/ final StaticSingleAssignmentStatement valueForName( Object name ) {
+		StaticSingleAssignmentStatement value = ssaValues.get( name.toString() );
 		
-		TryCatch tryCatch = new TryCatch( exType );
-		StatementBlock tryBlock = tryCatch.tryBlock;
+		if( value == null ) throw new IllegalArgumentException( "Value name not found: " + name );
 		
-		LabelStatement start = labelForName( tryStart );
-		LabelStatement end   = labelForName( tryEnd );
-		LabelStatement hand  = labelForName( handler );		
-		
-		Statement next ;		
-		for( Statement s = start.next; s != end; s = next ) {
-			next = s.next;
-			remove( s );
-			tryBlock.insert( s, tryBlock.last );
-		}
-		
-		insert( tryCatch, start );
-		
-		//FIXME: 
-		
-		return tryCatch;
+		return value;
 	}
-
 	
 	/** Get the label with the given name - throw up if not found */
 	/*pkg*/ final LabelStatement labelForName( Object name ) {

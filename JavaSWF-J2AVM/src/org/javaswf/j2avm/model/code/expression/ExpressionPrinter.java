@@ -6,6 +6,7 @@ package org.javaswf.j2avm.model.code.expression;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.FieldDescriptor;
 import org.javaswf.j2avm.model.MethodDescriptor;
+import org.javaswf.j2avm.model.code.statement.StaticSingleAssignmentStatement;
 import org.javaswf.j2avm.model.types.ArrayType;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -71,6 +72,7 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 		 || e instanceof ConditionExpression
 		 || e instanceof ConvertExpression
 		 || e instanceof CastExpression
+		 || e instanceof ConditionalExpression
 		 || e instanceof InstanceOfExpression ) {
 			ipw.print( "(" );
 			e.accept( this );
@@ -173,21 +175,9 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitNew(org.javaswf.j2avm.model.types.ObjectType, org.javaswf.j2avm.model.types.ValueType[], org.javaswf.j2avm.model.code.expression.Expression[]) */
-	public void visitNew( ObjectType type, ValueType[] paramTypes, Expression... args ) {
+	public void visitNew( ObjectType type ) {
 		ipw.print( "new " );
-		ipw.print( type.name );
-		
-		if( args.length == 0 ) {
-			ipw.print( "()" );			
-		}
-		else {
-			ipw.print( "( " );
-			for( int i = 0; i < args.length; i++ ) {
-				if( i > 0 ) ipw.print( ", " );
-				args[i].accept( this );
-			}		
-			ipw.print( " )" );
-		}
+		ipw.print( type.name );		
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitNewArray(org.javaswf.j2avm.model.types.ArrayType, org.javaswf.j2avm.model.code.expression.Expression[]) */
@@ -237,11 +227,6 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 		ipw.print( "this" );
 	}
 
-	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitVariable(java.lang.String, org.javaswf.j2avm.model.types.ValueType) */
-	public void visitVariable( String name, ValueType type ) {
-		ipw.print( name );
-	}
-
 	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitException(org.javaswf.j2avm.model.types.ValueType) */
 	public void visitException( ValueType type ) {
 		ipw.print( "<caught-exception>" );		
@@ -262,9 +247,24 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 			if( i > 0 ) ipw.print( ", " );
 			else ipw.print( " " );
 			
+	
 			args[i].accept( this );
 		}		
 		if( args.length > 0 ) ipw.print( " " );			
 		ipw.print( ")" );
+	}
+
+	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitSSAValue(org.javaswf.j2avm.model.code.statement.StaticSingleAssignmentStatement) */
+	public void visitSSAValue( StaticSingleAssignmentStatement value ) {
+		ipw.print( value.name() );
+	}
+
+	/** @see org.javaswf.j2avm.model.code.expression.ExpressionVisitor#visitConditional(org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.expression.Expression, org.javaswf.j2avm.model.code.expression.Expression) */
+	public void visitConditional( Expression condition, Expression ifTrue, Expression ifFalse ) {
+		printOpArg( condition );
+		ipw.print( " ? " );
+		printOpArg( ifTrue );
+		ipw.print( " : " );
+		printOpArg( ifFalse );
 	}
 }

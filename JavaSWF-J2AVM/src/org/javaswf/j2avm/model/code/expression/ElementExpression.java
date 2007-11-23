@@ -20,13 +20,13 @@ public final class ElementExpression extends Expression {
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#accept(org.javaswf.j2avm.model.code.expression.ExpressionVisitor) */
 	@Override
 	public void accept( ExpressionVisitor visitor ) {
-		visitor.visitElement( children[0], children[1] );
+		visitor.visitElement( child(0), child(1) );
 	}
 
 	/** @see org.javaswf.j2avm.model.code.expression.Expression#type() */
 	@Override
 	public ValueType type() {
-		ValueType aType = children[0].type();
+		ValueType aType = child(0).type();
 		if( !( aType instanceof ArrayType ) ) {
 			throw new IllegalStateException( "Array expression is not an array type" );
 		}
