@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.code.instruction;
+package org.javaswf.j2avm.model.code.intermediate;
 
 import java.util.LinkedList;
 
@@ -19,7 +19,7 @@ public class StatementConstructor {
     private final MethodModel   method;
     
     //queue of items to be resolved
-    private final LinkedList<ConstructedCode> agenda = new LinkedList<ConstructedCode>();
+    private final LinkedList<Statement> agenda = new LinkedList<Statement>();
     
     /**
      * @param list the statements to process in-place
@@ -44,7 +44,7 @@ public class StatementConstructor {
         int count = 0;
         int size  = agenda.size();
         while( ! agenda.isEmpty() ) {
-        	ConstructedCode cc = agenda.removeFirst();
+            Statement cc = agenda.removeFirst();
             cc.construct( this ); 
             
             //if everything in the agenda has been processed and there was no
@@ -67,7 +67,7 @@ public class StatementConstructor {
     /**
      * Append an item to the processing agenda
      */
-    /*pkg*/ void addToAgenda( ConstructedCode cc ) {
+    /*pkg*/ void addToAgenda( Statement cc ) {
     	agenda.addLast( cc );
     }    
 }

@@ -7,8 +7,6 @@ import java.util.Collection;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
-import org.javaswf.j2avm.model.code.ValueGenerator;
-import org.javaswf.j2avm.model.code.instruction.StatementConstructor;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
@@ -20,7 +18,7 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public final class MethodModel extends Model implements ValueGenerator {
+public final class MethodModel extends Model {
 
 	/** Name for constructor methods */
 	public static final String CONSTRUCTOR_NAME = "<init>";
@@ -105,9 +103,9 @@ public final class MethodModel extends Model implements ValueGenerator {
         
         //--build statements
         CodeAttribute code = code();
-        if( code != null ) {
-            new StatementConstructor( code.statements, this ).perform();
-        }
+//        if( code != null ) {
+//            new StatementConstructor( code.statements, this ).perform();
+//        }
 	}
 	
     /**

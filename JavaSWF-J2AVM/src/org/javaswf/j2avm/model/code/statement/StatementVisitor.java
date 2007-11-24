@@ -1,5 +1,6 @@
 package org.javaswf.j2avm.model.code.statement;
 
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
@@ -46,8 +47,9 @@ public interface StatementVisitor {
      * 
      * @param valueName the human-friendly value name
      * @param value the value
+     * @param references the references to the value
      */
-    public void visitSSAValue( String valueName, Expression value );
+    public void visitSSAValue( String valueName, Expression value, Set<SSAValueExpression> references );
     
     /**
      * Visit an array element assignment

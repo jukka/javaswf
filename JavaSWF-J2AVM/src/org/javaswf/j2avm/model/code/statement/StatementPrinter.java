@@ -1,5 +1,6 @@
 package org.javaswf.j2avm.model.code.statement;
 
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.epistem.io.IndentingPrintWriter;
@@ -138,10 +139,12 @@ public final class StatementPrinter implements StatementVisitor {
 	}
 
 
-	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitSSAValue(java.lang.String, org.javaswf.j2avm.model.code.expression.Expression) */
-	public void visitSSAValue( String valueName, Expression value ) {
+	/** @see org.javaswf.j2avm.model.code.statement.StatementVisitor#visitSSAValue(String, Expression, Set) */
+	public void visitSSAValue( String valueName, Expression value, Set<SSAValueExpression> references  ) {
 		ipw.print( valueName );
-		ipw.print( " = " );
+		ipw.print( " {" );
+        ipw.print( references.size() );
+        ipw.print( "} = " );
 		value.accept( ep );
 		ipw.println();		
 	}

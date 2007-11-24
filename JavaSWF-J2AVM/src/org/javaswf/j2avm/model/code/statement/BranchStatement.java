@@ -16,7 +16,6 @@ public abstract class BranchStatement extends Statement implements LabelTargette
 	
 	BranchStatement( Object targetName ) {
 		this.targetName = targetName;		
-		target.targetters.add( this );
 	}
 
 	BranchStatement( Object targetName, Expression expression ) {

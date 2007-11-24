@@ -38,12 +38,13 @@ import static org.javaswf.j2avm.model.code.expression.Condition.*;
 import static org.javaswf.j2avm.model.code.expression.ExpressionBuilder.*;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.javaswf.j2avm.model.MethodDescriptor;
 import org.javaswf.j2avm.model.code.expression.Expression;
 import org.javaswf.j2avm.model.code.expression.ExpressionBuilder;
+import org.javaswf.j2avm.model.code.instruction.Instructions;
+import org.javaswf.j2avm.model.code.instruction.PrimitiveArrayType;
 import org.javaswf.j2avm.model.code.statement.LabelStatement;
 import org.javaswf.j2avm.model.code.statement.Statement;
 import org.javaswf.j2avm.model.code.statement.StatementCursor;
@@ -92,9 +93,7 @@ public final class InstructionResolver implements Instructions {
      * offsets.  Call this after all the instructions have been parsed
      */
     public void positionLabels() {
-    	for( Iterator<LabelStatement> i = list.labels(); i.hasNext(); ) {
-			LabelStatement label =  i.next();
-			
+    	for( LabelStatement label : list.labels()) {
 			Integer offset = (Integer) label.name;
 			Statement s = statementByOffset.get( offset );
 			
@@ -110,9 +109,8 @@ public final class InstructionResolver implements Instructions {
     	currentOffset = label;
     }
     
-	private void insert( Expression e ) {
-		IntermediateStatement s = new UnassembledExpressionStatement( e );
-		s.append( statements );		
+	private void insert( Expression e ) {		
+		statements.value( e );		
 	}
 	
     public void aaload()  { insert( element( null, null ) ); }
@@ -223,7 +221,7 @@ public final class InstructionResolver implements Instructions {
     public void lstore(int localVar) { store( localVar ); }
 
     private void store( int localVar ) {
-    	new LocalVarAssignmentStatement( localVar, null );
+    	new LocalVarAssignmentStatement( localVar, null ).append( statements );
     }
     
     public void dconst_0()  { insert( constantDouble( 0.0 ) ); }
@@ -340,7 +338,10 @@ public final class InstructionResolver implements Instructions {
     	invoke( call( md, null, new Expression[ md.signature.paramTypes.length ] ), md );
     }
 
-    public void goto_(int label)  { statements.branch( label ); }
+    public void goto_(int label)  {
+        list.label( label );
+        statements.branch( label ); 
+    }
     public void goto_w(int label) { goto_( label ); }
     public void jsr_w(int label)  { throw new RuntimeException( "JSR is unsupported - please recompile for >= Java 5" ); }
     public void jsr(int label)    { jsr_w( label ); }
@@ -360,29 +361,36 @@ public final class InstructionResolver implements Instructions {
     	Statements.Cases cases = statements.switchBranch( null );
     	
 		for (int i = 0; i < caseValues.length; i++) {
+	        list.label( caseTargets[i] );
 			cases.switchCase( caseValues[i], caseTargets[i] );
         }
 
+        list.label( defaultLabel );
 		cases.defaultCase( defaultLabel );
     }
 
-    public void if_acmpeq(int label) { statements.conditionalBranch( label, condition( IF_EQUAL           , null, null ) ); }
-    public void if_acmpne(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
-    public void if_icmpeq(int label) { statements.conditionalBranch( label, condition( IF_EQUAL           , null, null ) ); }
-    public void if_icmpge(int label) { statements.conditionalBranch( label, condition( IF_GREATER_OR_EQUAL, null, null ) ); }
-    public void if_icmpgt(int label) { statements.conditionalBranch( label, condition( IF_GREATER_THAN    , null, null ) ); }
-    public void if_icmple(int label) { statements.conditionalBranch( label, condition( IF_LESS_OR_EQUAL   , null, null ) ); }
-    public void if_icmplt(int label) { statements.conditionalBranch( label, condition( IF_LESS_THAN       , null, null ) ); }
-    public void if_icmpne(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
-    public void ifeq(int label)      { statements.conditionalBranch( label, condition( IF_EQUAL           , null, constantInt( 0 ) ) ); }
-    public void ifge(int label)      { statements.conditionalBranch( label, condition( IF_GREATER_OR_EQUAL, null, constantInt( 0 ) ) ); }
-    public void ifgt(int label)      { statements.conditionalBranch( label, condition( IF_GREATER_THAN    , null, constantInt( 0 ) ) ); }
-    public void ifle(int label)      { statements.conditionalBranch( label, condition( IF_LESS_OR_EQUAL   , null, constantInt( 0 ) ) ); }
-    public void iflt(int label)      { statements.conditionalBranch( label, condition( IF_LESS_THAN       , null, constantInt( 0 ) ) ); }
-    public void ifne(int label)      { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, constantInt( 0 ) ) ); }
-    public void ifnonnull(int label) { statements.conditionalBranch( label, condition( IF_NOT_EQUAL       , null, constantNull() ) ); }
-    public void ifnull(int label)    { statements.conditionalBranch( label, condition( IF_EQUAL           , null, constantNull() ) ); }
+    public void if_acmpeq(int label) { condBranch( label, condition( IF_EQUAL           , null, null ) ); }
+    public void if_acmpne(int label) { condBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
+    public void if_icmpeq(int label) { condBranch( label, condition( IF_EQUAL           , null, null ) ); }
+    public void if_icmpge(int label) { condBranch( label, condition( IF_GREATER_OR_EQUAL, null, null ) ); }
+    public void if_icmpgt(int label) { condBranch( label, condition( IF_GREATER_THAN    , null, null ) ); }
+    public void if_icmple(int label) { condBranch( label, condition( IF_LESS_OR_EQUAL   , null, null ) ); }
+    public void if_icmplt(int label) { condBranch( label, condition( IF_LESS_THAN       , null, null ) ); }
+    public void if_icmpne(int label) { condBranch( label, condition( IF_NOT_EQUAL       , null, null ) ); }
+    public void ifeq(int label)      { condBranch( label, condition( IF_EQUAL           , null, constantInt( 0 ) ) ); }
+    public void ifge(int label)      { condBranch( label, condition( IF_GREATER_OR_EQUAL, null, constantInt( 0 ) ) ); }
+    public void ifgt(int label)      { condBranch( label, condition( IF_GREATER_THAN    , null, constantInt( 0 ) ) ); }
+    public void ifle(int label)      { condBranch( label, condition( IF_LESS_OR_EQUAL   , null, constantInt( 0 ) ) ); }
+    public void iflt(int label)      { condBranch( label, condition( IF_LESS_THAN       , null, constantInt( 0 ) ) ); }
+    public void ifne(int label)      { condBranch( label, condition( IF_NOT_EQUAL       , null, constantInt( 0 ) ) ); }
+    public void ifnonnull(int label) { condBranch( label, condition( IF_NOT_EQUAL       , null, constantNull() ) ); }
+    public void ifnull(int label)    { condBranch( label, condition( IF_EQUAL           , null, constantNull() ) ); }
 
+    private void condBranch( int label, Expression condition ) {
+        list.label( label );
+        statements.conditionalBranch( label, condition );
+    }
+    
     public void nop() { statements.expression( constantNull() ); }
 
     public void iinc(int localVar, int increment) {

@@ -4,6 +4,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.javaswf.j2avm.model.FieldDescriptor;
+import org.javaswf.j2avm.model.code.expression.CaughtExceptionExpression;
 import org.javaswf.j2avm.model.code.expression.Expression;
 
 /**
@@ -78,6 +79,19 @@ public abstract class Statements {
     	BranchStatement branch = new ConditionalBranchStatement( name, condition );
     	insert_( branch );    	
     	return this;
+    }
+    
+    /**
+     * Insert a try statement
+     * 
+     * @param exception the exception to be caught
+     * @param end the label of the end of the try block
+     * @param handler the label of the exception handler
+     */
+    public final Statements tryCatch( CaughtExceptionExpression exception, Object end, Object handler ) {
+        TryStatement tryCatch = new TryStatement( exception, end, handler );
+        insert_( tryCatch );      
+        return this;        
     }
     
     /**

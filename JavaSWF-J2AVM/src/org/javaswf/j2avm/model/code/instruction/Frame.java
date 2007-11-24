@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.code;
+package org.javaswf.j2avm.model.code.instruction;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.code.instruction.Instruction;
+import org.javaswf.j2avm.model.code.intermediate.Slot;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ExceptionHandler;
 import org.javaswf.j2avm.model.types.PrimitiveType;

@@ -17,7 +17,7 @@ import org.javaswf.j2avm.model.code.expression.SSAValueExpression;
 public class StaticSingleAssignmentStatement extends Statement {
 	
 	//the references to this value
-	private final Set<SSAValueExpression> references = new HashSet<SSAValueExpression>();
+	protected final Set<SSAValueExpression> references = new HashSet<SSAValueExpression>();
 	
 	private String name;
 	
@@ -33,7 +33,7 @@ public class StaticSingleAssignmentStatement extends Statement {
 	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
 	@Override
 	public void accept( StatementVisitor visitor ) {
-		visitor.visitSSAValue( name, child(0) );		
+		visitor.visitSSAValue( name, child(0), references );		
 	}
 	
 	/**

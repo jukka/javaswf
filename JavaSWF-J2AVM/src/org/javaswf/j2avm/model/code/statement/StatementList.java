@@ -1,7 +1,6 @@
 package org.javaswf.j2avm.model.code.statement;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -43,10 +42,10 @@ public final class StatementList {
 	}
 	
 	/**
-	 * Get an iterator over all the labels in the list
+	 * Get an iterable over all the labels in the list
 	 */
-	public final Iterator<LabelStatement> labels() {
-		return labels.values().iterator();
+	public final Iterable<LabelStatement> labels() {
+		return labels.values();
 	}
 	
 	/**
@@ -55,6 +54,8 @@ public final class StatementList {
 	 * @param after the statement to place s after
 	 */
 	final void move( Statement s, Statement after ) {
+	    if( s.prev == after || s == after ) return;
+	    
 		pluck( s );
 		place( s, after );
 	}
@@ -129,7 +130,7 @@ public final class StatementList {
 	 */
 	public final LabelStatement label( Statement s, Object name ) {
 		
-		LabelStatement label = labels.get( name.toString() );
+	    LabelStatement label = labels.get( name.toString() );
 		
 		if( label == null ) {
 			label = new LabelStatement( name );

@@ -78,7 +78,11 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 			e.accept( this );
 			ipw.print( ")" );			
 		}
-		else {
+		else { 
+		    if( e == null ) {
+		        System.err.println( "NULL EXPRESSION" );
+		    }
+		        
 			e.accept( this );
 		}		
 	}
@@ -246,8 +250,7 @@ public final class ExpressionPrinter implements ExpressionVisitor {
 		for( int i = 0; i < args.length; i++ ) {
 			if( i > 0 ) ipw.print( ", " );
 			else ipw.print( " " );
-			
-	
+
 			args[i].accept( this );
 		}		
 		if( args.length > 0 ) ipw.print( " " );			

@@ -22,8 +22,13 @@ public abstract class ExpressionContainer implements Iterable<Expression> {
 	 */
 	protected ExpressionContainer( Expression...ee ) {
 		for( Expression e : ee ) {
-			children.add( e );
-    		e.parent = this;
+    		if( e != null ) {
+                children.add( e );
+    		    e.parent = this;
+    		}
+    		else {
+    		    children.add( new ConstantNull() );
+    		}
 		}
 	}
 	
@@ -63,16 +68,20 @@ public abstract class ExpressionContainer implements Iterable<Expression> {
 
     	//retransmit to children
     	for( Expression e : children ) {
-    		e.statement = this.statement;
-    		e.addToList();    		
+    	    if( e != null ) {
+        		e.statement = this.statement;
+        		e.addToList();
+    	    }
     	}    	
     }
 
     protected final void removeFromList() {    	
     	//retransmit to children
     	for( Expression e : children ) {
-    		e.removeFromList();
-    		e.statement = null;
+            if( e != null ) {
+        		e.removeFromList();
+        		e.statement = null;
+            }
     	}
 
     	removingFromList();
@@ -90,10 +99,5 @@ public abstract class ExpressionContainer implements Iterable<Expression> {
      * statement list to allow any cleanup to be performed. 
      */
     protected abstract void removingFromList();
-    
-    
-	public final void release() {
-		//FIXME: DELETE ME
-    }
 
 }

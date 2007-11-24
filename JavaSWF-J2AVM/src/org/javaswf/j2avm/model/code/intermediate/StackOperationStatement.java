@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.code.instruction;
+package org.javaswf.j2avm.model.code.intermediate;
 
 import org.javaswf.j2avm.model.code.expression.ExpressionBuilder;
 import org.javaswf.j2avm.model.code.statement.StatementVisitor;

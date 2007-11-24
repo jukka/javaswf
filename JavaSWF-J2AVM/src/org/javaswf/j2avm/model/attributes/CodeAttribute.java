@@ -5,18 +5,16 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.code.expression.ExpressionBuilder;
 import org.javaswf.j2avm.model.code.instruction.InstructionParser;
-import org.javaswf.j2avm.model.code.instruction.InstructionResolver;
+import org.javaswf.j2avm.model.code.intermediate.InstructionResolver;
 import org.javaswf.j2avm.model.code.statement.LabelStatement;
 import org.javaswf.j2avm.model.code.statement.StatementCursor;
 import org.javaswf.j2avm.model.code.statement.StatementList;
 import org.javaswf.j2avm.model.code.statement.StatementPrinter;
-import org.javaswf.j2avm.model.code.statement.TryCatch;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
@@ -110,7 +108,14 @@ public class CodeAttribute extends AttributeModel {
         	LabelStatement endLabel     = code.statements.label( end );
         	LabelStatement handlerLabel = code.statements.label( handler );
         	
-        	code.statements.addHandler( startLabel, endLabel, exType, handlerLabel );
+        	code.statements.label( startLabel );
+            code.statements.label( endLabel );
+            code.statements.label( handlerLabel );
+            resolver.positionLabels();
+        	
+            StatementCursor cur = code.statements.cursorAtStart();
+            cur.jumpTo( start );
+            cur.insert().tryCatch( ExpressionBuilder.exception( exType ), end, handler );
         }
         
         //attributes
@@ -134,33 +139,11 @@ public class CodeAttribute extends AttributeModel {
         out.println( "max stack : " + maxStack );
         out.println( "max locals: " + maxLocals );
         out.println();
-
+        
         StatementPrinter sp = new StatementPrinter( out );
         StatementCursor  sc = statements.cursorAtStart();
         while( sc.visitNext( sp ) );
-                
-        if( statements.hasExceptionHandlers() ) {
-            out.println();
-            out.println( "handlers {" );
-            out.indent();
-
-            for( Iterator<TryCatch> it = statements.handlers(); it.hasNext(); ) {
-				TryCatch tc = it.next();
-				out.print( "try( " );
-				out.print( tc.tryStart.name );
-				out.print( " .. " );
-				out.print( tc.tryEnd.name );
-				out.print( " ) catch ( " );
-				out.print( tc.exceptionType.name );
-				out.print( " ) goto " );
-				out.print( tc.handlerStart.name );
-				out.println();
-			}
-
-            out.unindent();
-            out.println( "}" );
-        }
-        
+                        
         if( ! attributes.isEmpty() ) {
             out.println();
             out.println( "attributes {" );

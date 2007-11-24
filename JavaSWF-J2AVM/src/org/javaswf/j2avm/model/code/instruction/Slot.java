@@ -1,4 +1,4 @@
-package org.javaswf.j2avm.model.code;
+package org.javaswf.j2avm.model.code.instruction;
 
 /**
  * A slot contains a reference to a value and the same slot may appear in
