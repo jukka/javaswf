@@ -52,7 +52,7 @@ public interface ExpressionVisitor {
 
     /** Visit a Constant Null */
     public void visitConstantNull();
-   
+    
     /**
      * Visit a conditional expression
      * 

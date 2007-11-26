@@ -1,5 +1,6 @@
 package org.javaswf.j2avm.model.code.expression;
 
+import org.javaswf.j2avm.model.code.intermediate.SlotValue;
 import org.javaswf.j2avm.model.types.ValueType;
 
 /**
@@ -7,7 +8,7 @@ import org.javaswf.j2avm.model.types.ValueType;
  *
  * @author nickmain
  */
-public abstract class Constant extends Expression {
+public abstract class Constant extends Expression implements SlotValue {
 
 	private final ValueType type;
 	

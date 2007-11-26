@@ -8,6 +8,7 @@ import org.javaswf.j2avm.model.types.JavaType;
 import org.javaswf.j2avm.model.types.ObjectOrArrayType;
 import org.javaswf.j2avm.model.types.ObjectType;
 import org.javaswf.j2avm.model.types.PrimitiveType;
+import org.javaswf.j2avm.model.types.ValueType;
 
 /**
  * Builder for expressions.  Static methods to allow static import.
@@ -17,6 +18,28 @@ import org.javaswf.j2avm.model.types.PrimitiveType;
 public final class ExpressionBuilder {
 
 	private ExpressionBuilder() {} //prevent instantiation
+
+	   
+    /**
+     * An argument value
+     * 
+     * @param type the parameter type
+     * @param index the parameter index (zero based)
+     */
+    public static ArgumentExpression argument( ValueType type, int index ) {
+        return new ArgumentExpression( type, index );
+    }
+
+    
+    /**
+     * A reference to "this"
+     * 
+     * @param type the instance type
+     */
+    public static ThisExpression this_( ObjectType type ) {
+        return new ThisExpression( type );
+    }
+	
 	
 	/**
 	 * An array length operation.

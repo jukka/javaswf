@@ -8,13 +8,14 @@ import java.util.Set;
 
 import org.javaswf.j2avm.model.code.expression.Expression;
 import org.javaswf.j2avm.model.code.expression.SSAValueExpression;
+import org.javaswf.j2avm.model.code.intermediate.SlotValue;
 
 /**
  * The definition of an SSA value
  *
  * @author nickmain
  */
-public class StaticSingleAssignmentStatement extends Statement {
+public class StaticSingleAssignmentStatement extends Statement implements SlotValue {
 	
 	//the references to this value
 	protected final Set<SSAValueExpression> references = new HashSet<SSAValueExpression>();
