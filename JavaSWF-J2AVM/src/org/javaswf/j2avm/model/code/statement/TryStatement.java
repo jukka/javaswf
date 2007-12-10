@@ -51,7 +51,7 @@ public class TryStatement extends Statement implements LabelTargetter {
 	protected void removingFromList() {
 		endLabel    .targetters.remove( this );
 		handlerLabel.targetters.remove( this );		
-	}
+	}	
 }
 
 

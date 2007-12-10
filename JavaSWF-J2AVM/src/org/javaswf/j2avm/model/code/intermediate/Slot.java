@@ -9,7 +9,7 @@ package org.javaswf.j2avm.model.code.intermediate;
  * @author nickmain
  */
 public class Slot {
-	private SlotValue value; //either StaticSingleAssignmentStatement or Constant
+	private SlotValue value; 
 	
 	public Slot( SlotValue value ) { this.value = value; }
 

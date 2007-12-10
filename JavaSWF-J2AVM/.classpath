@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src-runtime-annotations"/>
 	<classpathentry kind="src" path="src-generator"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="lib/asm-all-3.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JavaSWF-FileFormat"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/EpistemCommon"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/JavaSWF-AVM2"/>

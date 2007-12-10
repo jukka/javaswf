@@ -1,6 +1,8 @@
 package org.javaswf.j2avm.model.code.intermediate;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.javaswf.j2avm.model.MethodModel;
 import org.javaswf.j2avm.model.code.statement.Statement;
@@ -17,6 +19,9 @@ public class StatementConstructor {
 
     private final StatementList list;
     private final MethodModel   method;
+    
+    //frame before each statement
+    private Map<Statement, Frame> frames = new HashMap<Statement, Frame>();
     
     //queue of items to be resolved
     private final LinkedList<Statement> agenda = new LinkedList<Statement>();
