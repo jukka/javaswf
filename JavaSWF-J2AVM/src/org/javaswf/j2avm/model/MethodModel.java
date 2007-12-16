@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.epistem.io.IndentingPrintWriter;
 import org.javaswf.j2avm.model.attributes.AttributeModel;
 import org.javaswf.j2avm.model.attributes.CodeAttribute;
+import org.javaswf.j2avm.model.code.intermediate.StatementConstructor;
 import org.javaswf.j2avm.model.flags.MethodFlag;
 import org.javaswf.j2avm.model.parser.ConstantPool;
 import org.javaswf.j2avm.model.types.JavaType;
@@ -103,9 +104,9 @@ public final class MethodModel extends Model {
         
         //--build statements
         CodeAttribute code = code();
-//        if( code != null ) {
-//            new StatementConstructor( code.statements, this ).perform();
-//        }
+        if( code != null ) {
+            new StatementConstructor( code.statements, this ).perform();
+        }
 	}
 	
     /**

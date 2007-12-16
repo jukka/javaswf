@@ -36,43 +36,49 @@ public class StatementConstructor {
     }
     
     /**
-     * Perform the construction process
+     * Perform the construction process.
      */
     public void perform() {
-        
-        //add all statements to the agenda
-        StatementCursor cursor = list.cursorAtStart();
-        Statement s;
-        while(( s = cursor.next()) != null ) addToAgenda( s );
-        
-        //process the agenda
-        int count = 0;
-        int size  = agenda.size();
-        while( ! agenda.isEmpty() ) {
-            Statement cc = agenda.removeFirst();
-            cc.construct( this ); 
-            
-            //if everything in the agenda has been processed and there was no
-            //decrease in the agenda size then we're in a loop and need to
-            //abort
-            if( agenda.size() < size ) {
-            	count = 0;
-            	size  = agenda.size();            	
-            }
-            else {
-            	count++;
-            	if( count == size ) {
-            		System.err.println( "maxed out" );
-            		return;
-            	}
-            }
-        }
+
+    	// Build stack frames and local vars for each statement
+    	// Statements consume the previous 
+    	
+  
     }
     
     /**
-     * Append an item to the processing agenda
+     * Get or determine the frame just before the given statement
+     * @param s the statement
      */
-    /*pkg*/ void addToAgenda( Statement cc ) {
-    	agenda.addLast( cc );
-    }    
+    public Frame frameForStatement( Statement s ) {
+    	Frame f = frames.get( s );
+    	if( f == null ) {
+    		f = determineFrame( s );
+    		//is already in the cache
+    	}
+    	
+    	return f;
+    }
+
+    /**
+     * Determine the frame for the given statement
+     */
+    private Frame determineFrame( Statement s ) {
+    	agenda.add( s );
+    	processAgenda();
+    	return frames.get( s );
+    }
+
+    /**
+     * Process the agenda to determine frames for all the statements it
+     * contains.
+     */
+    private void processAgenda() {
+    	while( ! agenda.isEmpty()) {
+    		Statement s = agenda.removeFirst();
+    		if( frames.containsKey( s ) ) continue; //already has a frame
+    		
+    		//TODO:
+    	}
+    }
 }

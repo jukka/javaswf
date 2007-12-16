@@ -22,11 +22,11 @@ public final class LocalVarAccessStatement extends StaticSingleAssignmentStateme
         this.varIndex = varIndex;
     }
 	
-	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
-	@Override
-	public void accept( StatementVisitor visitor ) {
-		visitor.visitSSAValue( "<local-" + varIndex + ">", child( 0 ), references );		
-	}
+//	/** @see org.javaswf.j2avm.model.code.statement.Statement#accept(org.javaswf.j2avm.model.code.statement.StatementVisitor) */
+//	@Override
+//	public void accept( StatementVisitor visitor ) {
+//		visitor.visitSSAValue( "<local-" + varIndex + ">", child( 0 ), references );		
+//	}
 	
 	/** Append to a statement list */
 	/*pkg*/ final void append( Statements statements ) {
