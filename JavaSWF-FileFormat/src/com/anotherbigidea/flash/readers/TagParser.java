@@ -202,8 +202,9 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
 			case TAG_DEFINEVIDEOSTREAM: parseDefineVideoStream( in ); break;
 			case TAG_VIDEOFRAME       : parseVideoFrame( in, length ); break;
 			
-            case TAG_SYMBOLCLASS : parseSymbolClass( in ); break;
-            case TAG_DOABC       : parseDoABC( in ); break;
+            case TAG_SYMBOLCLASS        : parseSymbolClass( in ); break;
+            case TAG_DOABC              : parseDoABC( in ); break;
+            case TAG_DEFINE_BINARY_DATA : parseDefBinData( in, contents ); break;
             
             case TAG_FILE_ATTRIBUTES: mTagtypes.tagFileAttributes( (int) in.readUI32() ); break;
             
@@ -213,6 +214,16 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
         }                
     }
 
+    protected void parseDefBinData( InStream in, byte[] contents ) throws IOException {
+        int id = in.readUI16();
+        //in.readUI32(); //reserved
+        
+        byte[] data = new byte[ contents.length - 6 ];
+        System.arraycopy( contents, 6, data, 0, data.length );
+        
+        mTagtypes.tagDefineBinaryData( id, data );
+    }
+    
     protected void parseSymbolClass( InStream in ) throws IOException {
         
         Map<Integer, String> classes = new LinkedHashMap<Integer, String>(); //use LHM to preserve order

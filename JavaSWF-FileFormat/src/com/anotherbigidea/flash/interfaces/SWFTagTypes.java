@@ -35,6 +35,7 @@ package com.anotherbigidea.flash.interfaces;
 
 import java.io.*;
 import java.util.*;
+
 import com.anotherbigidea.flash.structs.*;
 
 /**
@@ -204,6 +205,24 @@ public interface SWFTagTypes extends SWFSpriteTagTypes
      * @param flags combination of the FILE_ATTRIBUTES_* flags
      */
     public void tagFileAttributes( int flags ) throws IOException;
+    
+    /**
+     * Associate AS3 classes with sprites, or the main timeline.
+     * 
+     * @param classes map of symbol id to class name (id zero is main timeline)
+     * @since Flash 9
+     */
+    public void tagSymbolClass( Map<Integer, String> classes ) throws IOException;
+    
+    /**
+     * Define a blob of data that can be associated with an ActionScript 3
+     * class via tagSymbolClass.  The class must extend ByteArray.
+     * 
+     * @param id the symbol id.
+     * @param data the binary data.
+     * @since Flash 9
+     */
+    public void tagDefineBinaryData( int id, byte[] data ) throws IOException;
     
     /**
      * In files produced by Generator...

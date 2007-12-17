@@ -83,14 +83,6 @@ public interface SWFSpriteTagTypes extends SWFTags
 	 * @return SWFActions to receive actions - or null to skip the data
 	 */
 	public SWFActions tagDoInitAction( int spriteId ) throws IOException;
-
-    /**
-     * Associate AS3 classes with sprites, or the main timeline.
-     * 
-     * @param classes map of symbol id to class name (id zero is main timeline)
-     * @since Flash 9
-     */
-    public void tagSymbolClass( Map<Integer, String> classes ) throws IOException;
     
     /**
      * The AVM2 ABC tag

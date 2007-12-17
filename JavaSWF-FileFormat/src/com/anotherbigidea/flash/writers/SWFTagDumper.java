@@ -985,9 +985,20 @@ public class SWFTagDumper
                 ") #blocks=" + svp.getImageBlocks().length );
         }
         
-        //if( dumpHex ) {
+        if( dumpHex ) {
             Hex.dump( writer, videoPacket, 0L, indent + "    ", false );
             println( dashes );
-        //}  
+        }  
     }
+
+    /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagDefineBinaryData(int, byte[]) */
+    public void tagDefineBinaryData(int id, byte[] data) throws IOException {
+        println( "define-binary-data id=" + id + " length=" + data.length );
+        if( dumpHex ) {
+            Hex.dump( writer, data, 0L, indent + "    ", false );
+            println( dashes );
+        }          
+    }
+    
+    
 }

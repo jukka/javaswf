@@ -1838,4 +1838,12 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
         out.writeUI32( flags );
         completeTag();
     }
+
+    /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagDefineBinaryData(int, byte[]) */
+    public void tagDefineBinaryData(int id, byte[] data) throws IOException {
+        startTag( TAG_DEFINE_BINARY_DATA, id, false );
+        out.writeUI32( 0 ); //reserved
+        out.write( data );
+        completeTag();
+    }
 }

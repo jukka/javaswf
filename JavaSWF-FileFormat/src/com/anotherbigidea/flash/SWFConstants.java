@@ -113,6 +113,11 @@ public interface SWFConstants
     //??? 80
     //??? 81
     public static final int TAG_DOABC                = 82;
+    //??? 83
+    //??? 84
+    //??? 85
+    //??? 86
+    public static final int TAG_DEFINE_BINARY_DATA   = 87;
     
     //--Fill Types
     public static final int FILL_SOLID           = 0x00;

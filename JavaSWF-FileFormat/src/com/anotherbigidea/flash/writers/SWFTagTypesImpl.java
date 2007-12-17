@@ -66,6 +66,7 @@ import com.anotherbigidea.flash.structs.SoundInfo;
  */
 public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature 
 {
+
     protected SWFTagTypes mTagtypes;
     
     /** No pass-thru */
@@ -497,6 +498,11 @@ public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature
         if( mTagtypes != null ) mTagtypes.tagFileAttributes( flags );        
     }
 
+    /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagDefineBinaryData(int, byte[]) */
+    public void tagDefineBinaryData(int id, byte[] data) throws IOException {
+        if( mTagtypes != null ) mTagtypes.tagDefineBinaryData( id, data );
+    }
+    
     /**
      * Convenience method to read from a SWF file and pass it to this instance.
      * 
