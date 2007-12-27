@@ -18,6 +18,11 @@ import com.anotherbigidea.flash.avm2.InstanceInfoFlags;
  */
 public class AVM2Class implements Comparable<AVM2Class> {
 
+	/**
+	 * The ABC file this class belongs to
+	 */
+	public final AVM2ABCFile abcFile;
+	
     /** The class index */
     public final int index;
     
@@ -68,6 +73,7 @@ public class AVM2Class implements Comparable<AVM2Class> {
                        boolean isSealed, boolean isFinal, boolean isInterface,
                        AVM2Namespace protectedNamespace ) {
         
+    	this.abcFile            = abcFile;
         this.index              = index;
         this.name               = name;
         this.superclass         = superclass;
