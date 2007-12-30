@@ -101,7 +101,13 @@ public class AVM2Method {
                 out.print( " : " );
             }
             
-            paramTypes.get( i ).dump( out );
+            AVM2Name ptype = paramTypes.get( i );
+            if( ptype == null ) {
+                out.print( "*" );
+            }
+            else {
+                ptype.dump( out );
+            }
             
             if( defaultValues != null 
              && i >= (paramTypes.size() - defaultValues.size()) ) {

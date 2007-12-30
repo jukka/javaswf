@@ -22,6 +22,13 @@ public final class AVM2Code {
 	
 	private int stackSize;
 	private int scopeSize;
+	private int registersUsed;
+	
+	/* Special register mode is used to allow temporary register allocation
+	 * for special purposes.  While in this mode register use counts towards
+	 * the body's maxRegisters but not to registersUsed.
+	 */
+	private boolean specialRegisterMode;
 	
 	/**
 	 * @param body the method/script body to wrap
@@ -52,7 +59,19 @@ public final class AVM2Code {
 	//register a register use
 	private void local( int index ) {
 		body.maxRegisters = Math.max( index + 1, body.maxRegisters );
+		if( ! specialRegisterMode ) registersUsed = body.maxRegisters;
 	}	
+	
+	/**
+	 * Turn special register mode on or off.
+	 * 
+	 * @param on true for on
+	 * @return the next available register index
+	 */
+	public int specialRegisterMode( boolean on ) {
+	    specialRegisterMode = on;
+	    return registersUsed;
+	}
 	
 	/**
 	 * Trace out a message
@@ -99,6 +118,22 @@ public final class AVM2Code {
 	}
 	
 	/**
+	 * Add, with type conversion.
+	 */
+	public void add() {
+	    stack(-1);
+	    instructions.append( OP_add );
+	}
+
+    /**
+     * Add ints, with conversion if required.
+     */
+    public void addInts() {
+        stack(-1);
+        instructions.append( OP_add_i );
+    }
+	
+	/**
 	 * Push a value, according to type
 	 */
 	private void push( Object obj ) {
@@ -129,7 +164,15 @@ public final class AVM2Code {
 		stack(1);
 		instructions.append( OP_pushnull );
 	}
-	
+
+    /**
+     * Push undefined
+     */
+    public void pushUndefined() {
+        stack(1);
+        instructions.append( OP_pushundefined );
+    }
+
 	/**
 	 * Push a signed int
 	 */
@@ -185,7 +228,29 @@ public final class AVM2Code {
 		stack( -argCount - 1 );
 		instructions.append( OP_callpropvoid, new AVM2QName( qualifiedName ), argCount );
 	}
+	   
+    /**
+     * Call a property on an object.  There is no return value.
+     * 
+     * @param qualifiedName the prop name
+     * @param argCount the number of arguments
+     */
+    public void callPropVoid( AVM2QName qualifiedName, int argCount ) {
+        stack( -argCount - 1 );
+        instructions.append( OP_callpropvoid, qualifiedName, argCount );
+    }
 	
+    /**
+     * Call a property on an object.
+     * 
+     * @param qualifiedName the prop name
+     * @param argCount the number of arguments
+     */
+    public void callProperty( AVM2QName qualifiedName, int argCount ) {
+        stack( -argCount );
+        instructions.append( OP_callproperty, qualifiedName, argCount );
+    }
+    
 	/**
 	 * Push a string
 	 */
