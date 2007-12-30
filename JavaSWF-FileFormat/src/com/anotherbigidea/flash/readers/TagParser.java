@@ -466,17 +466,25 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
                                    fillType == FILL_RADIAL_GRADIENT );
         }
         else if( fillType == FILL_TILED_BITMAP 
-              || fillType == FILL_CLIPPED_BITMAP )
+              || fillType == FILL_CLIPPED_BITMAP
+              || fillType == FILL_NONSMOOTHED_TILED_BITMAP    
+              || fillType == FILL_NONSMOOTHED_CLIPPED_BITMAP )
         {
             int bitmapId = in.readUI16();
             Matrix startMatrix = new Matrix( in );
             Matrix endMatrix   = new Matrix( in );
             
             shape.defineFillStyle( bitmapId, startMatrix, 
-                                   fillType == FILL_CLIPPED_BITMAP );
+                                      fillType == FILL_CLIPPED_BITMAP
+                                   || fillType == FILL_NONSMOOTHED_CLIPPED_BITMAP,
+                                      fillType == FILL_CLIPPED_BITMAP
+                                   || fillType == FILL_TILED_BITMAP  );
 
             shape.defineFillStyle( bitmapId, endMatrix, 
-                                   fillType == FILL_CLIPPED_BITMAP );
+                                      fillType == FILL_CLIPPED_BITMAP
+                                   || fillType == FILL_NONSMOOTHED_CLIPPED_BITMAP,
+                                      fillType == FILL_CLIPPED_BITMAP
+                                   || fillType == FILL_TILED_BITMAP  );
         }                            
     }
     
@@ -1210,46 +1218,59 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
     {
         int fillType = in.readUI8();
         
-        if( fillType == FILL_SOLID )
-        {
-            Color color = hasAlpha ? new AlphaColor(in) : new Color(in);
+        switch( fillType ) {
+            case FILL_SOLID: {
+                Color color = hasAlpha ? new AlphaColor(in) : new Color(in);
+                
+                if( shape != null ) shape.defineFillStyle( color );
+                break;
+            }
             
-            if( shape != null ) shape.defineFillStyle( color );
+            case FILL_LINEAR_GRADIENT:
+            case FILL_RADIAL_GRADIENT: {
+                Matrix matrix   = new Matrix( in );            
+                
+                int numRatios = in.readUI8();
+                
+                int[]   ratios = new int[ numRatios ];
+                Color[] colors = new Color[ numRatios ];
+                
+                for( int i = 0; i < numRatios; i++ )
+                {
+                    ratios[i] = in.readUI8();
+                    colors[i] = hasAlpha ? new AlphaColor(in) : new Color(in);
+                }            
+                
+                if( shape != null )
+                {
+                    shape.defineFillStyle( matrix, ratios, colors, 
+                                           fillType == FILL_RADIAL_GRADIENT );
+                }     
+                break;
+            }
+
+            case FILL_NONSMOOTHED_TILED_BITMAP:    
+            case FILL_NONSMOOTHED_CLIPPED_BITMAP: 
+            case FILL_TILED_BITMAP:
+            case FILL_CLIPPED_BITMAP: {
+                int bitmapId = in.readUI16();
+                Matrix matrix = new Matrix( in );
+                
+                if( shape != null )
+                {
+                    shape.defineFillStyle( bitmapId, matrix, 
+                                              fillType == FILL_CLIPPED_BITMAP
+                                           || fillType == FILL_NONSMOOTHED_CLIPPED_BITMAP,
+                                              fillType == FILL_CLIPPED_BITMAP
+                                           || fillType == FILL_TILED_BITMAP );
+                }
+                break;
+            }    
+            
+            case FILL_FOCAL_RADIAL_GRADIENT: //FIXME:
+            default:
+                throw new IOException( "Unknown fill type: " + fillType );
         }
-        else if( fillType == FILL_LINEAR_GRADIENT 
-              || fillType == FILL_RADIAL_GRADIENT )
-        {
-            Matrix matrix   = new Matrix( in );            
-            
-            int numRatios = in.readUI8();
-            
-            int[]   ratios = new int[ numRatios ];
-            Color[] colors = new Color[ numRatios ];
-            
-            for( int i = 0; i < numRatios; i++ )
-            {
-                ratios[i] = in.readUI8();
-                colors[i] = hasAlpha ? new AlphaColor(in) : new Color(in);
-            }            
-            
-            if( shape != null )
-            {
-                shape.defineFillStyle( matrix, ratios, colors, 
-                                       fillType == FILL_RADIAL_GRADIENT );
-            }                        
-        }
-        else if( fillType == FILL_TILED_BITMAP 
-              || fillType == FILL_CLIPPED_BITMAP )
-        {
-            int bitmapId = in.readUI16();
-            Matrix matrix = new Matrix( in );
-            
-            if( shape != null )
-            {
-                shape.defineFillStyle( bitmapId, matrix, 
-                                       fillType == FILL_CLIPPED_BITMAP );
-            }            
-        }                    
     }
     
     public static void main( String[] args ) throws IOException

@@ -65,7 +65,7 @@ public interface SWFShape extends SWFVectors
     /**
      * Bitmap fill - tiled or clipped
      */
-    public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped )
+    public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped, boolean smoothed )
         throws IOException;
     
     public void defineLineStyle( int width, Color color ) throws IOException;

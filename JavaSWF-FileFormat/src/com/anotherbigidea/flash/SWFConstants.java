@@ -120,11 +120,14 @@ public interface SWFConstants
     public static final int TAG_DEFINE_BINARY_DATA   = 87;
     
     //--Fill Types
-    public static final int FILL_SOLID           = 0x00;
-    public static final int FILL_LINEAR_GRADIENT = 0x10;
-    public static final int FILL_RADIAL_GRADIENT = 0x12;
-    public static final int FILL_TILED_BITMAP    = 0x40;
-    public static final int FILL_CLIPPED_BITMAP  = 0x41;    
+    public static final int FILL_SOLID                      = 0x00;
+    public static final int FILL_LINEAR_GRADIENT            = 0x10;
+    public static final int FILL_RADIAL_GRADIENT            = 0x12;
+    public static final int FILL_FOCAL_RADIAL_GRADIENT      = 0x13;
+    public static final int FILL_TILED_BITMAP               = 0x40;
+    public static final int FILL_CLIPPED_BITMAP             = 0x41;    
+    public static final int FILL_NONSMOOTHED_TILED_BITMAP   = 0x42;    
+    public static final int FILL_NONSMOOTHED_CLIPPED_BITMAP = 0x43;    
     
     //--Clip Action Conditions
     public static final int CLIP_ACTION_ON_LOAD     = 0x01;

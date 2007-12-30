@@ -1229,10 +1229,10 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
             outstandingChanges = true;
         }
 
-        public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped )
+        public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped, boolean smoothed )
             throws IOException
         {
-            fillStyles.addElement( new FillStyle( bitmapId, matrix, clipped ) );
+            fillStyles.addElement( new FillStyle( bitmapId, matrix, clipped, smoothed ) );
             outstandingChanges = true;
         }
     

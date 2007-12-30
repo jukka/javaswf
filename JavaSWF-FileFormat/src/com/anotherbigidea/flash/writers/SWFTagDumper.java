@@ -793,10 +793,10 @@ public class SWFTagDumper
     /**
      * SWFShape interface
      */     
-    public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped )
+    public void defineFillStyle( int bitmapId, Matrix matrix, boolean clipped, boolean smoothed )
         throws IOException
     {
-        println( "    fill clipped=" + clipped + " image=" + bitmapId + " " + matrix );
+        println( "    fill clipped=" + clipped + " smoothed=" + smoothed + " image=" + bitmapId + " " + matrix );
     }
     
     /**

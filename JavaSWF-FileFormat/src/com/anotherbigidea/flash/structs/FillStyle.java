@@ -81,13 +81,18 @@ public class FillStyle implements Style
     /**
      * Bitmap fill
      */
-    public FillStyle( int bitmapId, Matrix matrix, boolean clipped )
+    public FillStyle( int bitmapId, Matrix matrix, boolean clipped, boolean smoothed )
     {
         this.matrix   = matrix;
         this.bitmapId = bitmapId;
                 
         fillType = clipped ? SWFConstants.FILL_CLIPPED_BITMAP : 
                              SWFConstants.FILL_TILED_BITMAP;
+        
+        if     ( (!clipped) && (!smoothed) ) fillType = SWFConstants.FILL_NONSMOOTHED_TILED_BITMAP;
+        else if( (!clipped) &&   smoothed  ) fillType = SWFConstants.FILL_TILED_BITMAP;
+        else if(   clipped  && (!smoothed) ) fillType = SWFConstants.FILL_NONSMOOTHED_CLIPPED_BITMAP;
+        else if(   clipped  &&   smoothed  ) fillType = SWFConstants.FILL_CLIPPED_BITMAP;
     }
             
     public void write( OutStream out, boolean hasAlpha ) throws IOException
