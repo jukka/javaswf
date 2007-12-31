@@ -29,4 +29,10 @@ public class IfJump extends AVM1OperationAggregation {
     protected void writeOp(SWFActionBlock block) throws IOException {
         block.ifJump( jumpLabel );
     }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReference() */
+    @Override
+    public String labelReference() {
+        return jumpLabel;
+    }    
 }

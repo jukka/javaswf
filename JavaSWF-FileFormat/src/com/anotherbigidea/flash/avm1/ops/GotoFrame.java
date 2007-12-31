@@ -44,17 +44,10 @@ public class GotoFrame extends AVM1OperationAggregation {
     }
 
     /**
-     * Goto a frame and play
+     * Goto a frame and play (or stop)
      */
-    public static GotoFrame andPlay() {
-        return new GotoFrame( PlayAction.AndPlay );        
-    }
-
-    /**
-     * Goto a frame and stop
-     */
-    public static GotoFrame andStop() {
-        return new GotoFrame( PlayAction.AndStop );
+    public static GotoFrame andPlay( boolean play ) {
+        return new GotoFrame( play ? PlayAction.AndPlay : PlayAction.AndStop );        
     }
     
     private GotoFrame( PlayAction playAction ) {

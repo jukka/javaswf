@@ -778,9 +778,9 @@ public class ActionBlockWriter implements SWFActionBlock, SWFActionCodes {
         writeCode( DEL_VAR );
     }   
  
-    public void deleteThreadVars() throws IOException
+    public void deleteScopeProperty() throws IOException
     {
-        writeCode( DEL_THREAD_VARS );
+        writeCode( DEL_SCOPE_VAR );
     }   
      
     public void enumerate() throws IOException

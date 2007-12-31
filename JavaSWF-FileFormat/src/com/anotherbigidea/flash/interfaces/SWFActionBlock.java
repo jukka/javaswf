@@ -151,7 +151,7 @@ public interface SWFActionBlock {
     public void defineLocal() throws IOException;
 
     public void deleteProperty() throws IOException;
-    public void deleteThreadVars() throws IOException;
+    public void deleteScopeProperty() throws IOException;
 
     public void enumerate() throws IOException;
     public void typedEquals() throws IOException;

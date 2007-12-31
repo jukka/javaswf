@@ -123,8 +123,8 @@ public class ActionHelper implements SWFActionBlock {
     public void deleteProperty() throws IOException {
         mBlock.deleteProperty();
     }
-    public void deleteThreadVars() throws IOException {
-        mBlock.deleteThreadVars();
+    public void deleteScopeProperty() throws IOException {
+        mBlock.deleteScopeProperty();
     }
     public void divide() throws IOException {
         mBlock.divide();

@@ -22,4 +22,10 @@ public class Jump extends AVM1Operation {
     public void write(SWFActionBlock block) throws IOException {
         block.jump( jumpLabel );
     }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReference() */
+    @Override
+    public String labelReference() {
+        return jumpLabel;
+    }    
 }

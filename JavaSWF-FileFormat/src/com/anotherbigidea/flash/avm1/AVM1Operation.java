@@ -59,49 +59,13 @@ public abstract class AVM1Operation {
      */
     public int intValue() {
         return 0;
+    }    
+    
+    /** 
+     * Get any label referenced by this operation
+     * @return null if this operation does not reference a label
+     */
+    public String labelReference() {
+        return null;
     }
-    
-    /*
-s
-    //--Flash 5 Actions
-
-    public SWFActionBlock startFunction( String name, String[] paramNames ) throws IOException;
-
-    public void deleteProperty() throws IOException;
-    public void deleteThreadVars() throws IOException;
-
-    public void enumerate() throws IOException;
-    public void getMember() throws IOException;
-
-    public void setMember() throws IOException;
-    public void getTargetPath() throws IOException;
-
-    public SWFActionBlock startWith() throws IOException;
-
-
-    public void decrement() throws IOException;
-    public void increment() throws IOException;
-
-    public void duplicate() throws IOException;
-    public void returnValue() throws IOException;
-    public void swap() throws IOException;
-    public void storeInRegister( int registerNumber ) throws IOException;
-
-    public void pushRegister( int registerNumber ) throws IOException;
-    
-    //--Flash 6 Actions
-    public void enumerateObject() throws IOException;
-    
-    //--Flash 7 Actions
-    public SWFActionBlock startFunction2( String name, 
-            int numRegistersToAllocate,
-            int preloadingFlags,
-            String[] paramNames,
-            int[] registersForArguments ) throws IOException;
-    
-    public void _throw() throws IOException;
-    public void _extends() throws IOException;
-    public void _implements() throws IOException;
-    
-    */
 }

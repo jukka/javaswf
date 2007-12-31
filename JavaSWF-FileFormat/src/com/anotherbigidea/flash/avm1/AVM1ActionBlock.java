@@ -1,5 +1,11 @@
 package com.anotherbigidea.flash.avm1;
 
+import java.io.IOException;
+import java.util.*;
+
+import com.anotherbigidea.flash.avm1.ops.JumpLabel;
+import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+
 /**
  * A block of AVM1 Actions
  *
@@ -7,9 +13,135 @@ package com.anotherbigidea.flash.avm1;
  */
 public class AVM1ActionBlock {
 
+    /**
+     * The operation that owns this block - null for a top-level block
+     */
+    public final AVM1Operation owner; 
+    
     private AVM1Operation first;
     private AVM1Operation last;
     private int count;
+
+    //--the labels in this block (or any sub-block)
+    private final Map<String, JumpLabel> labels;
+    private final Map<String, Collection<AVM1Operation>> labelReferences; //reference counts
+    
+    public AVM1ActionBlock() {
+        owner  = null;
+        labels = new HashMap<String, JumpLabel>();        
+        labelReferences = new HashMap<String, Collection<AVM1Operation>>();
+    }
+    
+    public AVM1ActionBlock( AVM1Operation owner ) {
+        this.owner = owner;
+        labels = null;
+        labelReferences = null;
+    }
+    
+    /**
+     * Find a label in this block, any sub-block or outer-block.
+     *  
+     * @return null if the label does not exist
+     */
+    public JumpLabel findLabel( String label ) {
+        if( labels != null ) {
+            return labels.get( label );
+        }
+        
+        if( owner != null ) {
+            return owner.block.findLabel( label );
+        }
+        
+        return null;
+    }
+
+    /**
+     * Find a label in this block, any sub-block or outer-block, and get the
+     * references to it.  This does not guarantee that the label exists - just
+     * that there are references to it.
+     *  
+     * @return empty collection if the label does not exist
+     */
+    public Collection<AVM1Operation> labelRefs( String label ) {
+        if( labels != null ) {
+            return labelReferences.get( label );
+        }
+        
+        if( owner != null ) {
+            return owner.block.labelRefs( label );
+        }
+        
+        return Collections.emptySet();
+    }
+
+    /**
+     * Remove a label - just the label, not any references
+     */
+    private void dropLabel( JumpLabel label ) {
+        if( labels != null ) {
+            labels.remove( label.label );
+        }
+        
+        else if( owner != null ) {
+            owner.block.dropLabel( label );
+        }
+    }
+
+    /**
+     * Add a label 
+     */
+    private void addLabel( JumpLabel label ) {
+        if( labels != null ) {
+            labels.put( label.label, label );
+        }
+        
+        else if( owner != null ) {
+            owner.block.addLabel( label );
+        }
+    }
+    
+    /**
+     * Add a reference to a label
+     */
+    private void referenceLabel( String label, AVM1Operation op ) {
+        if( labelReferences != null ) {
+            Collection<AVM1Operation> refs = labelReferences.get( label );
+            if( refs == null ) {
+                refs = new HashSet<AVM1Operation>();
+                labelReferences.put( label, refs );
+            }
+            
+            refs.add( op );
+        }
+        
+        else if( owner != null ) {
+            owner.block.referenceLabel( label, op );
+        }
+    }
+    
+    /**
+     * Remove a reference to a label
+     */
+    private void dereferenceLabel( String label, AVM1Operation op ) {
+        if( labelReferences != null ) {
+            Collection<AVM1Operation> refs = labelReferences.get( label );
+            if( refs != null ) {
+                refs.remove( op );
+                if( refs.isEmpty() ) labelReferences.remove( label );
+            }
+        }
+        
+        else if( owner != null ) {
+            owner.block.dereferenceLabel( label, op );
+        }
+    }
+    
+    /**
+     * Called when all operations have been added to the block.
+     */
+    public final void complete() {
+        //FIXME
+    }
     
     /**
      * Get the operation count (operations that have not been aggregated)
@@ -40,6 +172,17 @@ public class AVM1ActionBlock {
      * Remove an operation from this block
      */
     /*pkg*/ void remove( AVM1Operation op ) {
+        
+        if( op instanceof JumpLabel ) {
+            dropLabel( (JumpLabel) op );
+        }
+        else {
+            String label = op.labelReference();
+            if( label != null ) {
+                dereferenceLabel( label, op );
+            }
+        }
+        
         if( op.block != this ) return;
         count--;
         
@@ -61,6 +204,16 @@ public class AVM1ActionBlock {
      * Append an operation to this block
      */
     /*pkg*/ void append( AVM1Operation op ) {
+        if( op instanceof JumpLabel ) {
+            addLabel( (JumpLabel) op );
+        }
+        else {
+            String label = op.labelReference();
+            if( label != null ) {
+                referenceLabel( label, op );
+            }
+        }
+
         count++;
         op.block = this;
         
@@ -72,5 +225,19 @@ public class AVM1ActionBlock {
         }
         
         last = op;
+    }
+    
+    /**
+     * Write this block
+     */
+    public void write( SWFActionBlock block ) throws IOException {
+        AVM1Operation op = first;
+        
+        while( op != null ) {
+            op.write( block );
+            op = op.next();
+        }
+        
+        block.end();
     }
 }

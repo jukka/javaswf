@@ -13,7 +13,7 @@ import com.anotherbigidea.flash.interfaces.SWFActionBlock;
  */
 public final class WaitForFrame extends AVM1OperationAggregation {
 
-    /** The target frame - either a number or strig label */
+    /** The target frame - either a number or string label */
     public AVM1Operation frame;
         
     public final String jumpLabel;
@@ -38,5 +38,11 @@ public final class WaitForFrame extends AVM1OperationAggregation {
     @Override
     protected void writeOp(SWFActionBlock block) throws IOException {
         block.waitForFrame( jumpLabel );
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReference() */
+    @Override
+    public String labelReference() {
+        return jumpLabel;
     }    
 }

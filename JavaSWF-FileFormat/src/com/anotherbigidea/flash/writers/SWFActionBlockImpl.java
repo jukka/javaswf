@@ -425,9 +425,9 @@ public class SWFActionBlockImpl implements SWFActionBlock {
         if( acts != null ) acts.deleteProperty();
     }    
     
-    public void deleteThreadVars() throws IOException
+    public void deleteScopeProperty() throws IOException
     {
-        if( acts != null ) acts.deleteThreadVars();
+        if( acts != null ) acts.deleteScopeProperty();
     }    
     
     public void enumerate() throws IOException

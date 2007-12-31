@@ -88,7 +88,7 @@ public interface SWFActionCodes
     public static final int MB_ASCII_TO_CHAR  = 0x37; //F4
     
     public static final int DEL_VAR           = 0x3a; //F5 ---  
-    public static final int DEL_THREAD_VARS   = 0x3b; //F5 ---  
+    public static final int DEL_SCOPE_VAR     = 0x3b; //F5 ---  
     public static final int DEFINE_LOCAL_VAL  = 0x3c; //F5 ---  
     public static final int CALL_FUNCTION     = 0x3d; //F5 ---    
     public static final int RETURN            = 0x3e; //F5 ---      

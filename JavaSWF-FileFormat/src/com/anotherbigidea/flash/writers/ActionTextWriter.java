@@ -597,9 +597,9 @@ public class ActionTextWriter implements SWFActions, SWFActionBlock, SWFActionCo
         print( "deleteProperty", null );
     }    
     
-    public void deleteThreadVars() throws IOException
+    public void deleteScopeProperty() throws IOException
     {
-        print( "deleteThreadVars", null );
+        print( "deleteScopeProperty", null );
     }    
     
     public void enumerate() throws IOException

@@ -1,0 +1,34 @@
+package com.anotherbigidea.flash.avm1.ops;
+
+import java.io.IOException;
+
+import com.anotherbigidea.flash.avm1.AVM1Operation;
+import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
+import com.anotherbigidea.flash.avm1.AVM1ValueProducer;
+import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+
+/**
+ * Get a member
+ *
+ * @author nickmain
+ */
+public class GetMember extends AVM1OperationAggregation implements AVM1ValueProducer {
+
+    public AVM1Operation name;
+    public AVM1Operation object;
+    
+    
+    /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#aggregate() */
+    @Override
+    public void aggregate() {
+        if( name   == null ) name = consumePrevious();
+        if( object == null ) object = consumePrevious();
+    }
+    
+    /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#writeOp(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
+    @Override
+    protected void writeOp( SWFActionBlock block ) throws IOException {
+        block.getMember();
+    }
+    
+}
