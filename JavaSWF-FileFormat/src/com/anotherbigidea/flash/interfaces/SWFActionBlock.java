@@ -44,6 +44,8 @@ import java.io.IOException;
  */
 public interface SWFActionBlock {
 
+    public static enum GetURLMethod { MethodNone, MethodGet, MethodPost };
+    
     /**
      * End of actions
      */
@@ -123,7 +125,7 @@ public interface SWFActionBlock {
     public void getVariable() throws IOException;
     public void setVariable() throws IOException;
 
-    public void getURL( int sendVars, int loadMode ) throws IOException;
+    public void getURL( GetURLMethod method, boolean loadVars, boolean targetSprite ) throws IOException;
 
     public void gotoFrame( boolean play ) throws IOException;
     public void setTarget() throws IOException;

@@ -34,7 +34,6 @@
 package com.anotherbigidea.flash.interfaces;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.structs.AlphaTransform;

@@ -47,16 +47,7 @@ import java.io.IOException;
  *  5. done() is called to terminate all action passing
  */
 public interface SWFActions
-{
-    public static final int GET_URL_SEND_VARS_NONE = 0;  //don't send variables
-    public static final int GET_URL_SEND_VARS_GET  = 1;  //send vars using GET
-    public static final int GET_URL_SEND_VARS_POST = 2;  //send vars using POST
-
-    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL  = 0;
-    public static final int GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE = 1;
-    public static final int GET_URL_MODE_LOAD_VARS_INTO_LEVEL   = 3;
-    public static final int GET_URL_MODE_LOAD_VARS_INTO_SPRITE  = 4;
-    
+{    
     /**
      * Start of actions
      * 

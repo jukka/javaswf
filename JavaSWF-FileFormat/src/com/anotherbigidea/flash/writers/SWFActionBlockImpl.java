@@ -325,11 +325,10 @@ public class SWFActionBlockImpl implements SWFActionBlock {
         if( acts != null ) acts.setVariable();
     }
     
-    public void getURL( int sendVars, int loadMode ) throws IOException
-    {        
-        if( acts != null ) acts.getURL( sendVars, loadMode );
+    public void getURL(GetURLMethod method, boolean loadVars, boolean targetSprite) throws IOException {
+        if( acts != null ) acts.getURL( method, loadVars, targetSprite );
     }
-    
+
     public void gotoFrame( boolean play ) throws IOException
     {
         if( acts != null ) acts.gotoFrame( play );

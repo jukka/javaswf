@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.anotherbigidea.flash.SWFActionCodes;
-import com.anotherbigidea.flash.interfaces.SWFActions;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.interfaces.SWFActions;
 
 /**
  * A writer that implements the SWFActions interface and writes
@@ -406,52 +406,27 @@ public class ActionTextWriter implements SWFActions, SWFActionBlock, SWFActionCo
         print( "setVariable", null );
     }
     
-    public void getURL( int sendVars, int loadMode ) throws IOException
-    {        
-        String sendVars_ = null;
-        switch( sendVars )
-        {
-            case GET_URL_SEND_VARS_GET:
-                sendVars_ = "send vars via GET";
+    public void getURL(GetURLMethod method, boolean loadVars, boolean targetSprite) throws IOException {
+        String sendVars = null;
+        
+        switch( method ) {
+            case MethodGet:
+                sendVars = "send vars via GET";
                 break;
             
-            case GET_URL_SEND_VARS_POST:
-                sendVars_ = "send vars via POST";
+            case MethodPost:
+                sendVars = "send vars via POST";
                 break;
             
-            case GET_URL_SEND_VARS_NONE:
+            case MethodNone:
             default:
-                sendVars_ = "no send";
+                sendVars = "no send";
                 break;
         }
-        
-        String mode = null;
-        switch( loadMode )
-        {
-            case GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL : 
-                mode = "load movie into level";
-                break;
                 
-            case GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE: 
-                mode = "load movie into sprite";
-                break;
-  
-            case GET_URL_MODE_LOAD_VARS_INTO_LEVEL :
-                mode = "load vars into level";
-                break;
-  
-            case GET_URL_MODE_LOAD_VARS_INTO_SPRITE:
-                mode = "load vars into sprite";
-                break;
-  
-            default:
-                mode = "???";
-                break;
-        }
-        
-        print( "getURL",  new String[] { sendVars_, mode } );
+        print( "getURL",  new String[] { sendVars, loadVars ? "load-vars" : "load-movie", targetSprite ? "into sprite" : "into frame" } );        
     }
-    
+
     public void gotoFrame( boolean play ) throws IOException
     {
         print( "gotoFrame", new String[] { play ? "and play" : "and stop" } );

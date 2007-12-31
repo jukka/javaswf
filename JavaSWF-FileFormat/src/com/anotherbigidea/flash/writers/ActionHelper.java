@@ -162,8 +162,8 @@ public class ActionHelper implements SWFActionBlock {
     public void getTime() throws IOException {
         mBlock.getTime();
     }
-    public void getURL(int sendVars, int loadMode) throws IOException {
-        mBlock.getURL(sendVars, loadMode);
+    public void getURL(GetURLMethod method, boolean loadVars, boolean targetSprite) throws IOException {
+        mBlock.getURL( method, loadVars, targetSprite );
     }
     public void getURL(String url, String target) throws IOException {
         mBlock.getURL(url, target);

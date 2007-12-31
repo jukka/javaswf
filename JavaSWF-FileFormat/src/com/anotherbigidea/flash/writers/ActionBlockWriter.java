@@ -46,7 +46,6 @@ import org.epistem.io.OutStream;
 import com.anotherbigidea.flash.SWFActionCodes;
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
-import com.anotherbigidea.flash.interfaces.SWFActions;
 
 /**
  * Implementation of SWFActionBlock that builds a byte array of the actions
@@ -525,36 +524,24 @@ public class ActionBlockWriter implements SWFActionBlock, SWFActionCodes {
         writeCode( SET_VARIABLE );
     }
  
-    public void getURL( int sendVars, int loadMode ) throws IOException
-    {
+    /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#getURL(com.anotherbigidea.flash.interfaces.SWFActionBlock.GetURLMethod, boolean, boolean) */
+    public void getURL(GetURLMethod method, boolean loadVars, boolean targetSprite) throws IOException {
         writeCode( GET_URL_2 );
         mOut.writeUI16( 1 );
 
         int flags = 0;
+
+        if( loadVars     ) flags |= 0x80;
+        if( targetSprite ) flags |= 0x40;
         
-        String sendVars_ = null;
-        switch( sendVars )
-        {
-	        case SWFActions.GET_URL_SEND_VARS_GET:  flags = 1; break;
-	        case SWFActions.GET_URL_SEND_VARS_POST: flags = 2; break;
-	        
-	        case SWFActions.GET_URL_SEND_VARS_NONE:
-	        default: break;
+        switch( method ) {
+            case MethodGet:  flags |= 0x01; break;
+            case MethodPost: flags |= 0x02; break;
         }
         
-        String mode = null;
-        switch( loadMode )
-        {
-	        case SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL:  break;                
-	        case SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE: flags |= 0x40; break;
-	        case SWFActions.GET_URL_MODE_LOAD_VARS_INTO_LEVEL :  flags |= 0x80; break;
-	        case SWFActions.GET_URL_MODE_LOAD_VARS_INTO_SPRITE:  flags |= 0xC0; break;
-	        default: break;
-        }
-        
-        mOut.writeUI8( flags );        
+        mOut.writeUI8( flags );                
     }
- 
+
     public void gotoFrame( boolean play ) throws IOException
     {
         writeCode( GOTO_FRAME_2 );

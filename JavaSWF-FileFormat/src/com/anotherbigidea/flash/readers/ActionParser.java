@@ -43,7 +43,7 @@ import org.epistem.io.InStream;
 import com.anotherbigidea.flash.SWFActionCodes;
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
-import com.anotherbigidea.flash.interfaces.SWFActions;
+import com.anotherbigidea.flash.interfaces.SWFActionBlock.GetURLMethod;
 
 /**
  * Parse action bytes and drive a SWFActions interface
@@ -382,18 +382,17 @@ public class ActionParser implements SWFActionCodes
         
         private void parseGetURL2( int flags ) throws IOException
         {
-            int sendVars = flags & 0x03;
-            int mode = 0;
+            GetURLMethod method;
+            boolean loadVars     = (flags & 0x80) != 0;
+            boolean targetSprite = (flags & 0x40) != 0;
             
-            switch( flags & 0xF0 )
-            {
-	            case 0x40: mode = SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_SPRITE; break;
-	            case 0x80: mode = SWFActions.GET_URL_MODE_LOAD_VARS_INTO_LEVEL;   break;
-	            case 0xC0: mode = SWFActions.GET_URL_MODE_LOAD_VARS_INTO_SPRITE;  break;
-	            default:   mode = SWFActions.GET_URL_MODE_LOAD_MOVIE_INTO_LEVEL;  break;
+            switch( flags & 0x03 ) {
+                case 1:  method = GetURLMethod.MethodGet; break;
+                case 2:  method = GetURLMethod.MethodPost; break;
+                default: method = GetURLMethod.MethodNone; break;
             }
             
-            mBlock.getURL( sendVars, mode );
+            mBlock.getURL( method, loadVars, targetSprite );
         }        
         
         private void parsePush( int length, InStream in ) throws IOException 
