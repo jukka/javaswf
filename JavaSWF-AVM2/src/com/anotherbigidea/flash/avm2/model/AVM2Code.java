@@ -90,6 +90,31 @@ public final class AVM2Code {
 	}
 
 	/**
+	 * Push the global scope object
+	 */
+	public void getGlobalScope() {
+	    stack(1);
+	    instructions.append( OP_getglobalscope );
+	}
+	
+	/**
+	 * Set a property
+	 */
+	public void setProperty( String name ) {
+	    stack(-2);
+	    AVM2QName qname = new AVM2QName( name );
+	    instructions.append( OP_setproperty, qname );
+	}
+	
+	/**
+	 * Get a property
+	 */
+	public void getProperty( String name ) {
+        AVM2QName qname = new AVM2QName( name );
+	    instructions.append( OP_getproperty, qname );
+	}
+	
+	/**
 	 * Duplicate the top stack value
 	 */
 	public void dup() {
@@ -474,5 +499,18 @@ public final class AVM2Code {
         code.returnVoid();
         
         return body.maxScope;
+    }
+    
+    /**
+     * Create a standalone script.
+     * 
+     * @param abc the ABC file to add the script to
+     */
+    public static AVM2Code standaloneScript( AVM2ABCFile abc ) {
+        AVM2Script script = abc.prependScript();
+        script.script.methodBody.scopeDepth = 1;
+        AVM2Code code = new AVM2Code( script.script.methodBody );
+        code.setupInitialScope();
+        return code;
     }
 }
