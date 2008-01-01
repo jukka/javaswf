@@ -100,7 +100,7 @@ public interface SWFConstants
     //??? 67
     //??? 68
     public static final int TAG_FILE_ATTRIBUTES      = 69;
-    //??? 70
+    public static final int TAG_PLACEOBJECT3         = 70;  
     //??? 71
     //??? 72
     //??? 73

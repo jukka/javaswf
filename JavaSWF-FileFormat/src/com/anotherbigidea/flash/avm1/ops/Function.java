@@ -5,8 +5,11 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
+import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.writers.ActionTextWriter;
+
 import static com.anotherbigidea.flash.SWFActionCodes.*;
 
 /**
@@ -14,7 +17,7 @@ import static com.anotherbigidea.flash.SWFActionCodes.*;
  *
  * @author nickmain
  */
-public class Function extends AVM1Operation {
+public class Function extends AVM1Operation implements AVM1BlockContainer {
 
     public static enum PreloadingFlag {        
         PRELOAD_PARENT   (START_FUNCTION2_PRELOAD_PARENT   ),
@@ -67,6 +70,11 @@ public class Function extends AVM1Operation {
         this.registersForArguments = registersForArguments;
     }
     
+    /** @see com.anotherbigidea.flash.avm1.AVM1BlockContainer#subBlocks() */
+    public AVM1ActionBlock[] subBlocks() {
+        return new AVM1ActionBlock[] { body };
+    }
+    
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     public void write( SWFActionBlock block ) throws IOException {
@@ -77,5 +85,14 @@ public class Function extends AVM1Operation {
                 name, numRegistersToAllocate, bits, paramNames, registersForArguments );
         
         body.write( bodyBlock );
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#print(com.anotherbigidea.flash.writers.ActionTextWriter) */
+    @Override
+    public void print(ActionTextWriter writer) throws IOException {
+        int bits = PreloadingFlag.encode( flags );        
+        writer.startFunction2( name, numRegistersToAllocate, bits, paramNames, registersForArguments );
+        body.print( writer );
+        writer.end();
     }
 }

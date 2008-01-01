@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.writers.ActionTextWriter;
 
 /**
  * A target for branches
@@ -19,5 +20,12 @@ public final class JumpLabel extends AVM1Operation {
     @Override
     public void write(SWFActionBlock block) throws IOException {
         block.jumpLabel( label );
+    }
+    
+    /**
+     * Print the operation
+     */
+    public void print( ActionTextWriter writer ) throws IOException {
+        writer.jumpLabelOnOwnLine( label );
     }
 }

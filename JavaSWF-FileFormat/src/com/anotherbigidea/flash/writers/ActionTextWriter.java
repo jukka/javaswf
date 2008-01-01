@@ -66,6 +66,10 @@ public class ActionTextWriter implements SWFActions, SWFActionBlock, SWFActionCo
         if( indent.length() < 4 ) indent = "";
         else indent = indent.substring( 0, indent.length() - 4 );
     }
+
+    public void println( String msg ) {
+        printer.println( "  " + msg );        
+    }
     
     protected void print( String mnemonic, String[] args )
     {
@@ -85,7 +89,6 @@ public class ActionTextWriter implements SWFActions, SWFActionBlock, SWFActionCo
     		printer.println( mnemonic );
     		return;
     	}
-    	        
         
         writePaddedString( mnemonic + " ", 15 );
         
@@ -164,7 +167,12 @@ public class ActionTextWriter implements SWFActions, SWFActionBlock, SWFActionCo
         if( this.label != null ) print( "", null );
         this.label = label;
     }    
-  
+
+    public void jumpLabelOnOwnLine( String label ) throws IOException
+    {
+        print( "---- " + label + " ----", null );
+    }    
+    
     public void gotoFrame( int frameNumber ) throws IOException
     {
         print( "gotoFrame", new String[] { Integer.toString( frameNumber ) } );

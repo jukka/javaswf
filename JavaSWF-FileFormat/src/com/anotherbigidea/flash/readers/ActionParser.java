@@ -222,7 +222,7 @@ public class ActionParser implements SWFActionCodes
 	                case DEFINE_LOCAL_VAL   : mBlock.defineLocalValue(); break;
 	                case DEFINE_LOCAL       : mBlock.defineLocal(); break;
 	                case DEL_VAR            : mBlock.deleteProperty(); break;
-	                case DEL_THREAD_VARS    : mBlock.deleteScopeProperty(); break;
+	                case DEL_SCOPE_VAR      : mBlock.deleteScopeProperty(); break;
 	                case ENUMERATE          : mBlock.enumerate(); break;
 	                case TYPED_EQUALS       : mBlock.typedEquals(); break;
 	                case GET_MEMBER         : mBlock.getMember(); break;

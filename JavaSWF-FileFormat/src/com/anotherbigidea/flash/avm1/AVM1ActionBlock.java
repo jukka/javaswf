@@ -3,8 +3,11 @@ package com.anotherbigidea.flash.avm1;
 import java.io.IOException;
 import java.util.*;
 
+import org.epistem.io.IndentingPrintWriter;
+
 import com.anotherbigidea.flash.avm1.ops.JumpLabel;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.writers.ActionTextWriter;
 
 /**
  * A block of AVM1 Actions
@@ -16,7 +19,7 @@ public class AVM1ActionBlock {
     /**
      * The operation that owns this block - null for a top-level block
      */
-    public final AVM1Operation owner; 
+    public final AVM1Operation owner;
     
     private AVM1Operation first;
     private AVM1Operation last;
@@ -140,7 +143,60 @@ public class AVM1ActionBlock {
      * Called when all operations have been added to the block.
      */
     public final void complete() {
-        //FIXME
+        if( owner == null ) { //only outer block
+        
+            //remove extraneous labels (only if outer block)        
+            Set<JumpLabel> extraneousLabels = new HashSet<JumpLabel>();
+            for( String label : labels.keySet() ) {
+                Collection<AVM1Operation> refs = labelReferences.get( label );
+                if( refs == null || refs.isEmpty()) {
+                    extraneousLabels.add( labels.get( label ) );
+                }
+            }
+            
+            for( JumpLabel label : extraneousLabels ) {
+                label.remove();
+            }
+            
+            aggregateAll();
+        }
+    }
+    
+    /**
+     * Aggregate all operations
+     */
+    public void aggregateAll() {
+        for( AVM1Operation op = first; op != null; op = op.next() ) {
+            if( op instanceof AVM1OperationAggregation ) {
+                AVM1OperationAggregation agg = (AVM1OperationAggregation) op;                
+                agg.aggregate();
+            }
+            
+            if( op instanceof AVM1BlockContainer ) {
+                AVM1BlockContainer container = (AVM1BlockContainer) op;
+                AVM1ActionBlock[] blocks = container.subBlocks();
+                
+                for( AVM1ActionBlock block : blocks ) {
+                    block.aggregateAll();
+                }
+            }
+        }
+    }
+
+    /**
+     * Print all operations
+     */
+    public void print( ActionTextWriter actwriter ) throws IOException {
+        for( AVM1Operation op = first; op != null; op = op.next() ) {
+            op.print( actwriter );
+        }
+    }
+    
+    /**
+     * Print all operations
+     */
+    public void print( IndentingPrintWriter ipw ) throws IOException {
+        print( new ActionTextWriter( ipw ));
     }
     
     /**

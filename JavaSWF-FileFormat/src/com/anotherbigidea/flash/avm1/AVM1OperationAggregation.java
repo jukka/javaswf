@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.anotherbigidea.flash.avm1.ops.StackValue;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.writers.ActionTextWriter;
 
 /**
  * An operation that can aggregate other operations. The aggregated operations
@@ -68,7 +69,7 @@ public abstract class AVM1OperationAggregation extends AVM1Operation
      * @return the op
      */
     protected final AVM1Operation prependOp( AVM1Operation op ) {
-        ops.set( 0, op );
+        ops.add( 0, op );
         return op;
     }
     
@@ -87,5 +88,22 @@ public abstract class AVM1OperationAggregation extends AVM1Operation
         }    
         
         writeOp( block );
+    }
+    
+    /**
+     * Print the operation
+     */
+    public void print( ActionTextWriter writer ) throws IOException {
+        writeOp( writer );
+
+        if( ! ops.isEmpty() ) {
+            writer.indent();
+            
+            for( AVM1Operation op : ops ) {
+                op.print( writer );
+            }
+            
+            writer.unindent();
+        }        
     }
 }

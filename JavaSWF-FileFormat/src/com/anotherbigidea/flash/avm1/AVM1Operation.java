@@ -3,6 +3,7 @@ package com.anotherbigidea.flash.avm1;
 import java.io.IOException;
 
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
+import com.anotherbigidea.flash.writers.ActionTextWriter;
 
 /**
  * An AVM1 Operation
@@ -67,5 +68,12 @@ public abstract class AVM1Operation {
      */
     public String labelReference() {
         return null;
+    }
+    
+    /**
+     * Print the operation
+     */
+    public void print( ActionTextWriter writer ) throws IOException {
+        write( writer );
     }
 }
