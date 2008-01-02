@@ -1,0 +1,137 @@
+<project name="BabelSWF-Stuff" basedir=".">
+
+	<property name="dxd.sdk" value="/Users/dmain/workspace-cvs/DXD_SDK"/>
+	
+    <condition property="executable-suffix" value=".exe" else="">
+        <os family="windows"/>
+    </condition>
+	
+    <property file="build.properties" />
+	
+    <path id="javaswf">
+        <pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
+        <pathelement location="../EpistemCommon/eclipse-build"/>
+        <pathelement location="../JavaSWF-AVM2/eclipse-build"/>
+        <pathelement location="../JavaSWF-BabelSWF/eclipse-build"/>
+    </path>
+	
+    <taskdef name="avm-translate" 
+             classname="babelswf.TranslatorTask"
+             classpathref="javaswf"/>
+
+	<macrodef name="swf-dump">
+		<attribute name="swf" />
+        <attribute name="out" />
+		<sequential>
+	        <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+	              classpathref="javaswf" >
+	            <arg value="@{swf}"/>
+	            <arg value="out=@{out}"/>
+	            <arg value="hex"/>
+	            <arg value="acts"/>
+	        </java>		
+		</sequential>
+	</macrodef>
+
+	<macrodef name="mtasc">
+        <attribute name="mainfile" />
+        <attribute name="sourcepath" />
+        <attribute name="output" />
+		<sequential>
+	        <exec dir="@{sourcepath}" executable="${mtasc}" failonerror="true">
+	            <arg line="@{mainFile} -version 8 -v -header 100:100:12 -strict -main -mx -cp @{sourcepath} -swf @{output}" />
+	        </exec>		
+			<swf-dump  out="@{sourcepath}/@{output}.txt" swf="@{sourcepath}/@{output}" />
+		</sequential>	
+	</macrodef>
+	
+    <!-- The AS3 SWF compiler task -->
+    <macrodef name="compile-swf">
+        <attribute name="src-path"  />
+        <attribute name="swf-file"  />
+        <attribute name="as-file"   />
+
+        <sequential>
+        	<exec executable="${flex.swf.compiler}" taskname="compile-swf">
+        		<arg line="-sp @{src-path} -output @{swf-file} @{src-path}/@{as-file}" />
+        	</exec>
+        </sequential>
+    </macrodef>
+
+	
+    <!-- Compile the AS-2 testcases -->
+    <target name="compile-as2-testcases">
+    	<mkdir dir="as2-testcases/swf"/>
+        <mtasc mainfile="Test.as" sourcepath="as2-testcases/src" output="../swf/Test.swf" />
+    </target>
+    
+    <!-- Dump the AS-2 testcase fla swfs -->
+    <target name="dump-as2-fla-testcases">
+        <swf-dump out="as2-testcases/fla/testfla.swf.txt" swf="as2-testcases/fla/testfla.swf" />
+    </target>	
+	
+	<!-- Compile the runtime SWF -->
+	<target name="compile-runtime">
+		<compile-swf
+			src-path="src-as-runtime"
+			as-file ="babelswf/RuntimeSWF.as"
+			swf-file="generated/babel.swf"
+		/>		   
+		<swf-dump swf="generated/babel.swf" out="generated/babel.txt" />
+	</target>
+	
+	
+    <!-- 
+    ===========================================================================    
+    ===========================================================================    
+    ===========================================================================    
+    ===========================================================================    
+    -->
+	
+    <!-- Test the translator -->
+    <target name="translator-test">
+    	<mkdir dir="generated-as3"/>
+        <avm-translate 
+            avm1swf="as2-testcases/fla/testfla.swf"
+        	avm2swf="generated-as3/testfla.swf"
+        />
+    	<swf-dump swf="generated-as3/testfla.swf"
+    	          out="generated-as3/testfla.swf.txt" />
+    </target>
+
+    <!-- Dump the FLA-AS2 used for testing -->
+    <target name="dump-as2-test">
+        <swf-dump swf="fla/hello-world-trace.swf"
+                  out="generated/hello-world-trace.txt" />
+    </target>
+
+	
+    <!-- Compile the AS3 used for reference -->
+    <target name="compile-as3">
+        <mkdir dir="generated"/>
+        <exec dir="as" executable="/Applications/Adobe Flex Builder 3/sdks/3.0.0/bin/mxmlc" >
+            <arg line="-as3=true -o ../generated/Test.swf -sp=. test/Test.as"/>
+        </exec>
+        <swf-dump swf="generated/Test.swf"
+                  out="generated/Test.txt" />
+    </target>
+
+    <!-- Dump the FLA-AS3 used for reference -->
+    <target name="dump-as3-test">
+        <swf-dump swf="fla/test.swf"
+                  out="generated/test-fla.txt" />
+    </target>
+
+    <!-- Dump the DXD bouncy-ball panel SWFs -->
+    <target name="dump-bouncy-ball">    	
+    	<echo>Code SWF..</echo>
+        <swf-dump swf="${dxd.sdk}/dxd/code/gad_bouncyball_code.swf"
+                  out="generated/gad_bouncyball_code.txt" />
+        <echo>Asset SWF..</echo>
+        <swf-dump swf="${dxd.sdk}/dxd/components/gad_bouncyball.swf"
+                  out="generated/gad_bouncyball.txt" />
+        <echo>Done</echo>
+    </target>
+
+	
+</project>
