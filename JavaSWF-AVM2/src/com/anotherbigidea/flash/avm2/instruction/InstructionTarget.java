@@ -88,4 +88,20 @@ public class InstructionTarget extends Instruction implements Comparable<Instruc
     public void write(OutStream out) throws IOException {
         //nada
     }
+    
+    /**
+     * Get the set of instructions that follow this one in normal execution
+     * flow
+     */
+    public Set<Instruction> getFollowOnInstructions() {
+        Set<Instruction> ins = new HashSet<Instruction>();
+        if( nextInstruction != null ) ins.add( nextInstruction );
+        return ins;
+    }
+    
+    public int getScopePopCount() { return 0; }
+    public int getScopePushCount() { return 0; }
+    public int getPopCount() { return 0; }
+    public int getPushCount() { return 0; }
+    public int[] registersUsed() { return new int[0]; }
 }

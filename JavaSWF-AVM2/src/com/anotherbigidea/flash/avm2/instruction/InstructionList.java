@@ -1,7 +1,9 @@
 package com.anotherbigidea.flash.avm2.instruction;
 
 import java.util.Collections;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.anotherbigidea.flash.avm2.Operation;
@@ -13,10 +15,10 @@ import com.anotherbigidea.flash.avm2.Operation;
  */
 public class InstructionList {
 
-    /** Immutable set of the targets in this list (in offset order) */
-    public final SortedSet<InstructionTarget> targets;
+    /** Immutable map of the targets in this list (in offset order) */
+    public final SortedMap<Integer,InstructionTarget> targets;
     
-    private final SortedSet<InstructionTarget> targets_internal;
+    private final SortedMap<Integer,InstructionTarget> targets_internal;
 
     //--The list:
     private Instruction firstInstruction;
@@ -24,10 +26,9 @@ public class InstructionList {
     private int instructionCount;
     
     
-    public InstructionList( ) {
-        
-        targets_internal = new TreeSet<InstructionTarget>();
-        targets = Collections.unmodifiableSortedSet( targets_internal );
+    public InstructionList( ) {        
+        targets_internal = new TreeMap<Integer,InstructionTarget>();
+        targets = Collections.unmodifiableSortedMap( targets_internal );
     }
 
     /**
@@ -149,7 +150,7 @@ public class InstructionList {
         if( i instanceof InstructionTarget ) {
             InstructionTarget it = (InstructionTarget) i;
             if( ! it.targetters.isEmpty() ) return; //cannot remove if there are targetters
-            targets_internal.remove( i );
+            targets_internal.remove( it.label );
             
         } else {
             instructionCount--;            
@@ -182,7 +183,7 @@ public class InstructionList {
 
         if( i instanceof InstructionTarget ) {
             InstructionTarget it = (InstructionTarget) i;
-            targets_internal.add( it );
+            targets_internal.put( it.label, it );
         } else {
             instructionCount++;
         }        

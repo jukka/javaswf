@@ -197,8 +197,27 @@ public enum ArgType {
                     out.writeSI24( offsets[i] );
                 }
             }
-            
-            default: return;
+        }
+    }
+    
+    /**
+     * If this argument type implies extra values to be popped from the stack
+     * then determine the count.
+     * 
+     * @param value the argument value
+     * @return the pop count
+     */
+    public int extraStackPops( Object value ) {
+        switch( this ) {
+            case NAME_INDEX: {
+                AVM2Name name = (AVM2Name) value;
+                return ( name.kind.hasRuntimeName      ? 1 : 0 ) 
+                     + ( name.kind.hasRuntimeNamespace ? 1 : 0 );
+            }
+
+            case ARG_COUNT:       return (Integer) value;                
+            case KEY_VALUE_COUNT: return 2 * (Integer) value;                
+            default:              return 0;
         }
     }
     

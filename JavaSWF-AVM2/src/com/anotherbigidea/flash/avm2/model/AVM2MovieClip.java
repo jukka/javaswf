@@ -98,6 +98,7 @@ public class AVM2MovieClip {
 	    }
         consCode.callPropVoid( "addFrameScript", frames.size() * 2 );
 	    
-	    consCode.returnVoid();
+	    consCode.returnVoid();	   
+	    consCode.calcMaxes();
 	}
 }

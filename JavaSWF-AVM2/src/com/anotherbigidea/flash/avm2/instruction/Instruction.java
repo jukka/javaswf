@@ -3,6 +3,7 @@ package com.anotherbigidea.flash.avm2.instruction;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -72,6 +73,7 @@ public class Instruction {
      * Get the set of targeted instruction addresses.
      */
     public Set<Integer> getTargetAddresses() {
+        if( operation == null ) return Collections.EMPTY_SET;
         Set<Integer> targets = new HashSet<Integer>();
         
         for (int i = 0; i < arguments.length; i++) {
@@ -94,6 +96,27 @@ public class Instruction {
         }
         
         return targets;
+    }
+    
+    /**
+     * Get the set of instructions that follow this one in normal execution
+     * flow
+     */
+    public Set<Instruction> getFollowOnInstructions() {
+        Set<Instruction> ins = new HashSet<Instruction>();
+        
+        //gather branch targets
+        Set<Integer> targets = getTargetAddresses();
+        for( Integer targ : targets ) {
+            ins.add( instructionList.targets.get( targ ));
+        }
+        
+        //add next
+        if( ! operation.isAbruptFlow() ) {
+            ins.add( nextInstruction );
+        }
+        
+        return ins;
     }
     
     /**
@@ -158,6 +181,79 @@ public class Instruction {
     }
     
     /**
+     * Get the number of scope stack slots popped by this instruction - 0 or 1
+     */
+    public int getScopePopCount() {
+        return operation.scopePopCount;
+    }
+    
+    /**
+     * Get the number of scope stack slots pushed by ths instruction - 0 or 1
+     */
+    public int getScopePushCount() {
+        return operation.scopePushCount;
+    }
+    
+    /**
+     * Get the number of stack slots popped by this instruction
+     */
+    public int getPopCount() {
+        int count = operation.popCount;
+        
+        //check the arguments for implication of extra values
+        ArgType[] argTypes = operation.argTypes;
+        for( int i = 0; i < argTypes.length; i++ ) {
+            count += argTypes[i].extraStackPops( arguments[i] );
+        }     
+        
+        return count;
+    }
+    
+    /**
+     * Get the number of stack slots pushed by ths instruction
+     */
+    public int getPushCount() {
+        return operation.pushCount;
+    }
+    
+    /**
+     * Get the registers referenced/used by this instruction
+     * 
+     * @return zero-length array if this instruction does not use a register
+     */
+    public int[] registersUsed() {
+        
+        int register;
+        
+        switch( operation ) {
+            case OP_setlocal0: register = 0; break;
+            case OP_setlocal1: register = 1; break;
+            case OP_setlocal2: register = 2; break;
+            case OP_setlocal3: register = 3; break;
+            case OP_getlocal0: register = 0; break;
+            case OP_getlocal1: register = 1; break;
+            case OP_getlocal2: register = 2; break;
+            case OP_getlocal3: register = 3; break;
+
+            case OP_setlocal:
+            case OP_kill:
+            case OP_inclocal:
+            case OP_inclocal_i:
+            case OP_getlocal:
+            case OP_declocal:
+            case OP_declocal_i:
+                return new int[] { (Integer) arguments[0] };
+
+            case OP_hasnext2:
+                return new int[] { (Integer) arguments[0], (Integer) arguments[1] };
+            
+            default: return new int[0];
+        }
+        
+        return new int[] { register };
+    }
+    
+    /**
      * Write the instruction as bytecode data 
      */
     public void write( OutStream out ) throws IOException {
@@ -196,6 +292,7 @@ public class Instruction {
         Constructor<? extends Instruction> cons = classCache.get( op );
         if( cons == null ) {
             String className = Instruction.class.getName() + "_" + op.mnemonic;
+            
             Class<? extends Instruction> clazz = null;
             try {
                 clazz = (Class<? extends Instruction>) Class.forName( className );
@@ -361,7 +458,7 @@ public class Instruction {
             case OP_equals : instrs.equals( ); break;
             case OP_esc_xattr : instrs.esc_xattr( ); break;
             case OP_esc_xelem : instrs.esc_xelem( ); break;
-            case OP_finddef : instrs.finddef( (Integer) arguments[0] ); break;
+         // case OP_finddef : instrs.finddef( (Integer) arguments[0] ); break;
             case OP_findproperty : instrs.findproperty( (Integer) arguments[0] ); break;
             case OP_findpropstrict : instrs.findpropstrict( (Integer) arguments[0] ); break;
             case OP_getdescendants : instrs.getdescendants( (Integer) arguments[0] ); break;

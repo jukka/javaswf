@@ -3,10 +3,13 @@ package com.anotherbigidea.flash.avm2.model;
 import static com.anotherbigidea.flash.avm2.Operation.*;
 
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.anotherbigidea.flash.avm2.MethodInfoFlags;
 import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.instruction.InstructionList;
+import com.anotherbigidea.flash.avm2.instruction.MaxValueAnalyzer;
 
 
 /**
@@ -19,16 +22,7 @@ public final class AVM2Code {
 
 	private final AVM2MethodBody body;
 	private final InstructionList instructions;
-	
-	private int stackSize;
-	private int scopeSize;
-	private int registersUsed;
-	
-	/* Special register mode is used to allow temporary register allocation
-	 * for special purposes.  While in this mode register use counts towards
-	 * the body's maxRegisters but not to registersUsed.
-	 */
-	private boolean specialRegisterMode;
+	private Map<String, Integer> labelInts;
 	
 	/**
 	 * @param body the method/script body to wrap
@@ -36,42 +30,95 @@ public final class AVM2Code {
 	public AVM2Code( AVM2MethodBody body ) {
 		this.body = body;
 		this.instructions = body.instructions;
-		
-		stackSize = 0;
-		scopeSize = body.scopeDepth;
-		body.maxScope     = Math.max( body.maxScope, scopeSize );
-		body.maxStack     = Math.max( body.maxStack, 0 );
-        body.maxRegisters = Math.max( body.maxRegisters, 0 );
-	}
-	
-	//register a stack push
-	private void stack( int count ) {
-		stackSize += count;
-		body.maxStack = Math.max( stackSize, body.maxStack );
 	}
 
-	//register a scope push
-	private void scope( int count ) {
-		scopeSize += count;
-		body.maxScope = Math.max( scopeSize, body.maxScope );
+	/**
+	 * Calculate and set the max-registers, max-stack, and max-scope for the
+	 * method body, given the current instructions
+	 */
+	public void calcMaxes() {
+	    new MaxValueAnalyzer( body ).analyze();
 	}
-
-	//register a register use
-	private void local( int index ) {
-		body.maxRegisters = Math.max( index + 1, body.maxRegisters );
-		if( ! specialRegisterMode ) registersUsed = body.maxRegisters;
-	}	
 	
 	/**
-	 * Turn special register mode on or off.
-	 * 
-	 * @param on true for on
-	 * @return the next available register index
+	 * Append a branch target to the list
 	 */
-	public int specialRegisterMode( boolean on ) {
-	    specialRegisterMode = on;
-	    return registersUsed;
+	public void target( int label ) {
+	    instructions.appendTarget( label );
 	}
+	
+	/**
+     * Append a branch target to the list
+     */
+    public void target( String label ) {
+        target( stringToIntLabel( label ) );
+    }
+	
+	/**
+	 * Add a label instruction that allows the AVM2 verifier to accept the
+	 * followning code as non-dead.
+	 */
+	public void label() {
+	    instructions.append( OP_label );
+	}
+	
+	/**
+	 * An unconditional branch
+	 */
+	public void jump( int label ) {
+	    instructions.append( OP_jump, label );
+	}
+
+	private int stringToIntLabel( String label ) {
+        if( labelInts == null ) {
+            labelInts = new HashMap<String, Integer>();
+        }
+
+        Integer intLabel = labelInts.get( label );
+        if( intLabel == null ) {
+            intLabel = labelInts.size() + Short.MAX_VALUE;  //offset to avoid collisions with int labels
+            labelInts.put( label, intLabel );
+        }
+        
+        return intLabel;	    
+	}
+	
+	/**
+	 * An unconditional branch
+	 */
+	public void jump( String label ) {
+	    jump( stringToIntLabel( label ) );
+	}
+	
+	public void ifeq      ( int label ) { instructions.append( OP_ifeq      , label ); }      
+	public void iffalse   ( int label ) { instructions.append( OP_iffalse   , label ); }   
+	public void ifge      ( int label ) { instructions.append( OP_ifge      , label ); }      
+	public void ifgt      ( int label ) { instructions.append( OP_ifgt      , label ); }      
+	public void ifle      ( int label ) { instructions.append( OP_ifle      , label ); }      
+	public void iflt      ( int label ) { instructions.append( OP_iflt      , label ); }      
+	public void ifne      ( int label ) { instructions.append( OP_ifne      , label ); }      
+	public void ifnge     ( int label ) { instructions.append( OP_ifnge     , label ); }     
+	public void ifngt     ( int label ) { instructions.append( OP_ifngt     , label ); }     
+	public void ifnle     ( int label ) { instructions.append( OP_ifnle     , label ); }     
+	public void ifnlt     ( int label ) { instructions.append( OP_ifnlt     , label ); }     
+	public void ifstricteq( int label ) { instructions.append( OP_ifstricteq, label ); }
+	public void ifstrictne( int label ) { instructions.append( OP_ifstrictne, label ); }
+	public void iftrue    ( int label ) { instructions.append( OP_iftrue    , label ); } 
+	
+    public void ifeq      ( String label ) { ifeq      ( stringToIntLabel( label )); }      
+    public void iffalse   ( String label ) { iffalse   ( stringToIntLabel( label )); }   
+    public void ifge      ( String label ) { ifge      ( stringToIntLabel( label )); }      
+    public void ifgt      ( String label ) { ifgt      ( stringToIntLabel( label )); }      
+    public void ifle      ( String label ) { ifle      ( stringToIntLabel( label )); }      
+    public void iflt      ( String label ) { iflt      ( stringToIntLabel( label )); }      
+    public void ifne      ( String label ) { ifne      ( stringToIntLabel( label )); }      
+    public void ifnge     ( String label ) { ifnge     ( stringToIntLabel( label )); }     
+    public void ifngt     ( String label ) { ifngt     ( stringToIntLabel( label )); }     
+    public void ifnle     ( String label ) { ifnle     ( stringToIntLabel( label )); }     
+    public void ifnlt     ( String label ) { ifnlt     ( stringToIntLabel( label )); }     
+    public void ifstricteq( String label ) { ifstricteq( stringToIntLabel( label )); }
+    public void ifstrictne( String label ) { ifstrictne( stringToIntLabel( label )); }
+    public void iftrue    ( String label ) { iftrue    ( stringToIntLabel( label )); } 
 	
 	/**
 	 * Trace out a message
@@ -90,10 +137,51 @@ public final class AVM2Code {
 	}
 
 	/**
+	 * Increment a local register as an int
+	 */
+	public void incLocal_i( int local ) {
+	    instructions.append( OP_inclocal_i, local );
+	}
+
+    /**
+     * Increment a local register as a number
+     */
+    public void incLocal( int local ) {
+        instructions.append( OP_inclocal, local );
+    }
+
+    /**
+     * Decrement a local register as an int
+     */
+    public void decLocal_i( int local ) {
+        instructions.append( OP_declocal_i, local );
+    }
+
+    /**
+     * Decrement a local register as a number
+     */
+    public void decLocal( int local ) {
+        instructions.append( OP_declocal, local );
+    }
+
+    /**
+     * Increment stack top
+     */
+    public void increment() {
+        instructions.append( OP_increment );        
+    }
+
+    /**
+     * Descrement stack top
+     */
+    public void decrement() {
+        instructions.append( OP_decrement );        
+    }
+    
+	/**
 	 * Push the global scope object
 	 */
 	public void getGlobalScope() {
-	    stack(1);
 	    instructions.append( OP_getglobalscope );
 	}
 	
@@ -101,7 +189,6 @@ public final class AVM2Code {
 	 * Set a property
 	 */
 	public void setProperty( String name ) {
-	    stack(-2);
 	    AVM2QName qname = new AVM2QName( name );
 	    instructions.append( OP_setproperty, qname );
 	}
@@ -118,7 +205,6 @@ public final class AVM2Code {
 	 * Duplicate the top stack value
 	 */
 	public void dup() {
-		stack(1);
 		instructions.append( OP_dup );
 	}	
 	
@@ -146,7 +232,6 @@ public final class AVM2Code {
 	 * Add, with type conversion.
 	 */
 	public void add() {
-	    stack(-1);
 	    instructions.append( OP_add );
 	}
 
@@ -154,7 +239,6 @@ public final class AVM2Code {
      * Add ints, with conversion if required.
      */
     public void addInts() {
-        stack(-1);
         instructions.append( OP_add_i );
     }
 	
@@ -186,7 +270,6 @@ public final class AVM2Code {
 	 * Push null
 	 */
 	public void pushNull() {
-		stack(1);
 		instructions.append( OP_pushnull );
 	}
 
@@ -194,7 +277,6 @@ public final class AVM2Code {
      * Push undefined
      */
     public void pushUndefined() {
-        stack(1);
         instructions.append( OP_pushundefined );
     }
 
@@ -202,8 +284,6 @@ public final class AVM2Code {
 	 * Push a signed int
 	 */
 	public void pushInt( int value ) {
-		stack(1);
-		
 		Operation op = null;
 		if( value <= Byte.MAX_VALUE && value >= Byte.MIN_VALUE ) {
 			op = OP_pushbyte;
@@ -222,7 +302,6 @@ public final class AVM2Code {
 	 * Push an unsigned int
 	 */
 	public void pushUInt( int value ) {
-		stack(1);		
 		instructions.append( OP_pushuint, value );
 	}
 	
@@ -230,7 +309,6 @@ public final class AVM2Code {
 	 * Push a double
 	 */
 	public void pushDouble( double value ) {
-		stack(1);
 		instructions.append( OP_pushdouble, value );
 	}
 
@@ -238,7 +316,6 @@ public final class AVM2Code {
 	 * Push a boolean
 	 */
 	public void pushBoolean( boolean value ) {
-		stack(1);
 		if( value ) instructions.append( OP_pushtrue );
 		else        instructions.append( OP_pushfalse );
 	}
@@ -250,7 +327,6 @@ public final class AVM2Code {
 	 * @param argCount the number of arguments
 	 */
 	public void callPropVoid( String qualifiedName, int argCount ) {
-		stack( -argCount - 1 );
 		instructions.append( OP_callpropvoid, new AVM2QName( qualifiedName ), argCount );
 	}
 	   
@@ -261,7 +337,6 @@ public final class AVM2Code {
      * @param argCount the number of arguments
      */
     public void callPropVoid( AVM2QName qualifiedName, int argCount ) {
-        stack( -argCount - 1 );
         instructions.append( OP_callpropvoid, qualifiedName, argCount );
     }
 	
@@ -272,7 +347,6 @@ public final class AVM2Code {
      * @param argCount the number of arguments
      */
     public void callProperty( AVM2QName qualifiedName, int argCount ) {
-        stack( -argCount );
         instructions.append( OP_callproperty, qualifiedName, argCount );
     }
     
@@ -280,7 +354,6 @@ public final class AVM2Code {
 	 * Push a string
 	 */
 	public void pushString( String s ) {
-		stack(1);
 		instructions.append( OP_pushstring, s );
 	}
 	
@@ -288,7 +361,6 @@ public final class AVM2Code {
 	 * Find and push the object with the given named property.
 	 */
 	public void findPropStrict( String qualifiedName ) {
-		stack(1);
 		instructions.append( OP_findpropstrict, new AVM2QName( qualifiedName ) );
 	}
 	
@@ -304,8 +376,6 @@ public final class AVM2Code {
 	 * Push stack top onto the scope chain
 	 */
 	public void pushScope() {
-		scope( 1 );
-		stack( -1 );
 		instructions.append( OP_pushscope );
 	}
 
@@ -313,7 +383,6 @@ public final class AVM2Code {
 	 * Pop from the scope chain
 	 */
 	public void popScope() {
-		scope( -1 );
 		instructions.append( OP_popscope );
 	}
 	
@@ -322,9 +391,6 @@ public final class AVM2Code {
 	 * @param index the register index
 	 */
 	public void getLocal( int index ) {
-		local( index );
-		stack( 1 );
-		
 		switch( index ) {
 			case 0:  instructions.append( OP_getlocal0 ); break;
 			case 1:  instructions.append( OP_getlocal1 ); break;
@@ -339,9 +405,6 @@ public final class AVM2Code {
 	 * @param index the register index
 	 */
 	public void setLocal( int index ) {
-		local( index );
-		stack( -1 );
-		
 		switch( index ) {
 			case 0:  instructions.append( OP_setlocal0 ); break;
 			case 1:  instructions.append( OP_setlocal1 ); break;
@@ -362,7 +425,6 @@ public final class AVM2Code {
 	 * Push the scope object at the given index on the scope stack
 	 */
 	public void getScopeObject( int index ) {
-		stack(1);
 		instructions.append( OP_getscopeobject, index );
 	}
 	
@@ -371,7 +433,6 @@ public final class AVM2Code {
 	 * @param name the qualified name
 	 */
 	public void getLex( String name ) {
-		stack(1);
 		instructions.append( OP_getlex, new AVM2QName( name ) );
 	}
 
@@ -380,7 +441,6 @@ public final class AVM2Code {
 	 * @param name the qualified name
 	 */
 	public void getLex( AVM2Name name ) {
-		stack(1);
 		instructions.append( OP_getlex, name );
 	}
 
@@ -395,7 +455,6 @@ public final class AVM2Code {
 	 * Initialize a property of an object
 	 */
 	public void initProperty( AVM2Name name ) {
-		stack(-2);
 		instructions.append( OP_initproperty, name );		
 	}
 	
@@ -404,7 +463,6 @@ public final class AVM2Code {
 	 * @param argCount the argument count
 	 */
 	public void constructSuper( int argCount ) {
-		stack( -argCount - 1 );
 		instructions.append( OP_constructsuper, argCount );
 	}
 	
@@ -448,6 +506,7 @@ public final class AVM2Code {
         AVM2Code code = new AVM2Code( initBody );
         code.setupInitialScope();
         code.returnVoid();
+        code.calcMaxes();
     }
     
     /**
@@ -497,6 +556,7 @@ public final class AVM2Code {
         code.initProperty( classQName );
         
         code.returnVoid();
+        code.calcMaxes();
         
         return body.maxScope;
     }

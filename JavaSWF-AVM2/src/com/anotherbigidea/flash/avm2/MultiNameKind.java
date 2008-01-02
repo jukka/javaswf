@@ -15,24 +15,31 @@ import org.epistem.io.OutStreamWrapper;
  */
 public enum MultiNameKind {
 
-    Qname      ( 7  ), //qualified name
-    QnameA     ( 13 ), //qualified attribute name
-    Multiname  ( 9  ), //name qualified by a set of namespaces
-    MultinameA ( 14 ), //attribute name qualified by a set of namespaces
-    RTQname    ( 15 ), //name with a runtime specified namespace
-    RTQnameA   ( 16 ), //attribute name with a runtime specified namespace
-    MultinameL ( 27 ), //runtime specified name qualified by a set of namespaces
-    MultinameLA( 28 ), //runtime specified attribute name qualified by a set of namespaces  
-    RTQnameL   ( 17 ), //name and namespace both specified at runtime
-    RTQnameLA  ( 18 ); //attribute name and namespace both specified at runtime
-
+    Qname      ( 7 , false, false ), //qualified name
+    QnameA     ( 13, false, false ), //qualified attribute name
+    Multiname  ( 9 , false, false ), //name qualified by a set of namespaces
+    MultinameA ( 14, false, false ), //attribute name qualified by a set of namespaces
+    RTQname    ( 15, true , false ), //name with a runtime specified namespace
+    RTQnameA   ( 16, true , false ), //attribute name with a runtime specified namespace
+    MultinameL ( 27, false, true  ), //runtime specified name qualified by a set of namespaces
+    MultinameLA( 28, false, true  ), //runtime specified attribute name qualified by a set of namespaces  
+    RTQnameL   ( 17, true , true  ), //name and namespace both specified at runtime
+    RTQnameLA  ( 18, true , true  ); //attribute name and namespace both specified at runtime
+    
+    public final boolean hasRuntimeNamespace;
+    public final boolean hasRuntimeName;
+    
     /**
      * The byte value
      */
     public final int value;
      
-    private MultiNameKind( int value ) {
+    private MultiNameKind( int value, 
+                           boolean hasRuntimeNamespace,
+                           boolean hasRuntimeName ) {
         this.value = value;
+        this.hasRuntimeNamespace = hasRuntimeNamespace;
+        this.hasRuntimeName      = hasRuntimeName;
     }    
 
     private static Map<Integer, MultiNameKind> val2enum =
