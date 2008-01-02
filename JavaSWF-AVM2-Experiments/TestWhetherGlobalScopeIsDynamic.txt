@@ -1,0 +1,52 @@
+signature: FWS
+header: version=9 length=165 width=2000 height=2000 rate=12 frame-count=1
+file-attributes allow-as3
+background-color  RGB(255,255,204)
+ABC File 'test' 
+abc-file {
+   script {
+
+    script method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 2
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              pushbyte 1
+              setlocal1
+        5   : label
+              getlocal1
+              pushbyte 10
+              ifgt 39
+              getglobalscope
+              pushstring "apples"
+              getlocal1
+              add
+              setproperty Qname:PackageNamespace()::foo
+              pushstring "Hello World - foo="
+              findpropstrict Qname:PackageNamespace()::foo
+              getproperty Qname:PackageNamespace()::foo
+              add
+              findpropstrict Qname:PackageNamespace()::trace
+              swap
+              callpropvoid Qname:PackageNamespace()::trace 1
+              inclocal_i 1
+              jump 5
+        39  : label
+              returnvoid
+
+      }
+    }
+  }
+
+}
+---------- frame ----------
+end
+---------------

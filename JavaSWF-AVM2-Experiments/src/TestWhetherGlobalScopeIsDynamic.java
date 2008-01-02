@@ -17,8 +17,19 @@ public class TestWhetherGlobalScopeIsDynamic {
         AVM2ABCFile abc = new AVM2ABCFile();
         AVM2Code code = AVM2Code.standaloneScript( abc );
         
+        code.pushInt( 1 );
+        code.setLocal( 1 );
+        
+        code.target( 999 );
+        code.label();
+        code.getLocal( 1 );
+        code.pushInt( 10 );
+        code.ifgt( 1001 );
+        
         code.getGlobalScope();
-        code.pushString( "wonka" );
+        code.pushString( "apples" );
+        code.getLocal( 1 );
+        code.add();
         code.setProperty( "foo" );
         
         code.pushString( "Hello World - foo=" );
@@ -26,7 +37,14 @@ public class TestWhetherGlobalScopeIsDynamic {
         code.getProperty( "foo" );        
         code.add();
         code.trace();
+        
+        code.incLocal_i( 1 );
+        
+        code.jump( 999 );
+        code.target( 1001 );
+        code.label();
         code.returnVoid();
+        code.calcMaxes();
         
         SWFWriter   swf  = new SWFWriter( "TestWhetherGlobalScopeIsDynamic.swf" );
         SWFTagTypes tags = new TagWriter( swf );
