@@ -2,6 +2,7 @@ package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
 
+import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1ValueProducer;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
@@ -20,6 +21,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
 
         public boolean isNonZero() { return value != 0; }
         public int intValue() { return value; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitIntValue( this ); }
     }
 
     public static final class BooleanValue extends ConstantOp {
@@ -29,6 +32,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         
         public boolean isNonZero() { return value; }
         public int intValue() { return value ? 1 : 0; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitBooleanValue( this ); }
     }
 
     public static final class FloatValue extends ConstantOp {
@@ -38,6 +43,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
 
         public boolean isNonZero() { return value != 0.0f; }
         public int intValue() { return (int) value; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitFloatValue( this ); }
     }
 
     public static final class DoubleValue extends ConstantOp {
@@ -47,6 +54,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         
         public boolean isNonZero() { return value != 0.0; }
         public int intValue() { return (int) value; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitDoubleValue( this ); }
     }
 
     public static final class NullValue extends ConstantOp {
@@ -54,6 +63,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         @Override public void write(SWFActionBlock block) throws IOException { block.pushNull(); }        
 
         public boolean isNonZero() { return false; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitNullValue( this ); }
     }
 
     public static final class UndefinedValue extends ConstantOp {
@@ -61,6 +72,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         @Override public void write(SWFActionBlock block) throws IOException { block.pushUndefined(); }
         
         public boolean isNonZero() { return false; }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitUndefinedValue( this ); }
     }
 
     public static final class StringValue extends ConstantOp {
@@ -69,5 +82,7 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         @Override public void write(SWFActionBlock block) throws IOException { block.push( value ); }        
 
         public int intValue() { return Integer.parseInt( value ); }
+        
+        public void accept(AVM1OpVisitor visitor) { visitor.visitStringValue( this ); }
     }
 }

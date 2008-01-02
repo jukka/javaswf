@@ -2,6 +2,7 @@ package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
 
+import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
 import com.anotherbigidea.flash.avm1.AVM1ValueProducer;
@@ -27,4 +28,10 @@ public class RandomNumber extends AVM1OperationAggregation implements AVM1ValueP
     protected void writeOp(SWFActionBlock block) throws IOException {
         block.randomNumber();        
     }    
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */
+    @Override
+    public void accept(AVM1OpVisitor visitor) {
+        visitor.visitRandomNumber( this );        
+    }
 }

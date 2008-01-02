@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
+import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
@@ -94,5 +95,11 @@ public class Function extends AVM1Operation implements AVM1BlockContainer {
         writer.startFunction2( name, numRegistersToAllocate, bits, paramNames, registersForArguments );
         body.print( writer );
         writer.end();
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */
+    @Override
+    public void accept(AVM1OpVisitor visitor) {
+        visitor.visitFunction( this );        
     }
 }

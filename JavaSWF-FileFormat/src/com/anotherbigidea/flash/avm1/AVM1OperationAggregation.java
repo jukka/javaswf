@@ -81,11 +81,9 @@ public abstract class AVM1OperationAggregation extends AVM1Operation
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     public void write(SWFActionBlock block) throws IOException {
-        if( ! ops.isEmpty() ) {
-            for( AVM1Operation op : ops ) {
-                op.write( block );
-            }
-        }    
+        for( AVM1Operation op : ops ) {
+            op.write( block );
+        }
         
         writeOp( block );
     }
@@ -105,5 +103,12 @@ public abstract class AVM1OperationAggregation extends AVM1Operation
             
             writer.unindent();
         }        
+    }
+
+    /** Visit all the aggregated ops */
+    public final void visitAggregated( AVM1OpVisitor visitor ) {
+        for( AVM1Operation op : ops ) {
+            op.accept( visitor );
+        }                
     }
 }

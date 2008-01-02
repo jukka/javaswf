@@ -6,6 +6,8 @@ import java.util.*;
 import org.epistem.io.IndentingPrintWriter;
 
 import com.anotherbigidea.flash.avm1.ops.JumpLabel;
+import com.anotherbigidea.flash.avm1.ops.PushRegister;
+import com.anotherbigidea.flash.avm1.ops.StoreInRegister;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
 
@@ -24,6 +26,7 @@ public class AVM1ActionBlock {
     private AVM1Operation first;
     private AVM1Operation last;
     private int count;
+    private int registerCount = 0;
 
     //--the labels in this block (or any sub-block)
     private final Map<String, JumpLabel> labels;
@@ -39,6 +42,21 @@ public class AVM1ActionBlock {
         this.owner = owner;
         labels = null;
         labelReferences = null;
+    }
+    
+    /**
+     * Count of registers used in this block - as preset or determined by
+     * added operations
+     */
+    public int registerCount() {
+        return registerCount;
+    }
+    
+    /**
+     * Preset the register count
+     */
+    public void setRegisterCount( int count ) {
+        registerCount = count;
     }
     
     /**
@@ -142,7 +160,7 @@ public class AVM1ActionBlock {
     /**
      * Called when all operations have been added to the block.
      */
-    public final void complete() {
+    public void complete() {
         if( owner == null ) { //only outer block
         
             //remove extraneous labels (only if outer block)        
@@ -260,6 +278,8 @@ public class AVM1ActionBlock {
      * Append an operation to this block
      */
     /*pkg*/ void append( AVM1Operation op ) {
+        //System.out.println( "Appending " + op.getClass().getSimpleName() );
+
         if( op instanceof JumpLabel ) {
             addLabel( (JumpLabel) op );
         }
@@ -270,6 +290,13 @@ public class AVM1ActionBlock {
             }
         }
 
+        if( op instanceof StoreInRegister ) {
+            registerCount = Math.max( registerCount, ((StoreInRegister) op).registerNumber + 1 );
+        }
+        else if( op instanceof PushRegister ) {
+            registerCount = Math.max( registerCount, ((PushRegister) op).registerNumber + 1 );
+        }
+        
         count++;
         op.block = this;
         
@@ -296,4 +323,14 @@ public class AVM1ActionBlock {
         
         block.end();
     }
+    
+    /**
+     * Visit all the operations in this list, in order
+     */
+    public void accept( AVM1OpVisitor visitor ) {
+        for( AVM1Operation op = first(); op != null; op = op.next() ) {
+            System.err.println( "About to visit " + op.getClass().getSimpleName() );
+            op.accept( visitor );
+        }
+    }   
 }

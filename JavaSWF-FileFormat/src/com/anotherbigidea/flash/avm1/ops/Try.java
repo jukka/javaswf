@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
+import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock.TryCatchFinally;
@@ -69,5 +70,11 @@ public class Try extends AVM1Operation implements AVM1BlockContainer {
         if( finallyBlock.count() > 0 ) finallyBlock.print( (ActionTextWriter) tcf.finallyBlock() );
                                   
         tcf.endTry();                          
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */
+    @Override
+    public void accept(AVM1OpVisitor visitor) {
+        visitor.visitTry( this );        
     }
 }

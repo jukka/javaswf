@@ -76,4 +76,9 @@ public abstract class AVM1Operation {
     public void print( ActionTextWriter writer ) throws IOException {
         write( writer );
     }
+    
+    /**
+     * Accept a visitor
+     */
+    public abstract void accept( AVM1OpVisitor visitor );
 }

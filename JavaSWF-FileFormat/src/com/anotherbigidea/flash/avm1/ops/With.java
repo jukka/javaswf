@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
+import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
@@ -52,5 +53,11 @@ public class With extends AVM1OperationAggregation implements AVM1BlockContainer
         
         writer.startWith();
         block.print( writer );
+    }
+    
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */
+    @Override
+    public void accept(AVM1OpVisitor visitor) {
+        visitor.visitWith( this );        
     }
 }
