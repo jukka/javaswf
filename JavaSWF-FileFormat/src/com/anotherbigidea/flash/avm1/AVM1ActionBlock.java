@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.epistem.io.IndentingPrintWriter;
 
+import com.anotherbigidea.flash.avm1.ops.Function;
 import com.anotherbigidea.flash.avm1.ops.JumpLabel;
 import com.anotherbigidea.flash.avm1.ops.PushRegister;
 import com.anotherbigidea.flash.avm1.ops.StoreInRegister;
@@ -29,19 +30,16 @@ public class AVM1ActionBlock {
     private int registerCount = 0;
 
     //--the labels in this block (or any sub-block)
-    private final Map<String, JumpLabel> labels;
-    private final Map<String, Collection<AVM1Operation>> labelReferences; //reference counts
+    private final Map<String, JumpLabel> labels = new HashMap<String, JumpLabel>();
+    private final Map<String, Collection<AVM1Operation>> labelReferences = 
+        new HashMap<String, Collection<AVM1Operation>>();
     
     public AVM1ActionBlock() {
-        owner  = null;
-        labels = new HashMap<String, JumpLabel>();        
-        labelReferences = new HashMap<String, Collection<AVM1Operation>>();
+        this( null );
     }
     
     public AVM1ActionBlock( AVM1Operation owner ) {
         this.owner = owner;
-        labels = null;
-        labelReferences = null;
     }
     
     /**
@@ -99,13 +97,7 @@ public class AVM1ActionBlock {
      * Remove a label - just the label, not any references
      */
     private void dropLabel( JumpLabel label ) {
-        if( labels != null ) {
-            labels.remove( label.label );
-        }
-        
-        else if( owner != null ) {
-            owner.block.dropLabel( label );
-        }
+        labels.remove( label.label );
     }
 
     /**
@@ -125,35 +117,23 @@ public class AVM1ActionBlock {
      * Add a reference to a label
      */
     private void referenceLabel( String label, AVM1Operation op ) {
-        if( labelReferences != null ) {
-            Collection<AVM1Operation> refs = labelReferences.get( label );
-            if( refs == null ) {
-                refs = new HashSet<AVM1Operation>();
-                labelReferences.put( label, refs );
-            }
-            
-            refs.add( op );
+        Collection<AVM1Operation> refs = labelReferences.get( label );
+        if( refs == null ) {
+            refs = new HashSet<AVM1Operation>();
+            labelReferences.put( label, refs );
         }
         
-        else if( owner != null ) {
-            owner.block.referenceLabel( label, op );
-        }
+        refs.add( op );
     }
     
     /**
      * Remove a reference to a label
      */
     private void dereferenceLabel( String label, AVM1Operation op ) {
-        if( labelReferences != null ) {
-            Collection<AVM1Operation> refs = labelReferences.get( label );
-            if( refs != null ) {
-                refs.remove( op );
-                if( refs.isEmpty() ) labelReferences.remove( label );
-            }
-        }
-        
-        else if( owner != null ) {
-            owner.block.dereferenceLabel( label, op );
+        Collection<AVM1Operation> refs = labelReferences.get( label );
+        if( refs != null ) {
+            refs.remove( op );
+            if( refs.isEmpty() ) labelReferences.remove( label );
         }
     }
     
@@ -161,23 +141,20 @@ public class AVM1ActionBlock {
      * Called when all operations have been added to the block.
      */
     public void complete() {
-        if( owner == null ) { //only outer block
-        
-            //remove extraneous labels (only if outer block)        
-            Set<JumpLabel> extraneousLabels = new HashSet<JumpLabel>();
-            for( String label : labels.keySet() ) {
-                Collection<AVM1Operation> refs = labelReferences.get( label );
-                if( refs == null || refs.isEmpty()) {
-                    extraneousLabels.add( labels.get( label ) );
-                }
+        //remove extraneous labels        
+        Set<JumpLabel> extraneousLabels = new HashSet<JumpLabel>();
+        for( String label : labels.keySet() ) {
+            Collection<AVM1Operation> refs = labelReferences.get( label );
+            if( refs == null || refs.isEmpty()) {
+                extraneousLabels.add( labels.get( label ) );
             }
-            
-            for( JumpLabel label : extraneousLabels ) {
-                label.remove();
-            }
-            
-            aggregateAll();
         }
+        
+        for( JumpLabel label : extraneousLabels ) {
+            label.remove();
+        }
+        
+        aggregateAll();
     }
     
     /**
@@ -190,13 +167,10 @@ public class AVM1ActionBlock {
                 agg.aggregate();
             }
             
-            if( op instanceof AVM1BlockContainer ) {
-                AVM1BlockContainer container = (AVM1BlockContainer) op;
-                AVM1ActionBlock[] blocks = container.subBlocks();
-                
-                for( AVM1ActionBlock block : blocks ) {
-                    block.aggregateAll();
-                }
+            if( op instanceof Function ) {
+                Function func = (Function) op;
+                AVM1ActionBlock block = func.body;
+                block.complete();
             }
         }
     }
@@ -251,8 +225,8 @@ public class AVM1ActionBlock {
             dropLabel( (JumpLabel) op );
         }
         else {
-            String label = op.labelReference();
-            if( label != null ) {
+            String[] labels = op.labelReferences();
+            for( String label : labels ) {
                 dereferenceLabel( label, op );
             }
         }
@@ -284,8 +258,8 @@ public class AVM1ActionBlock {
             addLabel( (JumpLabel) op );
         }
         else {
-            String label = op.labelReference();
-            if( label != null ) {
+            String[] labels = op.labelReferences();
+            for( String label : labels ) {
                 referenceLabel( label, op );
             }
         }

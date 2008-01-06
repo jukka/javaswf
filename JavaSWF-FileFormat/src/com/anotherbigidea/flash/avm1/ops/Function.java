@@ -1,24 +1,23 @@
 package com.anotherbigidea.flash.avm1.ops;
 
+import static com.anotherbigidea.flash.SWFActionCodes.*;
+
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Set;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
-import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
-
-import static com.anotherbigidea.flash.SWFActionCodes.*;
 
 /**
  * A function definition
  *
  * @author nickmain
  */
-public class Function extends AVM1Operation implements AVM1BlockContainer {
+public class Function extends AVM1Operation {
 
     public static enum PreloadingFlag {        
         PRELOAD_PARENT   (START_FUNCTION2_PRELOAD_PARENT   ),
@@ -69,11 +68,6 @@ public class Function extends AVM1Operation implements AVM1BlockContainer {
         this.numRegistersToAllocate = numRegistersToAllocate;
         this.paramNames = paramNames;
         this.registersForArguments = registersForArguments;
-    }
-    
-    /** @see com.anotherbigidea.flash.avm1.AVM1BlockContainer#subBlocks() */
-    public AVM1ActionBlock[] subBlocks() {
-        return new AVM1ActionBlock[] { body };
     }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */

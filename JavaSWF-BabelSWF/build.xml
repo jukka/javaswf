@@ -49,7 +49,7 @@
     <macrodef name="compile-swf">
         <attribute name="src-path"  />
         <attribute name="swf-file"  />
-        <attribute name="as-file"   />
+        <attribute name="as-file"   /> 
 
         <sequential>
         	<exec executable="${flex.swf.compiler}" taskname="compile-swf">
@@ -64,20 +64,33 @@
     	<mkdir dir="as2-testcases/swf"/>
         <mtasc mainfile="Test.as" sourcepath="as2-testcases/src" output="../swf/Test.swf" />
     </target>
-    
+
     <!-- Dump the AS-2 testcase fla swfs -->
     <target name="dump-as2-fla-testcases">
         <swf-dump out="as2-testcases/fla/testfla.swf.txt" swf="as2-testcases/fla/testfla.swf" />
     </target>	
+
+    <!-- Compile and dump the AS-3 testcases -->
+    <target name="compile-as3-testcases">
+        <mkdir dir="as3-testcases/swf"/>
+        <compile-swf
+            src-path="as3-testcases/src"
+            as-file ="AS3Test.as"
+            swf-file="as3-testcases/swf/AS3Test.swf"
+        />         
+        <swf-dump swf="as3-testcases/swf/AS3Test.swf" out="as3-testcases/swf/AS3Test.swf.txt" />
+    </target>
 	
 	<!-- Compile the runtime SWF -->
 	<target name="compile-runtime">
+		<delete dir="runtime"/>
+		<mkdir dir="runtime"/>
 		<compile-swf
 			src-path="src-as-runtime"
-			as-file ="babelswf/RuntimeSWF.as"
-			swf-file="generated/babel.swf"
+			as-file ="babelswf/BaseMovieClip.as"
+			swf-file="runtime/runtime.swf"
 		/>		   
-		<swf-dump swf="generated/babel.swf" out="generated/babel.txt" />
+		<swf-dump swf="runtime/runtime.swf" out="runtime/runtime.swf.txt" />
 	</target>
 	
 	
@@ -87,9 +100,21 @@
     ===========================================================================    
     ===========================================================================    
     -->
+
+    <!-- Test the translator -->
+    <target name="translator-test-mtasc">
+        <mkdir dir="generated-as3"/>
+        <avm-translate 
+            avm1swf="as2-testcases/swf/Test.swf"
+            avm2swf="generated-as3/Test_mtasc.swf"
+        />
+        <swf-dump swf="generated-as3/Test_mtasc.swf"
+                  out="generated-as3/Test_mtasc.swf.txt" />
+    </target>
+
 	
     <!-- Test the translator -->
-    <target name="translator-test">
+    <target name="translator-test-fla">
     	<mkdir dir="generated-as3"/>
         <avm-translate 
             avm1swf="as2-testcases/fla/testfla.swf"

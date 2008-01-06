@@ -67,7 +67,7 @@
             <arg value="acts"/>
         </java>
     </target>
-
+	
     <!-- Dump the Flex compiled test.swf -->
 	<target name="dump-flex-test-swf">
 		<java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
@@ -86,12 +86,12 @@
         </exec>
     </target>
 
-    <!-- Dump the dataswf -->
+    <!-- Dump the AS2/AS3 test swf -->
     <target name="dump-dataswf">
         <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
               classpathref="javaswf" >
-            <arg value="/Users/dmain/Desktop/dataswf.swf"/>
-            <arg value="out=/Users/dmain/Desktop/dataswf.txt"/>
+            <arg value="/Users/dmain/Desktop/as3-as2-bridge-testing/as2framework.swf"/>
+            <arg value="out=/Users/dmain/Desktop/test.txt"/>
             <arg value="hex"/>
             <arg value="acts"/>
         </java>

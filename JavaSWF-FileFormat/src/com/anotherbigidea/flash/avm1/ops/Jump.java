@@ -24,10 +24,10 @@ public class Jump extends AVM1Operation {
         block.jump( jumpLabel );
     }
 
-    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReference() */
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReferences() */
     @Override
-    public String labelReference() {
-        return jumpLabel;
+    public String[] labelReferences() {
+        return new String[] { jumpLabel };
     }    
 
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */

@@ -11,35 +11,73 @@ import com.anotherbigidea.flash.interfaces.SWFActionBlock.TryCatchFinally;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
 
 /**
- * A try-catch-finally block
+ * A try-catch-finally block. 
  *
  * @author nickmain
  */
-public class Try extends AVM1Operation implements AVM1BlockContainer {
+public class Try extends AVM1Operation {
 
     public final String catchVarName; //may be null
     public final int    catchRegister; //may be -1 (no register)
     
-    public final AVM1ActionBlock tryBlock     = new AVM1ActionBlock( this );
-    public final AVM1ActionBlock catchBlock   = new AVM1ActionBlock( this );
-    public final AVM1ActionBlock finallyBlock = new AVM1ActionBlock( this );
+    /**
+     * Label after the try-block, at the start of the catch block.
+     * Null if there is no catch block 
+     */
+    public final String catchLabel; 
     
-    public Try( int catchRegister ) {
+    /**
+     * Label at the start of the finally block.
+     * Null if there is no finally block.
+     */
+    public final String finallyLabel;
+    
+    /**
+     * Label after the end of the finally block (or catch if there
+     * is no finally).
+     */
+    public final String endLabel;
+    
+    public Try( int catchRegister, 
+                String catchLabel, 
+                String finallyLabel,
+                String endLabel ) {
         this.catchRegister = catchRegister;
         this.catchVarName  = null;
+        this.catchLabel    = catchLabel;
+        this.finallyLabel  = finallyLabel;
+        this.endLabel      = endLabel;
     }
 
-    public Try( String catchVarName ) {
+    public Try( String catchVarName, 
+                String catchLabel, 
+                String finallyLabel,
+                String endLabel ) {
         this.catchRegister = -1;
         this.catchVarName  = catchVarName;
+        this.catchLabel    = catchLabel;
+        this.finallyLabel  = finallyLabel;
+        this.endLabel      = endLabel;
     }
-    
-    /** @see com.anotherbigidea.flash.avm1.AVM1BlockContainer#subBlocks() */
-    public AVM1ActionBlock[] subBlocks() {
-        return new AVM1ActionBlock[] { tryBlock, catchBlock, finallyBlock };
+        
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReferences() */
+    @Override
+    public String[] labelReferences() {
+        if( catchLabel != null && finallyLabel != null ) {
+            return new String[] { catchLabel, finallyLabel, endLabel };
+        }
+
+        if( catchLabel != null ) {
+            return new String[] { catchLabel, endLabel };
+        }
+
+        if( finallyLabel != null ) {
+            return new String[] { finallyLabel, endLabel };
+        }
+
+        return new String[] { endLabel };
     }
 
-    
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     public void write( SWFActionBlock block ) throws IOException {

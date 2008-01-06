@@ -66,9 +66,10 @@ public abstract class AVM1Operation {
      * Get any label referenced by this operation
      * @return null if this operation does not reference a label
      */
-    public String labelReference() {
-        return null;
+    public String[] labelReferences() {
+        return NO_REFS;
     }
+    private final String[] NO_REFS = {};
     
     /**
      * Print the operation

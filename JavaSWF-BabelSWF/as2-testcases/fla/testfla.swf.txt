@@ -1,34 +1,18 @@
-signature: CWS
-header: version=8 length=119 width=11000 height=8000 rate=12 frame-count=1
+signature: FWS
+header: version=8 length=68 width=11000 height=8000 rate=12 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 AVM1 actions:
             conditions     0
   0000:     lookupTable    
             0:   "i"
-            1:   "iteration "
+  0007:     push           lookup( 0 )
+            push           45
+  0017:     defineLocalValue 
   0018:     push           lookup( 0 )
-            push           1
-  0028:     defineLocalValue 
-  0029:     push           lookup( 0 )
-  0034:     getVariable    
-  0035:     push           10
-  0043:     greaterThan    
-  0044:     not            
-  0045:     not            
-  0046:     ifJump         "0076"
-  0051:     push           lookup( 1 )
-            push           lookup( 0 )
-  0058:     getVariable    
-  0059:     typedAdd       
-  0060:     trace          
-  0061:     push           lookup( 0 )
-            push           lookup( 0 )
-  0068:     getVariable    
-  0069:     increment      
-  0070:     setVariable    
-  0071:     jump           "0029"
-  0076:     end            
+  0023:     getVariable    
+  0024:     trace          
+  0025:     end            
 ---------- frame ----------
 end
 ---------------

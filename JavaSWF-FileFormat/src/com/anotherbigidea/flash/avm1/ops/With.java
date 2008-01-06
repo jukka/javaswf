@@ -15,21 +15,32 @@ import com.anotherbigidea.flash.writers.ActionTextWriter;
  *
  * @author nickmain
  */
-public class With extends AVM1OperationAggregation implements AVM1BlockContainer {
+public class With extends AVM1OperationAggregation {
 
-    public final AVM1ActionBlock block = new AVM1ActionBlock( this );
+    /**
+     * Label of the instruction after the end of the with-block
+     */
+    public String endLabel();
     
     public AVM1Operation object;
 
-    /** @see com.anotherbigidea.flash.avm1.AVM1BlockContainer#subBlocks() */
-    public AVM1ActionBlock[] subBlocks() {
-        return new AVM1ActionBlock[] { block };
+    /**
+     * @param endLabel the label just after the end of the block
+     */
+    public With( String endLabel ) {
+        this.endLabel = endLabel;
     }
-
+    
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#aggregate() */
     @Override
     public void aggregate() {
         if( object == null ) object = consumePrevious();
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReferences() */
+    @Override
+    public String[] labelReferences() {
+        return new String[] { endLabel };
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#writeOp(com.anotherbigidea.flash.interfaces.SWFActionBlock) */

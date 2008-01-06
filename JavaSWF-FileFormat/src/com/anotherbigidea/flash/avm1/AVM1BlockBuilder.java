@@ -485,7 +485,9 @@ public class AVM1BlockBuilder implements SWFActionBlock {
                                           String[] paramNames, int[] registersForArguments)
         throws IOException {
         
-        Function func = new Function( name, numRegistersToAllocate, paramNames, registersForArguments );
+        Function func = ( name.length() == 0 ) ? 
+            new AnonymousFunction( numRegistersToAllocate, paramNames, registersForArguments ) :
+            new Function( name, numRegistersToAllocate, paramNames, registersForArguments );
         Function.PreloadingFlag.decode( preloadingFlags, func.flags );
         block.append( func );
         
@@ -495,7 +497,7 @@ public class AVM1BlockBuilder implements SWFActionBlock {
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#startWith() */
     public SWFActionBlock startWith() throws IOException {
 
-        With with = new With();
+        With with = new With(  );
         AVM1BlockBuilder bb = new AVM1BlockBuilder( with.block, lookupTable );        
         block.append( with );
         return bb;

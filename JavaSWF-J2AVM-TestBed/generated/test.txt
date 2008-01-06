@@ -1,5 +1,5 @@
 signature: CWS
-header: version=9 length=903 width=12000 height=12000 rate=12 frame-count=1
+header: version=9 length=918 width=12000 height=12000 rate=12 frame-count=1
 file-attributes allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,204)
@@ -103,7 +103,7 @@ abc-file {
               coerce Qname:PackageNamespace(flash.text)::StyleSheet
               setlocal3
               getlocal3
-              pushstring ".foo { font-size: 24px }"
+              pushstring ".foo { font-size: 24px; color: #ff0000 }"
               callpropvoid Qname:PackageNamespace()::parseCSS 1
               getlocal2
               getlocal3
@@ -136,7 +136,7 @@ abc-file {
               callpropvoid Qname:PackageNamespace()::beginFill 1
               getlocal1
               pushdouble 2.0
-              pushint 16711680
+              pushint 34816
               callpropvoid Qname:PackageNamespace()::lineStyle 2
               getlocal1
               getlocal2
