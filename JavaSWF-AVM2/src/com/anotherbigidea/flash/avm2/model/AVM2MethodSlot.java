@@ -9,7 +9,8 @@ import com.anotherbigidea.flash.avm2.ABC;
  *
  * @author nickmain
  */
-public class AVM2MethodSlot extends AVM2Trait {
+public class AVM2MethodSlot extends AVM2Trait 
+                            implements AVM2MethodContainer {
 
     /** The method */
     public final AVM2Method method;
@@ -29,6 +30,11 @@ public class AVM2MethodSlot extends AVM2Trait {
         this.method     = method;
     }
     
+    /** @see com.anotherbigidea.flash.avm2.model.AVM2MethodContainer#getMethod() */
+    public AVM2Method getMethod() {
+        return method;
+    }
+
     protected void dumpEx( IndentingPrintWriter out ) {
         if( isFinal    ) out.print( "final " );
         if( isOverride ) out.print( "override " );
@@ -55,10 +61,12 @@ public class AVM2MethodSlot extends AVM2Trait {
             }
         }
 
+        //System.out.println( "METHOD SLOT: " + name );
+        
         if( this instanceof AVM2Getter ) {
             ts.getter( nameIndex, dispId, methIndex, isFinal, isOverride, metadataIndices( context ));
         }
-        if( this instanceof AVM2Setter ) {
+        else if( this instanceof AVM2Setter ) {
             ts.setter( nameIndex, dispId, methIndex, isFinal, isOverride, metadataIndices( context ));
         } 
         else {

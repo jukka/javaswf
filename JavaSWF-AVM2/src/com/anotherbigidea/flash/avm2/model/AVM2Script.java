@@ -9,7 +9,7 @@ import com.anotherbigidea.flash.avm2.ABC;
  *
  * @author nickmain
  */
-public class AVM2Script {
+public class AVM2Script implements AVM2MethodContainer {
     
     /** The traits of the script */
     public final AVM2Traits traits = new AVM2Traits();
@@ -24,9 +24,14 @@ public class AVM2Script {
         this.script = script;
     }
     
+    /** @see com.anotherbigidea.flash.avm2.model.AVM2MethodContainer#getMethod() */
+    public AVM2Method getMethod() {
+        return script;
+    }
+    
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
-        out.println( " script {" );        
+        out.println( "script {" );        
         out.indent();
         
         for( AVM2Trait trait : traits.traits ) {

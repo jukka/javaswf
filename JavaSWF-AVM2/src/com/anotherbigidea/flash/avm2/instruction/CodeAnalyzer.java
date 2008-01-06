@@ -1,28 +1,27 @@
 package com.anotherbigidea.flash.avm2.instruction;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 import com.anotherbigidea.flash.avm2.model.AVM2ExceptionHandler;
 import com.anotherbigidea.flash.avm2.model.AVM2MethodBody;
 
 /**
  * Walks all instructions in a list in order to determine the max values for
- * stack, registers and scope,
+ * stack, registers and scope,  Also determines register use and allocates
+ * register numbers to instances of RegisterAllocation.
  *
  * @author nickmain
  */
-public class MaxValueAnalyzer {
+public class CodeAnalyzer {
     
     private int maxReg   = 0;
     private int maxStack = 0;
     private int maxScope = 0;
     
     /**
-     * Visited instructions
+     * Visited instructions - map to the incoming frame
      */
-    private final Set<Instruction> visited = new HashSet<Instruction>();
+    private final Map<Instruction,Frame> visited = new HashMap<Instruction, Frame>();
  
     /**
      * The visit queue
@@ -35,9 +34,11 @@ public class MaxValueAnalyzer {
     private static class Frame {
         final int scopeStack;
         final int stack;
-        Frame( int scopeStack, int stack ) {
+        final LocalRegisterState locals;
+        Frame( int scopeStack, int stack, LocalRegisterState locals ) {
             this.scopeStack = scopeStack;
             this.stack      = stack;
+            this.locals     = locals;
         }
     }
     
@@ -45,11 +46,50 @@ public class MaxValueAnalyzer {
      * A pending visit to an instruction
      */
     private static class PendingVisit {
-        final Instruction instruction;
-        final Frame       incomingFrame;
-        public PendingVisit( Instruction instruction, Frame incomingFrame ) {
+        final Instruction        instruction;
+        final Frame              incomingFrame;
+       public PendingVisit( Instruction instruction, Frame incomingFrame ) {
             this.incomingFrame = incomingFrame;
             this.instruction   = instruction;
+        }
+    }
+    
+    /**
+     * Holds the state of the local registers at any point in time.
+     */
+    private static class LocalRegisterState {
+        
+        /**
+         * true indicates that a register is in use, false that it is
+         * free.
+         */
+        boolean[] registerAllocations;
+        
+        /**
+         * Create an initial state where the first count registers are in use
+         */
+        public LocalRegisterState( int count ) {
+            registerAllocations = new boolean[ count ];
+            Arrays.fill( registerAllocations, true );
+        }
+
+        /**
+         * Create a new register state by mutating an existing one
+         * @param state the existing state
+         * @param index the register to change
+         * @param use whether to free (false) or allocate (true)
+         */
+        public LocalRegisterState( LocalRegisterState state, 
+                                   int index, boolean use ) {
+            registerAllocations = 
+                new boolean[ 
+                       Math.max( state.registerAllocations.length, 
+                                 index + 1 ) ];
+            
+            System.arraycopy( state, 0, 
+                              registerAllocations, 0, registerAllocations.length );
+            
+            registerAllocations[ index ] = use;
         }
     }
     
@@ -58,7 +98,7 @@ public class MaxValueAnalyzer {
     /**
      * @param body the method body to walk
      */
-    public MaxValueAnalyzer( AVM2MethodBody body ) {
+    public CodeAnalyzer( AVM2MethodBody body ) {
         this.body = body;
     }
     
@@ -107,6 +147,7 @@ public class MaxValueAnalyzer {
                 
                 //generate downstream visits
                 for( Instruction i : ins.getFollowOnInstructions() ) {
+                    if( i == null ) System.err.println( "NULL INSTRUCTION for " + ins.operation );
                     queue.add( new PendingVisit( i, out ) );
                 }
             }

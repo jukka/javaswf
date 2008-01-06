@@ -600,6 +600,9 @@ public class ABCWriter implements ABC {
             out.writeUI8( flags );
             out.writeVU30( dispId );
             out.writeVU30( methIndex );
+
+            
+            //System.out.println( "METHOD: " + nameIndex + " " + flags + " " + dispId + " " + methIndex );
             
             if( metadataIndices != null && metadataIndices.length > 0 ) {
                 out.writeVU30( metadataIndices.length );

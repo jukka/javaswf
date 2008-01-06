@@ -144,7 +144,8 @@ public class AVM2Method {
         if( returnType != null ) returnType.initPool( context );
         
         for( AVM2Name n : paramTypes ) {
-            n.initPool( context );
+            //param type may be null (any)
+            if( n != null ) n.initPool( context );
         }
         
         for( String n : paramNames ) {
@@ -166,7 +167,7 @@ public class AVM2Method {
         int[] ptypes = new int[ paramTypes.size() ];
         for( int i = 0; i < ptypes.length; i++ ) {
             AVM2Name ptype = paramTypes.get( i );
-            ptypes[i] = ptype.indexIn( context.pool );
+            ptypes[i] = (ptype != null) ? ptype.indexIn( context.pool ) : 0;
         }
         
         int[] pnames = null;

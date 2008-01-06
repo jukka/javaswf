@@ -56,7 +56,7 @@ public class ABCParser {
         readMethodInfos();        
         readMetadata();
         
-        int count = in.readVU30();        
+        int count = in.readVU30();
         ABC.ClassInfos classInfos = abcFile.classes( count );
         readInstanceInfos( classInfos, count );
         readClassInfos   ( classInfos, count );
@@ -243,6 +243,8 @@ public class ABCParser {
 //            if( nameIndex == 119 || (flags & 0x0f) == 11 ) {
 //                Hex.dump( ((ABCDumper) abc).ipw, in.read(64), 0, "", false );
 //            }
+                                    
+            //System.out.println( "PARSE: " + nameIndex + " " + flags );
             
             TraitKind tkind = TraitKind.fromValue( flags );
             //flags >>= 4;

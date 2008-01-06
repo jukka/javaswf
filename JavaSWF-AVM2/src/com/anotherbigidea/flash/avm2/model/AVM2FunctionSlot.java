@@ -9,7 +9,8 @@ import com.anotherbigidea.flash.avm2.ABC;
  *
  * @author nickmain
  */
-public class AVM2FunctionSlot extends AVM2Trait {
+public class AVM2FunctionSlot extends AVM2Trait 
+                              implements AVM2MethodContainer {
 
     /** The function */
     public final AVM2Method function;
@@ -27,6 +28,11 @@ public class AVM2FunctionSlot extends AVM2Trait {
     
     protected void initPoolEx( AVM2ABCFile.WriteContext context ) {
         function.initPool( context );
+    }
+    
+    /** @see com.anotherbigidea.flash.avm2.model.AVM2MethodContainer#getMethod() */
+    public AVM2Method getMethod() {
+        return function;
     }
     
     /**

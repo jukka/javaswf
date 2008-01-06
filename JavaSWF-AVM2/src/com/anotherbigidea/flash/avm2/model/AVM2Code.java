@@ -8,8 +8,9 @@ import java.util.Map;
 
 import com.anotherbigidea.flash.avm2.MethodInfoFlags;
 import com.anotherbigidea.flash.avm2.Operation;
+import com.anotherbigidea.flash.avm2.instruction.Instruction;
 import com.anotherbigidea.flash.avm2.instruction.InstructionList;
-import com.anotherbigidea.flash.avm2.instruction.MaxValueAnalyzer;
+import com.anotherbigidea.flash.avm2.instruction.CodeAnalyzer;
 
 
 /**
@@ -23,13 +24,22 @@ public final class AVM2Code {
 	private final AVM2MethodBody body;
 	private final InstructionList instructions;
 	private Map<String, Integer> labelInts;
+	private int labelIndex = 0;
+	
+	//--the register that holds the "this" object
+	private int thisRegister = 0;
+	
+	//--the number of registers reserved for normal operations, the registers
+	//  above this may be used for temporary purposes.
+	private final int reservedRegisters;
 	
 	/**
 	 * @param body the method/script body to wrap
 	 */
-	public AVM2Code( AVM2MethodBody body ) {
-		this.body = body;
-		this.instructions = body.instructions;
+	public AVM2Code( AVM2MethodBody body, int reservedRegisters ) {
+		this.body              = body;
+		this.instructions      = body.instructions;
+		this.reservedRegisters = reservedRegisters;
 	}
 
 	/**
@@ -37,7 +47,7 @@ public final class AVM2Code {
 	 * method body, given the current instructions
 	 */
 	public void calcMaxes() {
-	    new MaxValueAnalyzer( body ).analyze();
+	    new CodeAnalyzer( body ).analyze();
 	}
 	
 	/**
@@ -84,6 +94,13 @@ public final class AVM2Code {
 	}
 	
 	/**
+	 * Generate a new unique label - does not actually place it in the code.
+	 */
+	public String newLabel() {	    
+	    return "avm2Code::" + (labelIndex++);
+	}
+	
+	/**
 	 * An unconditional branch
 	 */
 	public void jump( String label ) {
@@ -120,6 +137,122 @@ public final class AVM2Code {
     public void ifstrictne( String label ) { ifstrictne( stringToIntLabel( label )); }
     public void iftrue    ( String label ) { iftrue    ( stringToIntLabel( label )); } 
 	
+    /**
+     * Get a member of an object - if the object is undefined then the
+     * value is undefined.  Name then object are on the stack. 
+     */
+    public void getMember_Safe() {
+        
+        swap();            // -> object, name
+        dup();             // -> object, object, name
+        pushUndefined();   // -> undefined, object, object, name
+        
+        String ifundefined = newLabel();
+        ifstricteq( ifundefined );
+        
+        swap(); // -> name, object
+        instructions.append( OP_getproperty, AVM2LateMultiname.EMPTY_PACKAGE );
+
+        String exit = newLabel();
+        jump( exit );
+        
+        target( ifundefined );
+        label();
+        
+        swap(); // -> name, object
+        pop();  // -> object (which is undefined)
+        
+        target( exit );
+        label();        
+    }
+    
+    /**
+     * Set a member of an object - if the object is undefined then the operation
+     * does nothing.  Value, name then object are on the stack. 
+     */
+    public void setMember_Safe() {
+        // stack is: value|name|object|..
+        
+        int tempReg = reservedRegisters;
+        
+        setLocal( tempReg   );  // -> n|o|..
+        setLocal( tempReg+1 );  // -> o|..
+        dup();                  // -> o|o..
+        pushUndefined();        // -> undefined|o|o..
+        
+        String ifundefined = newLabel();
+        ifstricteq( ifundefined );  // -> o|..
+        
+        getLocal( tempReg+1 ); // -> n|o|..
+        getLocal( tempReg   ); // -> v|n|o|..
+        
+        instructions.append( OP_setproperty, AVM2LateMultiname.EMPTY_PACKAGE );
+
+        String exit = newLabel();
+        jump( exit );
+        
+        target( ifundefined );
+        label();        
+        pop();  // -> ..
+        
+        target( exit );
+        label();        
+        killLocal( tempReg   );
+        killLocal( tempReg+1 );
+    }
+    
+    /**
+     * Get a variable from the current scope stack - name is on the stack, public
+     * namespace is assumed
+     */
+    public void getVariable() {
+        
+        dup(); //the name
+        
+        instructions.append( OP_findproperty, AVM2LateMultiname.EMPTY_PACKAGE ); //will push object or global
+        swap();   
+        instructions.append( OP_getproperty, AVM2LateMultiname.EMPTY_PACKAGE );
+    }
+    
+    /**
+     * Set a variable on the current scope object - value then name are on the
+     * stack, public namespace is assumed.  Assumption is that the scope
+     * object is in register zero.
+     */
+    public void setLocalVariable() {
+        int tempReg = reservedRegisters;
+                
+        setLocal( tempReg );  //value,name,.. -> name,...
+        getLocal( 0 );        // -> object,name,...
+        swap();               // -> name,object,...
+        getLocal( tempReg );  // -> value,name.object,...
+        instructions.append( OP_setproperty, AVM2LateMultiname.EMPTY_PACKAGE );
+        killLocal( tempReg );
+    }
+    
+    /**
+     * Set the "this" variable to point at the item in local register zero
+     */
+    public void setThis() {
+        getLocal( 0 );
+        dup();
+        setProperty( "this" );
+    }
+
+    /**
+     * Push a "with" object onto the scope stack
+     */
+    public void pushWith() {
+        instructions.append( OP_pushwith );
+    }
+
+    /**
+     * Kill a local variable
+     */
+    public void killLocal( int index ) {
+        instructions.append( OP_kill, index );
+    }
+    
 	/**
 	 * Trace out a message
 	 */
@@ -242,6 +375,172 @@ public final class AVM2Code {
         instructions.append( OP_add_i );
     }
 	
+    /**
+     * Subtract, with type conversion.
+     */
+    public void subtract() {
+        instructions.append( OP_subtract );
+    }
+
+    /**
+     * Subtract ints, with conversion if required.
+     */
+    public void subtractInts() {
+        instructions.append( OP_subtract_i );
+    }
+    
+    /**
+     * Multiply, with type conversion.
+     */
+    public void multiply() {
+        instructions.append( OP_multiply );
+    }
+
+    /**
+     * Multiply ints, with conversion if required.
+     */
+    public void multiplyInts() {
+        instructions.append( OP_multiply_i);
+    }
+    
+    
+    /**
+     * Divide, with type conversion.
+     */
+    public void divide() {
+        instructions.append( OP_divide );
+    }
+    
+    /**
+     * Divide, with type conversion.
+     */
+    public void modulo() {
+        instructions.append( OP_modulo );
+    }
+    
+    /**
+     * Compare two values
+     */
+    public void equals() {
+        instructions.append( OP_equals );        
+    }
+
+    /**
+     * Compare two values, strictly
+     */
+    public void strictEquals() {
+        instructions.append( OP_strictequals );        
+    }
+    
+    /**
+     * Compare two values
+     */
+    public void lessThan() {
+        instructions.append( OP_lessthan );        
+    }
+
+    /**
+     * Compare two values
+     */
+    public void greaterThan() {
+        instructions.append( OP_greaterthan );        
+    }
+    
+    /**
+     * Logical AND
+     */
+    public void and() {
+        //AVM1 does not have a logical AND - WTF ?!
+        
+        //stack is a,b,...
+        
+        String ifTrue = newLabel();
+        iftrue( ifTrue );
+        
+        //a is false - discard b and push false
+        pop();
+        pushBoolean( false );
+        
+        target( ifTrue );
+        label();
+        convertToBoolean();
+        
+        //stack now contains either b or false
+    }
+
+    /**
+     * Logical OR
+     */
+    public void or() {
+        //AVM1 does not have a logical AND - WTF ?!
+        
+        //stack is a,b,...
+        String ifFalse = newLabel();
+        iffalse( ifFalse );
+        
+        //a is true - discard b and push true
+        pop();
+        pushBoolean( true );
+        
+        target( ifFalse );
+        label();
+        convertToBoolean();
+        
+        //stack now contains either b or true
+    }
+
+    /**
+     * Logical NOT
+     */
+    public void not() {
+        instructions.append( OP_not );    
+    }
+    
+    /**
+     * Check that stack top is not NaN. If it is NaN then trace a message and
+     * throw up.
+     * 
+     * @param message the message to trace.
+     */
+    public void checkIsNotNan( String message ) {
+        String notNan = newLabel();
+        
+        dup();
+
+        findPropStrict( "isNaN" );
+        swap();
+        callProperty( "isNaN", 1 ); 
+        
+        iffalse( notNan );
+        
+        trace( message );
+        pushString( message );
+        instructions.append( OP_throw );
+        
+        target( notNan );
+        label();
+    }
+    
+    /**
+     * Duplicate and trace the stack top value.
+     * 
+     * @param message the message prefix
+     */
+    public void traceValue( String message ) {
+        dup();
+        pushString( message + ":" );
+        swap();
+        add();
+        trace();
+    }
+    
+    public void convertToBoolean() { instructions.append( OP_convert_b ); }
+    public void convertToDouble () { instructions.append( OP_convert_d ); }
+    public void convertToInt    () { instructions.append( OP_convert_i ); }
+    public void convertToObject () { instructions.append( OP_convert_o ); }
+    public void convertToString () { instructions.append( OP_convert_s ); }
+    public void convertToUInt   () { instructions.append( OP_convert_u ); }
+    
 	/**
 	 * Push a value, according to type
 	 */
@@ -265,6 +564,13 @@ public final class AVM2Code {
 			throw new IllegalArgumentException( "Don't know how to push " + obj.getClass() );
 		}
 	}
+
+    /**
+     * Push NaN
+     */
+    public void pushNaN() {
+        instructions.append( OP_pushnan );
+    }
 	
 	/**
 	 * Push null
@@ -349,6 +655,17 @@ public final class AVM2Code {
     public void callProperty( AVM2QName qualifiedName, int argCount ) {
         instructions.append( OP_callproperty, qualifiedName, argCount );
     }
+
+    /**
+     * Call a property on an object.
+     * 
+     * @param qualifiedName the prop name
+     * @param argCount the number of arguments
+     */
+    public void callProperty( String qualifiedName, int argCount ) {
+        instructions.append( OP_callproperty, new AVM2QName( qualifiedName ), argCount );
+    }
+
     
 	/**
 	 * Push a string
@@ -371,6 +688,18 @@ public final class AVM2Code {
 		getLocal( 0 );
 		pushScope();
 	}
+
+	/**
+     * Set up the initial scope for a script or method as a "with" scope (so 
+     * that dynamic properties can be found).  Also set up the "this" var.
+     */
+    public void setupDynamicScope() {
+        getLocal( 0 );
+        dup();
+        pushWith();
+        dup();
+        setProperty( "this" );
+    }
 	
 	/**
 	 * Push stack top onto the scope chain
@@ -384,6 +713,13 @@ public final class AVM2Code {
 	 */
 	public void popScope() {
 		instructions.append( OP_popscope );
+	}
+	
+	/**
+	 * Pop top stack value
+	 */
+	public void pop() {
+	    instructions.append( OP_pop );
 	}
 	
 	/**
@@ -415,11 +751,26 @@ public final class AVM2Code {
 	}
 	
 	/** 
-	 * Append a returnVoid operation
+	 * Append a returnVoid operation - but only if the previous instruction
+	 * is not a return.
 	 */
 	public void returnVoid() {
+	    Instruction last = instructions.last();
+	    if( last != null 
+	     && ( last.operation == OP_returnvalue
+	       || last.operation == OP_returnvoid )) {
+	        return;
+	    }
+	    
 		instructions.append( OP_returnvoid );
 	}
+
+    /** 
+     * Append a returnValue operation
+     */
+    public void returnValue() {
+        instructions.append( OP_returnvalue );
+    }
 	
 	/**
 	 * Push the scope object at the given index on the scope stack
@@ -467,13 +818,22 @@ public final class AVM2Code {
 	}
 	
 	/**
+	 * Throw the exception from the stack
+	 */
+	public void throwException() {
+	    instructions.append( OP_throw );
+	}
+	
+	/**
 	 * Start a minimal no-arg constructor for a class.  Assumes that the
 	 * static initializer has already been generated.  The constructor is left
 	 * open (no return operation).
 	 * 
+	 * @param superArg an argument to send to the super-contructor, null for none
+	 * 
 	 * @return the wrapper for adding to the constructor
 	 */
-	public static AVM2Code startNoArgConstructor( AVM2Class avm2Class ) {
+	public static AVM2Code startNoArgConstructor( AVM2Class avm2Class, String superArg ) {
 		
         AVM2Method cons = avm2Class.constructor = 
             new AVM2Method( null, EnumSet.noneOf( MethodInfoFlags.class ));
@@ -482,12 +842,40 @@ public final class AVM2Code {
 		body.scopeDepth = avm2Class.staticInitializer.methodBody.scopeDepth + 1;
 			
 		AVM2Code code = new AVM2Code( body );
-		code.setupInitialScope();
+		code.setupDynamicScope();
+		
 		code.getLocal( 0 );
-		code.constructSuper( 0 );
+
+		int argCount = 0;
+		if( superArg != null ) {
+		    argCount = 1;
+		    code.pushString( superArg );
+		}
+		
+		code.constructSuper( argCount );
 		
 		return code;
 	}
+
+    /**
+     * Start a minimal static initializer for a class.  The code is left
+     * open (no return operation).
+     * 
+     * @return the wrapper for adding to the initializer
+     */
+    public static AVM2Code startStaticInitializer( AVM2Class avm2Class, int classScopeDepth, int reservedRegisters ) {
+        
+        AVM2Method staticInit = avm2Class.staticInitializer = 
+            new AVM2Method( null, EnumSet.noneOf( MethodInfoFlags.class ));
+        
+        AVM2MethodBody initBody = staticInit.methodBody;
+        initBody.scopeDepth = classScopeDepth;
+
+        AVM2Code code = new AVM2Code( initBody );
+        code.setupDynamicScope();
+        
+        return code;
+    }
 
 	
     /**
@@ -503,62 +891,17 @@ public final class AVM2Code {
         AVM2MethodBody initBody = staticInit.methodBody;
         initBody.scopeDepth = classScopeDepth;
 
-        AVM2Code code = new AVM2Code( initBody );
+        AVM2Code code = new AVM2Code( initBody, 1 );
         code.setupInitialScope();
         code.returnVoid();
         code.calcMaxes();
     }
     
     /**
-     * Generate a class initialization script and determine the class scope depth.
-     * 
-     * The script has the avm2 class object as a trait and is run when the
-     * class is referenced.  
-     * 
-     * @param avm2Class the class in question
-     * @param superclasses the superclass in order from highest to most immediate
-     * 
-     * @return the class scope depth
+     * Start a class initialization script
      */
-    public static int classInitializationScript( AVM2Class avm2Class, String...superclasses ) {
-        
-        AVM2Script     script = avm2Class.abcFile.prependScript();
-        AVM2MethodBody body   = script.script.methodBody;
-        body.scopeDepth = 1;
-
-        AVM2Code       code   = new AVM2Code( body );
-        code.setupInitialScope();
-        code.getScopeObject( 0 );
-        
-        AVM2QName classQName = avm2Class.name;
-        
-        //--add the class as a trait of this script
-        AVM2ClassSlot slot = script.traits.addClass( classQName, classQName );
-        slot.indexId = script.traits.traits.size() - 1;
-
-        // build the scope stack for the new class (will be captured as a closure
-        // by newclass)
-        for( String superclass : superclasses ) {
-        	code.getLex( superclass );
-        	code.pushScope();        	
-        }
-
-        //push the superclass and create the new class   
-        code.getLex( avm2Class.superclass );
-        code.newClass( avm2Class );
-        	
-        //tear down the scope stack, except the global object
-        for( int i = 0; i < superclasses.length; i++ ) {
-            code.popScope();   
-        }
-        
-        //initialize the class slot (of the script object)
-        code.initProperty( classQName );
-        
-        code.returnVoid();
-        code.calcMaxes();
-        
-        return body.maxScope;
+    public static ClassInitializationScript classInitializationScript( AVM2Class avm2Class ) {
+        return new ClassInitializationScript( avm2Class );        
     }
     
     /**
@@ -566,11 +909,84 @@ public final class AVM2Code {
      * 
      * @param abc the ABC file to add the script to
      */
-    public static AVM2Code standaloneScript( AVM2ABCFile abc ) {
+    public static AVM2Code standaloneScript( AVM2ABCFile abc, int reservedRegisters ) {
         AVM2Script script = abc.prependScript();
         script.script.methodBody.scopeDepth = 1;
-        AVM2Code code = new AVM2Code( script.script.methodBody );
+        AVM2Code code = new AVM2Code( script.script.methodBody, reservedRegisters );
         code.setupInitialScope();
         return code;
+    }
+    
+    /**
+     * Wrapper around a class initialization script.
+     * 
+     * finish() should be called at the end
+     */
+    public static class ClassInitializationScript {
+       
+        private final AVM2Class avm2Class;
+        private final AVM2Code  code;
+        private int numSuperclasses;
+        
+        ClassInitializationScript( AVM2Class avm2Class ) {
+            this.avm2Class = avm2Class;
+        
+            AVM2Script     script = avm2Class.abcFile.prependScript();
+            AVM2MethodBody body   = script.script.methodBody;
+            body.scopeDepth = 1;
+
+            code = new AVM2Code( body, 1 );
+            code.setupInitialScope();
+            code.getScopeObject( 0 );
+            
+            AVM2QName classQName = avm2Class.name;
+            
+            //--add the class as a trait of this script
+            AVM2ClassSlot slot = script.traits.addClass( classQName, classQName );
+            slot.indexId = script.traits.traits.size() - 1;
+        }
+        
+        /**
+         * Add a superclass.  Superclasses should be added in order from
+         * highest to immediate.
+         */        
+        public void addSuperclass( String name ) {
+            addSuperclass( new AVM2QName( name ) );
+        }
+        
+        /**
+         * Add a superclass.  Superclasses should be added in order from
+         * highest to immediate.
+         */
+        public void addSuperclass( AVM2QName name ) {
+            code.getLex( name );
+            code.pushScope();           
+            
+            numSuperclasses++;
+        }
+        
+        /**
+         * Finish the script
+         * @return the scope depth for the class
+         */
+        public int finish() {
+            
+            //push the superclass and create the new class   
+            code.getLex( avm2Class.superclass );
+            code.newClass( avm2Class );
+                
+            //tear down the scope stack, except the global object
+            for( int i = 0; i < numSuperclasses; i++ ) {
+                code.popScope();   
+            }
+            
+            //initialize the class slot (of the script object)
+            code.initProperty( avm2Class.name );
+            
+            code.returnVoid();
+            code.calcMaxes();
+            
+            return code.body.maxScope;
+        }
     }
 }

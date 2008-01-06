@@ -69,6 +69,11 @@ public class AVM2Namespace implements Comparable<AVM2Namespace> {
     
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
+        if( kind == NamespaceKind.PackageNamespace && name.length() == 0 ) {
+            out.print( "Public" );
+            return;
+        }
+        
         out.print( kind.name() + "(" + name + ")" );
     }
 

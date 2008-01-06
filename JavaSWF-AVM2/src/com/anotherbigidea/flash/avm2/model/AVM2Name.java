@@ -9,6 +9,7 @@ import org.epistem.io.IndentingPrintWriter;
 import com.anotherbigidea.flash.avm2.MultiName;
 import com.anotherbigidea.flash.avm2.MultiNameKind;
 import com.anotherbigidea.flash.avm2.Namespace;
+import com.anotherbigidea.flash.avm2.NamespaceKind;
 import com.anotherbigidea.flash.avm2.model.io.ConstantPool;
 
 /**
@@ -151,6 +152,16 @@ public abstract class AVM2Name implements Comparable<AVM2Name> {
     
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
+        
+        if( kind == MultiNameKind.Qname
+         && namespace != null 
+         && namespace.kind == NamespaceKind.PackageNamespace 
+         && namespace.name.length() == 0 ) {
+
+            out.print( name );
+            return;
+        }
+        
         out.print( kind.name() + ":" );
         
         if( namespace != null ) {

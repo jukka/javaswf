@@ -39,6 +39,8 @@ public class AVM2Slot extends AVM2Trait {
             out.print( " = " );
             value.dump( out );
         }
+        
+        out.println();
     }
     
     protected void initPoolEx( AVM2ABCFile.WriteContext context ) {

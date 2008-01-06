@@ -1,5 +1,6 @@
 package com.anotherbigidea.flash.avm2.model;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.anotherbigidea.flash.avm2.MultiNameKind;
@@ -11,6 +12,10 @@ import com.anotherbigidea.flash.avm2.MultiNameKind;
  */
 public class AVM2LateMultiname extends AVM2Name {
 
+    public static final AVM2LateMultiname EMPTY_PACKAGE = 
+        new AVM2LateMultiname( 
+                Collections.singletonList( AVM2StandardNamespace.EmptyPackage.namespace ) );
+    
     /**
      * @param namespaceSet the set of namespaces
      */
