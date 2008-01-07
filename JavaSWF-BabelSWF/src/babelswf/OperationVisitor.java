@@ -215,7 +215,11 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitFunction(com.anotherbigidea.flash.avm1.ops.Function) */
     public void visitFunction(Function op) {
         
-        
+        // 0. Set up an activation object
+        // 1. Move this to a safe register away from reserved ranges
+        // 2. Get params into correct regs
+        // 3. Get named params set up
+        // 4. Deal with special vars
         
         
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
@@ -437,6 +441,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     public void visitStoreInRegister(StoreInRegister op) {
         op.visitAggregated( this );
         code.dup();
+        code.killLocal( op.registerNumber ); //to make sure AVM2 verifier doesn't object
         code.setLocal( op.registerNumber );
     }
 
