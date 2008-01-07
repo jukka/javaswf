@@ -2,8 +2,6 @@ package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
 
-import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
-import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
@@ -20,16 +18,9 @@ public class With extends AVM1OperationAggregation {
     /**
      * Label of the instruction after the end of the with-block
      */
-    public String endLabel();
+    public String endLabel;
     
     public AVM1Operation object;
-
-    /**
-     * @param endLabel the label just after the end of the block
-     */
-    public With( String endLabel ) {
-        this.endLabel = endLabel;
-    }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#aggregate() */
     @Override
@@ -46,8 +37,16 @@ public class With extends AVM1OperationAggregation {
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#writeOp(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     protected void writeOp( SWFActionBlock block ) throws IOException {
-        SWFActionBlock withBlock = block.startWith();        
-        this.block.write( withBlock );
+        SWFActionBlock withBlock = block.startWith();    
+        for( AVM1Operation op = next(); op != null; op = op.next() ) {
+            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endLabel ) ) {
+                withBlock.end();
+                op.write( block );
+                break;
+            }
+            
+            op.write( withBlock );
+        }        
     }
     
     /**
@@ -63,7 +62,16 @@ public class With extends AVM1OperationAggregation {
         }
         
         writer.startWith();
-        block.print( writer );
+
+        for( AVM1Operation op = next(); op != null; op = op.next() ) {
+            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endLabel ) ) {
+                op.print( writer );
+                break;
+            }
+            
+        }
+        
+        writer.end();
     }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */

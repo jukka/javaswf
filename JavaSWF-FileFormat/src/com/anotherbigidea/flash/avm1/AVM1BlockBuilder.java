@@ -45,23 +45,67 @@ public class AVM1BlockBuilder implements SWFActionBlock {
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#_try(int) */
     public TryCatchFinally _try(int catchRegisterNumber) throws IOException {
-        return _try( new Try( catchRegisterNumber ) );
+        return _try( new Try( catchRegisterNumber ));
     }
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#_try(java.lang.String) */
     public TryCatchFinally _try(String catchVarName) throws IOException {
-        return _try( new Try( catchVarName ) );
+        return _try( new Try( catchVarName ));
     }
 
+    private class TryBlockBuilder extends AVM1BlockBuilder {
+        String label;
+        
+        private TryBlockBuilder() {
+            super( block, lookupTable );
+        }
+        @Override public void jumpLabel(String label) throws IOException {
+            this.label = label;
+            super.jumpLabel( label );
+        }
+        @Override public void end() throws IOException {
+            //suppress
+        }
+    };         
+    
     private TryCatchFinally _try( final Try tryOp ) {
         block.append( tryOp );
         
         return new TryCatchFinally() {
-            public SWFActionBlock tryBlock()     { return new AVM1BlockBuilder( tryOp.tryBlock, lookupTable ); }
-            public SWFActionBlock catchBlock()   { return new AVM1BlockBuilder( tryOp.catchBlock, lookupTable ); }
-            public SWFActionBlock finallyBlock() { return new AVM1BlockBuilder( tryOp.finallyBlock, lookupTable );}
-            public void endTry() { /* nada */ }
+
+            final TryBlockBuilder tryBB     = new TryBlockBuilder();
+            final TryBlockBuilder catchBB   = new TryBlockBuilder();
+            final TryBlockBuilder finallyBB = new TryBlockBuilder();
+            
+            public SWFActionBlock tryBlock()     { return tryBB; }
+            public SWFActionBlock catchBlock()   { return catchBB; }
+            public SWFActionBlock finallyBlock() { return finallyBB; }
+            public void endTry() { 
+                tryOp.endTryLabel     = tryBB.label; 
+                tryOp.endCatchLabel   = catchBB.label;
+                tryOp.endFinallyLabel = finallyBB.label;                
+            }
         };
+    }
+
+    /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#startWith() */
+    public SWFActionBlock startWith() throws IOException {
+
+        final With with = new With();
+        block.append( with );
+        
+        return new AVM1BlockBuilder( block, lookupTable ) {
+            private String lastLabel;
+            
+            @Override public void jumpLabel(String label) throws IOException {
+                lastLabel = label;
+                super.jumpLabel( label );
+            }
+
+            @Override public void end() throws IOException {
+                with.endLabel = lastLabel;
+            }
+        };        
     }
     
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#add() */
@@ -494,14 +538,6 @@ public class AVM1BlockBuilder implements SWFActionBlock {
         return new AVM1BlockBuilder( func.body, lookupTable );
     }
 
-    /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#startWith() */
-    public SWFActionBlock startWith() throws IOException {
-
-        With with = new With(  );
-        AVM1BlockBuilder bb = new AVM1BlockBuilder( with.block, lookupTable );        
-        block.append( with );
-        return bb;
-    }
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#stop() */
     public void stop() throws IOException {

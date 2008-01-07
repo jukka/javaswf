@@ -2,8 +2,6 @@ package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
 
-import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
-import com.anotherbigidea.flash.avm1.AVM1BlockContainer;
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
@@ -21,61 +19,49 @@ public class Try extends AVM1Operation {
     public final int    catchRegister; //may be -1 (no register)
     
     /**
-     * Label after the try-block, at the start of the catch block.
-     * Null if there is no catch block 
+     * Label after the try-block
      */
-    public final String catchLabel; 
+    public String endTryLabel; 
+
+    /**
+     * Label at the end of the catch block.
+     * Null if there is no catch block.
+     */
+    public String endCatchLabel;
     
     /**
-     * Label at the start of the finally block.
+     * Label at the end of the finally block.
      * Null if there is no finally block.
      */
-    public final String finallyLabel;
+    public String endFinallyLabel;
     
-    /**
-     * Label after the end of the finally block (or catch if there
-     * is no finally).
-     */
-    public final String endLabel;
     
-    public Try( int catchRegister, 
-                String catchLabel, 
-                String finallyLabel,
-                String endLabel ) {
-        this.catchRegister = catchRegister;
-        this.catchVarName  = null;
-        this.catchLabel    = catchLabel;
-        this.finallyLabel  = finallyLabel;
-        this.endLabel      = endLabel;
+    public Try( int catchRegister ) {
+        this.catchRegister   = catchRegister;
+        this.catchVarName    = null;
     }
 
-    public Try( String catchVarName, 
-                String catchLabel, 
-                String finallyLabel,
-                String endLabel ) {
-        this.catchRegister = -1;
-        this.catchVarName  = catchVarName;
-        this.catchLabel    = catchLabel;
-        this.finallyLabel  = finallyLabel;
-        this.endLabel      = endLabel;
+    public Try( String catchVarName ) {
+        this.catchRegister   = -1;
+        this.catchVarName    = catchVarName;
     }
         
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReferences() */
     @Override
     public String[] labelReferences() {
-        if( catchLabel != null && finallyLabel != null ) {
-            return new String[] { catchLabel, finallyLabel, endLabel };
+        if( endCatchLabel != null && endFinallyLabel != null ) {
+            return new String[] { endCatchLabel, endFinallyLabel, endTryLabel };
         }
 
-        if( catchLabel != null ) {
-            return new String[] { catchLabel, endLabel };
+        if( endCatchLabel != null ) {
+            return new String[] { endCatchLabel, endTryLabel };
         }
 
-        if( finallyLabel != null ) {
-            return new String[] { finallyLabel, endLabel };
+        if( endFinallyLabel != null ) {
+            return new String[] { endFinallyLabel, endTryLabel };
         }
 
-        return new String[] { endLabel };
+        return new String[] { endTryLabel };
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
@@ -85,12 +71,51 @@ public class Try extends AVM1Operation {
                                   block._try( catchRegister ) :
                                   block._try( catchVarName );
         
-        tryBlock.write( tcf.tryBlock() );
-        
-        if( catchBlock.count()   > 0 ) catchBlock.write  ( tcf.catchBlock() );
-        if( finallyBlock.count() > 0 ) finallyBlock.write( tcf.finallyBlock() );
+        String endLabel = null;                                  
                                   
+        SWFActionBlock tryBlock = tcf.tryBlock();
+        for( AVM1Operation op = next(); op != null; op = op.next() ) {
+            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endTryLabel ) ) {
+                endLabel = ((JumpLabel) op).label;
+                break;
+            }
+             
+            op.write( tryBlock );
+        }          
+        tryBlock.end();
+                                  
+        if( endCatchLabel != null ) {
+            SWFActionBlock catchBlock = tcf.catchBlock();
+            catchBlock.jumpLabel( endLabel );
+            
+            for( AVM1Operation op = next(); op != null; op = op.next() ) {
+                if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endCatchLabel ) ) {
+                    endLabel = ((JumpLabel) op).label;
+                    break;
+                }
+                 
+                op.write( catchBlock );
+            }          
+            catchBlock.end();                                              
+        }
+
+        if( endFinallyLabel != null ) {
+            SWFActionBlock finallyBlock = tcf.finallyBlock();
+            finallyBlock.jumpLabel( endLabel );
+
+            for( AVM1Operation op = next(); op != null; op = op.next() ) {
+                if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endFinallyLabel ) ) {
+                    endLabel = ((JumpLabel) op).label;
+                    break;
+                }
+                 
+                op.write( finallyBlock );
+            }          
+            finallyBlock.end();                                              
+        }
+        
         tcf.endTry();
+        block.jumpLabel( endLabel );
     }
     
     /**
@@ -99,15 +124,54 @@ public class Try extends AVM1Operation {
     public void print( ActionTextWriter writer ) throws IOException {
 
         TryCatchFinally tcf = ( catchVarName == null ) ? 
-                                    writer._try( catchRegister ) :
-                                    writer._try( catchVarName );
+                writer._try( catchRegister ) :
+                writer._try( catchVarName );
 
-        tryBlock.print( (ActionTextWriter) tcf.tryBlock() );
+        String endLabel = null;                                  
         
-        if( catchBlock.count()   > 0 ) catchBlock.print  ( (ActionTextWriter) tcf.catchBlock() );
-        if( finallyBlock.count() > 0 ) finallyBlock.print( (ActionTextWriter) tcf.finallyBlock() );
+        tcf.tryBlock();
+        for( AVM1Operation op = next(); op != null; op = op.next() ) {
+            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endTryLabel ) ) {
+                endLabel = ((JumpLabel) op).label;
+                break;
+            }
+             
+            op.print( writer );
+        }          
+        writer.end();
                                   
-        tcf.endTry();                          
+        if( endCatchLabel != null ) {
+            tcf.catchBlock();
+            writer.jumpLabel( endLabel );
+            
+            for( AVM1Operation op = next(); op != null; op = op.next() ) {
+                if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endCatchLabel ) ) {
+                    endLabel = ((JumpLabel) op).label;
+                    break;
+                }
+                 
+                op.print( writer );
+            }          
+            writer.end();                                              
+        }
+
+        if( endFinallyLabel != null ) {
+            tcf.finallyBlock();
+            writer.jumpLabel( endLabel );
+
+            for( AVM1Operation op = next(); op != null; op = op.next() ) {
+                if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endFinallyLabel ) ) {
+                    endLabel = ((JumpLabel) op).label;
+                    break;
+                }
+                 
+                op.print( writer );
+            }          
+            writer.end();                                              
+        }
+        
+        tcf.endTry();
+        writer.jumpLabel( endLabel );        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */
