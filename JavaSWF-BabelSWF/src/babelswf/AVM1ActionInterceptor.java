@@ -83,7 +83,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
             @Override
             protected void afterFramesAdded( int frameCount ) {
                 AVM2Code cons = constructor();
-                cons.getLocal( 0 );
+                cons.getLocal( cons.thisValue );
                 cons.pushInt( frameCount );
                 cons.callPropVoid( BabelSWFRuntime.FRAMES_POST_CALL, 1 );
             }
@@ -228,7 +228,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
             @Override
             protected void afterFramesAdded( int frameCount ) {
                 AVM2Code cons = constructor();
-                cons.getLocal( 0 );
+                cons.getLocal( cons.thisValue );
                 cons.pushInt( frameCount );
                 cons.callPropVoid( BabelSWFRuntime.FRAMES_POST_CALL, 1 );
             }

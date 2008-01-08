@@ -39,7 +39,6 @@ public class FrameActions  {
      */
     private void translate( AVM1ActionBlock block ) {        
         AVM2Code code = clip.addFrame( frameNumber );
-        code.setReservedRegisters( 4 ); //TODO - is this right .. frame code only allows 4 regs ?
         
         try {
             block.print( IndentingPrintWriter.SYSOUT );

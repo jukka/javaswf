@@ -38,7 +38,6 @@ public class InitActions {
      */
     private void translate( AVM1ActionBlock block ) {        
         AVM2Code code = clip.initializer();
-        code.setReservedRegisters( 4 ); //TODO - is this right .. init code only allows 4 regs ?
         
         try {
             block.print( IndentingPrintWriter.SYSOUT );

@@ -439,10 +439,11 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStoreInRegister(com.anotherbigidea.flash.avm1.ops.StoreInRegister) */
     public void visitStoreInRegister(StoreInRegister op) {
-        op.visitAggregated( this );
-        code.dup();
-        code.killLocal( op.registerNumber ); //to make sure AVM2 verifier doesn't object
-        code.setLocal( op.registerNumber );
+        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+//        op.visitAggregated( this );
+//        code.dup();
+//        code.killLocal( op.registerNumber ); //to make sure AVM2 verifier doesn't object
+//        code.setLocal( op.registerNumber );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStringValue(com.anotherbigidea.flash.avm1.ops.ConstantOp.StringValue) */
@@ -476,7 +477,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTrace(com.anotherbigidea.flash.avm1.ops.Trace) */
     public void visitTrace(Trace op) {
-        code.getLocal( 0 );
+        code.getLocal( code.thisValue );
         op.visitAggregated( this );
         code.callPropVoid( BabelSWFRuntime.TRACE_METHOD, 1 );
     }
