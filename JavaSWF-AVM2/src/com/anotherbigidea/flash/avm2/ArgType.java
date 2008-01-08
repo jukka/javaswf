@@ -2,6 +2,7 @@ package com.anotherbigidea.flash.avm2;
 
 import java.io.IOException;
 
+import org.epistem.code.LocalValue;
 import org.epistem.io.InStream;
 import org.epistem.io.OutStream;
 
@@ -155,16 +156,23 @@ public enum ArgType {
             case NAME_INDEX:
             case ARG_COUNT:
             case KEY_VALUE_COUNT:    
-            case REGISTER:
-            case TARGET_REGISTER:
-            case INDEX_REGISTER:
             case METHOD_ID:
             case DOUBLE_INDEX:
             case SHORT:    
                 if( !( value instanceof Number)) throw new IOException( "Op arg must be a number" );
                 out.writeVU30( ((Number) value).intValue() );
                 return;
-            
+
+            case REGISTER:
+            case TARGET_REGISTER:
+            case INDEX_REGISTER:
+                if( value instanceof LocalValue ) {
+                    value = ((LocalValue<?>) value).allocatedRegister;
+                }
+                if( !( value instanceof Number)) throw new IOException( "Op arg must be a number" );
+                out.writeVU30( ((Number) value).intValue() );
+                return;
+                
             case DISP_ID:
             case SLOT_ID: 
                 if( !( value instanceof Number)) throw new IOException( "Op arg must be a number" );

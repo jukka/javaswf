@@ -240,8 +240,8 @@ public interface ABC extends PipelineInterface {
         public void debug( );
         public void debugfile( int string_index );
         public void debugline( int line_number );
-        public void declocal( );
-        public void declocal_i( );
+        public void declocal( int register );
+        public void declocal_i( int register );
         public void decrement( );
         public void decrement_i( );
         public void deleteproperty( int name_index );

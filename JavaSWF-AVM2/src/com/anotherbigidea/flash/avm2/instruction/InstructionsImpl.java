@@ -225,14 +225,14 @@ public abstract class InstructionsImpl implements ABC.Instructions {
         if( instructions != null ) instructions. debugline( line_number );
     }
 
-    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#declocal_i() */
-    public void declocal_i() {
-        if( instructions != null ) instructions. declocal_i();
+    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#declocal_i(int) */
+    public void declocal_i( int register ) {
+        if( instructions != null ) instructions. declocal_i( register );
     }
 
-    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#declocal() */
-    public void declocal() {
-        if( instructions != null ) instructions. declocal();
+    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#declocal(int) */
+    public void declocal( int register ) {
+        if( instructions != null ) instructions. declocal( register );
     }
 
     /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#decrement_i() */

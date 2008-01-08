@@ -1,5 +1,6 @@
 package com.anotherbigidea.flash.avm2.model;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -86,7 +87,7 @@ public class AVM2MovieClip {
 	 * @param frameNumber the zero-based frame number
 	 * @return the wrapper for adding code to the frame script
 	 */
-	public final AVM2Code addFrame( int frameNumber, int reservedRegisters ) {
+	public final AVM2Code addFrame( int frameNumber ) {
 	    AVM2Method frameMethod = new AVM2Method( null, null );
 	    AVM2QName name = new AVM2QName( packageInternal, "frame" + (frameNumber+1));
 	    avm2Class.traits.addMethod( name, frameMethod, false, false );

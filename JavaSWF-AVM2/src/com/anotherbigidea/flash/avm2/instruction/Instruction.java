@@ -3,12 +3,9 @@ package com.anotherbigidea.flash.avm2.instruction;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.epistem.code.LocalValue;
 import org.epistem.io.InStream;
 import org.epistem.io.IndentingPrintWriter;
 import org.epistem.io.OutStream;
@@ -16,6 +13,7 @@ import org.epistem.io.OutStream;
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.ArgType;
 import com.anotherbigidea.flash.avm2.Operation;
+import com.anotherbigidea.flash.avm2.instruction.AVM2CodeAnalyzer.Frame;
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
 
 /**
@@ -36,7 +34,7 @@ public class Instruction {
     
     /** The instruction arguments */
     public final Object[]  arguments;
-    
+
     /**
      * Get the previous instruction
      * @return null if this is the first instruction
@@ -367,6 +365,56 @@ public class Instruction {
     }
     
     /**
+     * Get the locals referenced by the instruction
+     * 
+     * @param locals the collection to add the locals to
+     */
+    public void gatherReferencedLocals( Collection<LocalValue<Instruction>> locals ) {
+        for( Object arg : arguments ) {
+            if( arg instanceof LocalValue ) {
+                
+                @SuppressWarnings( "unchecked" )
+                LocalValue<Instruction> local = (LocalValue<Instruction>) arg; 
+
+                //--setters
+                switch( operation ) {
+                    case OP_declocal :  
+                    case OP_declocal_i : 
+                    case OP_hasnext2 :  
+                    case OP_inclocal :  
+                    case OP_inclocal_i :  
+                    case OP_kill :  
+                    case OP_setlocal :  
+                    case OP_setlocal0 :  
+                    case OP_setlocal1 :  
+                    case OP_setlocal2 :  
+                    case OP_setlocal3 : 
+                        local.setters.add( this );
+                        break;
+                }                
+
+                //--getters
+                switch( operation ) {
+                    case OP_declocal :  
+                    case OP_declocal_i : 
+                    case OP_hasnext2 :  
+                    case OP_inclocal :  
+                    case OP_inclocal_i :  
+                    case OP_getlocal :  
+                    case OP_getlocal0 :  
+                    case OP_getlocal1 :  
+                    case OP_getlocal2 :  
+                    case OP_getlocal3 :  
+                        local.getters.add( this );
+                        break;
+                }                
+                
+                locals.add( local );
+            }
+        }        
+    }   
+    
+    /**
      * Initialize a write-context
      */
     public void initPool( AVM2ABCFile.WriteContext context ) {
@@ -446,8 +494,8 @@ public class Instruction {
             case OP_debug : instrs.debug( ); break;
             case OP_debugfile : instrs.debugfile( (Integer) arguments[0] ); break;
             case OP_debugline : instrs.debugline( (Integer) arguments[0] ); break;
-            case OP_declocal : instrs.declocal( ); break;
-            case OP_declocal_i : instrs.declocal_i( ); break;
+            case OP_declocal : instrs.declocal( reg( arguments[0]) ); break;
+            case OP_declocal_i : instrs.declocal_i( reg( arguments[0]) ); break;
             case OP_decrement : instrs.decrement( ); break;
             case OP_decrement_i : instrs.decrement_i( ); break;
             case OP_deleteproperty : instrs.deleteproperty( (Integer) arguments[0] ); break;
@@ -465,7 +513,7 @@ public class Instruction {
             case OP_getglobalscope : instrs.getglobalscope( ); break;
             case OP_getglobalslot : instrs.getglobalslot( (Integer) arguments[0] ); break;
             case OP_getlex : instrs.getlex( (Integer) arguments[0] ); break;
-            case OP_getlocal : instrs.getlocal( (Integer) arguments[0] ); break;
+            case OP_getlocal : instrs.getlocal( reg( arguments[0]) ); break;
             case OP_getlocal0 : instrs.getlocal0( ); break;
             case OP_getlocal1 : instrs.getlocal1( ); break;
             case OP_getlocal2 : instrs.getlocal2( ); break;
@@ -477,7 +525,7 @@ public class Instruction {
             case OP_greaterequals : instrs.greaterequals( ); break;
             case OP_greaterthan : instrs.greaterthan( ); break;
             case OP_hasnext : instrs.hasnext( ); break;
-            case OP_hasnext2 : instrs.hasnext2( (Integer) arguments[0], (Integer) arguments[1] ); break;
+            case OP_hasnext2 : instrs.hasnext2( reg( arguments[0]), reg( arguments[1]) ); break;
             case OP_ifeq : instrs.ifeq( (Integer) arguments[0] ); break;
             case OP_iffalse : instrs.iffalse( (Integer) arguments[0] ); break;
             case OP_ifge : instrs.ifge( (Integer) arguments[0] ); break;
@@ -493,8 +541,8 @@ public class Instruction {
             case OP_ifstrictne : instrs.ifstrictne( (Integer) arguments[0] ); break;
             case OP_iftrue : instrs.iftrue( (Integer) arguments[0] ); break;
             case OP_in : instrs.in( ); break;
-            case OP_inclocal : instrs.inclocal( (Integer) arguments[0] ); break;
-            case OP_inclocal_i : instrs.inclocal_i( (Integer) arguments[0] ); break;
+            case OP_inclocal : instrs.inclocal( reg( arguments[0]) ); break;
+            case OP_inclocal_i : instrs.inclocal_i( reg( arguments[0]) ); break;
             case OP_increment : instrs.increment( ); break;
             case OP_increment_i : instrs.increment_i( ); break;
             case OP_initproperty : instrs.initproperty( (Integer) arguments[0] ); break;
@@ -502,7 +550,7 @@ public class Instruction {
             case OP_istype : instrs.istype( (Integer) arguments[0] ); break;
             case OP_istypelate : instrs.istypelate( ); break;
             case OP_jump : instrs.jump( (Integer) arguments[0] ); break;
-            case OP_kill : instrs.kill( (Integer) arguments[0] ); break;
+            case OP_kill : instrs.kill( reg( arguments[0]) ); break;
             case OP_label : instrs.label( ); break;
             case OP_lessequals : instrs.lessequals( ); break;
             case OP_lessthan : instrs.lessthan( ); break;
@@ -543,7 +591,7 @@ public class Instruction {
             case OP_returnvoid : instrs.returnvoid( ); break;
             case OP_rshift : instrs.rshift( ); break;
             case OP_setglobalslot : instrs.setglobalslot( (Integer) arguments[0] ); break;
-            case OP_setlocal : instrs.setlocal( (Integer) arguments[0] ); break;
+            case OP_setlocal : instrs.setlocal( reg( arguments[0]) ); break;
             case OP_setlocal0 : instrs.setlocal0( ); break;
             case OP_setlocal1 : instrs.setlocal1( ); break;
             case OP_setlocal2 : instrs.setlocal2( ); break;
@@ -561,5 +609,14 @@ public class Instruction {
             case OP_urshift : instrs.urshift( ); break;        
             default: throw new RuntimeException( "Unknown operation " + operation );        
         }
+    }
+    
+    /**
+     * Unwrap a register allocation
+     */
+    private static int reg( Object arg ) {
+        if( arg instanceof Number ) return ((Number) arg).intValue();
+        if( arg instanceof LocalValue ) return ((LocalValue<Instruction>) arg).allocatedRegister;        
+        throw new RuntimeException( "Register arg must be number or allocation" );
     }
 }

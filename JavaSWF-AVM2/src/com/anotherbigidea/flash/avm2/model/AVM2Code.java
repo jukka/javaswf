@@ -2,15 +2,15 @@ package com.anotherbigidea.flash.avm2.model;
 
 import static com.anotherbigidea.flash.avm2.Operation.*;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import org.epistem.code.LocalValue;
 
 import com.anotherbigidea.flash.avm2.MethodInfoFlags;
 import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.instruction.Instruction;
 import com.anotherbigidea.flash.avm2.instruction.InstructionList;
-import com.anotherbigidea.flash.avm2.instruction.CodeAnalyzer;
+import com.anotherbigidea.flash.avm2.instruction.AVM2CodeAnalyzer;
 
 
 /**
@@ -25,29 +25,39 @@ public final class AVM2Code {
 	private final InstructionList instructions;
 	private Map<String, Integer> labelInts;
 	private int labelIndex = 0;
+
+	private final Set<Integer> reservedRegisters;
 	
-	//--the register that holds the "this" object
-	private int thisRegister = 0;
-	
-	//--the number of registers reserved for normal operations, the registers
-	//  above this may be used for temporary purposes.
-	private final int reservedRegisters;
+	/**
+	 * The local value representing the "this" value
+	 */
+	public final LocalValue<Instruction> thisValue = new LocalValue<Instruction>(0);
 	
 	/**
 	 * @param body the method/script body to wrap
+	 * @param reservedRegisters the set of registers to reserve
 	 */
-	public AVM2Code( AVM2MethodBody body, int reservedRegisters ) {
+	public AVM2Code( AVM2MethodBody body, Set<Integer> reservedRegisters ) {
 		this.body              = body;
 		this.instructions      = body.instructions;
 		this.reservedRegisters = reservedRegisters;
 	}
+
+    /**
+     * Reserve register zero
+     * 
+     * @param body the method/script body to wrap
+     */
+    public AVM2Code( AVM2MethodBody body ) {
+        this( body, Collections.singleton( 0 ));
+    }
 
 	/**
 	 * Calculate and set the max-registers, max-stack, and max-scope for the
 	 * method body, given the current instructions
 	 */
 	public void calcMaxes() {
-	    new CodeAnalyzer( body ).analyze();
+	    new AVM2CodeAnalyzer( body ).analyze( reservedRegisters );
 	}
 	
 	/**
@@ -167,24 +177,35 @@ public final class AVM2Code {
     }
     
     /**
+     * Create a new local value instance
+     */
+    public LocalValue<Instruction> newLocal() {
+        return new LocalValue<Instruction>();
+    }
+    
+    /**
      * Set a member of an object - if the object is undefined then the operation
      * does nothing.  Value, name then object are on the stack. 
      */
     public void setMember_Safe() {
         // stack is: value|name|object|..
         
-        int tempReg = reservedRegisters;
+        LocalValue<Instruction> tempReg1 = newLocal();
+        LocalValue<Instruction> tempReg2 = newLocal();
+
+        killLocal( tempReg1 );
+        killLocal( tempReg2 );
         
-        setLocal( tempReg   );  // -> n|o|..
-        setLocal( tempReg+1 );  // -> o|..
-        dup();                  // -> o|o..
-        pushUndefined();        // -> undefined|o|o..
+        setLocal( tempReg1 );  // -> n|o|..
+        setLocal( tempReg2 );  // -> o|..
+        dup();                 // -> o|o..
+        pushUndefined();       // -> undefined|o|o..
         
         String ifundefined = newLabel();
         ifstricteq( ifundefined );  // -> o|..
         
-        getLocal( tempReg+1 ); // -> n|o|..
-        getLocal( tempReg   ); // -> v|n|o|..
+        getLocal( tempReg2 ); // -> n|o|..
+        getLocal( tempReg1 ); // -> v|n|o|..
         
         instructions.append( OP_setproperty, AVM2LateMultiname.EMPTY_PACKAGE );
 
@@ -197,8 +218,6 @@ public final class AVM2Code {
         
         target( exit );
         label();        
-        killLocal( tempReg   );
-        killLocal( tempReg+1 );
     }
     
     /**
@@ -220,21 +239,21 @@ public final class AVM2Code {
      * object is in register zero.
      */
     public void setLocalVariable() {
-        int tempReg = reservedRegisters;
+        LocalValue<Instruction> tempReg = newLocal();
                 
-        setLocal( tempReg );  //value,name,.. -> name,...
-        getLocal( 0 );        // -> object,name,...
-        swap();               // -> name,object,...
-        getLocal( tempReg );  // -> value,name.object,...
-        instructions.append( OP_setproperty, AVM2LateMultiname.EMPTY_PACKAGE );
         killLocal( tempReg );
+        setLocal( tempReg );   //value,name,.. -> name,...
+        getLocal( thisValue ); // -> object,name,...
+        swap();                // -> name,object,...
+        getLocal( tempReg );   // -> value,name.object,...
+        instructions.append( OP_setproperty, AVM2LateMultiname.EMPTY_PACKAGE );
     }
     
     /**
      * Set the "this" variable to point at the item in local register zero
      */
     public void setThis() {
-        getLocal( 0 );
+        getLocal( thisValue );
         dup();
         setProperty( "this" );
     }
@@ -249,8 +268,8 @@ public final class AVM2Code {
     /**
      * Kill a local variable
      */
-    public void killLocal( int index ) {
-        instructions.append( OP_kill, index );
+    public void killLocal( LocalValue<Instruction> local ) {
+        instructions.append( OP_kill, local );
     }
     
 	/**
@@ -272,28 +291,28 @@ public final class AVM2Code {
 	/**
 	 * Increment a local register as an int
 	 */
-	public void incLocal_i( int local ) {
+	public void incLocal_i( LocalValue<Instruction> local ) {
 	    instructions.append( OP_inclocal_i, local );
 	}
 
     /**
      * Increment a local register as a number
      */
-    public void incLocal( int local ) {
+    public void incLocal( LocalValue<Instruction> local ) {
         instructions.append( OP_inclocal, local );
     }
 
     /**
      * Decrement a local register as an int
      */
-    public void decLocal_i( int local ) {
+    public void decLocal_i( LocalValue<Instruction> local ) {
         instructions.append( OP_declocal_i, local );
     }
 
     /**
      * Decrement a local register as a number
      */
-    public void decLocal( int local ) {
+    public void decLocal( LocalValue<Instruction> local ) {
         instructions.append( OP_declocal, local );
     }
 
@@ -685,7 +704,7 @@ public final class AVM2Code {
 	 * Set up the initial scope for a script or method
 	 */
 	public void setupInitialScope() {
-		getLocal( 0 );
+		getLocal( thisValue );
 		pushScope();
 	}
 
@@ -694,7 +713,7 @@ public final class AVM2Code {
      * that dynamic properties can be found).  Also set up the "this" var.
      */
     public void setupDynamicScope() {
-        getLocal( 0 );
+        getLocal( thisValue );
         dup();
         pushWith();
         dup();
@@ -724,30 +743,17 @@ public final class AVM2Code {
 	
 	/**
 	 * Push a local register
-	 * @param index the register index
 	 */
-	public void getLocal( int index ) {
-		switch( index ) {
-			case 0:  instructions.append( OP_getlocal0 ); break;
-			case 1:  instructions.append( OP_getlocal1 ); break;
-			case 2:  instructions.append( OP_getlocal2 ); break;
-			case 3:  instructions.append( OP_getlocal3 ); break;
-			default: instructions.append( OP_getlocal, index ); break;
-		}
+	public void getLocal( LocalValue<Instruction> local ) {
+	    instructions.append( OP_getlocal, local );
 	}
 
 	/**
 	 * Set a local register
 	 * @param index the register index
 	 */
-	public void setLocal( int index ) {
-		switch( index ) {
-			case 0:  instructions.append( OP_setlocal0 ); break;
-			case 1:  instructions.append( OP_setlocal1 ); break;
-			case 2:  instructions.append( OP_setlocal2 ); break;
-			case 3:  instructions.append( OP_setlocal3 ); break;
-			default: instructions.append( OP_setlocal, index ); break;
-		}
+	public void setLocal( LocalValue<Instruction> local ) {
+        instructions.append( OP_setlocal, local );
 	}
 	
 	/** 
@@ -841,10 +847,10 @@ public final class AVM2Code {
 		AVM2MethodBody body = cons.methodBody;
 		body.scopeDepth = avm2Class.staticInitializer.methodBody.scopeDepth + 1;
 			
-		AVM2Code code = new AVM2Code( body );
+		AVM2Code code = new AVM2Code( body, Collections.singleton( 0 ) );
 		code.setupDynamicScope();
 		
-		code.getLocal( 0 );
+		code.getLocal( code.thisValue );
 
 		int argCount = 0;
 		if( superArg != null ) {
@@ -863,7 +869,7 @@ public final class AVM2Code {
      * 
      * @return the wrapper for adding to the initializer
      */
-    public static AVM2Code startStaticInitializer( AVM2Class avm2Class, int classScopeDepth, int reservedRegisters ) {
+    public static AVM2Code startStaticInitializer( AVM2Class avm2Class, int classScopeDepth ) {
         
         AVM2Method staticInit = avm2Class.staticInitializer = 
             new AVM2Method( null, EnumSet.noneOf( MethodInfoFlags.class ));
@@ -871,7 +877,7 @@ public final class AVM2Code {
         AVM2MethodBody initBody = staticInit.methodBody;
         initBody.scopeDepth = classScopeDepth;
 
-        AVM2Code code = new AVM2Code( initBody );
+        AVM2Code code = new AVM2Code( initBody, Collections.singleton( 0 ) );
         code.setupDynamicScope();
         
         return code;
@@ -891,7 +897,7 @@ public final class AVM2Code {
         AVM2MethodBody initBody = staticInit.methodBody;
         initBody.scopeDepth = classScopeDepth;
 
-        AVM2Code code = new AVM2Code( initBody, 1 );
+        AVM2Code code = new AVM2Code( initBody, Collections.singleton( 0 ) );
         code.setupInitialScope();
         code.returnVoid();
         code.calcMaxes();
@@ -909,10 +915,10 @@ public final class AVM2Code {
      * 
      * @param abc the ABC file to add the script to
      */
-    public static AVM2Code standaloneScript( AVM2ABCFile abc, int reservedRegisters ) {
+    public static AVM2Code standaloneScript( AVM2ABCFile abc ) {
         AVM2Script script = abc.prependScript();
         script.script.methodBody.scopeDepth = 1;
-        AVM2Code code = new AVM2Code( script.script.methodBody, reservedRegisters );
+        AVM2Code code = new AVM2Code( script.script.methodBody, Collections.singleton( 0 ) );
         code.setupInitialScope();
         return code;
     }
@@ -935,7 +941,7 @@ public final class AVM2Code {
             AVM2MethodBody body   = script.script.methodBody;
             body.scopeDepth = 1;
 
-            code = new AVM2Code( body, 1 );
+            code = new AVM2Code( body, Collections.singleton( 0 ) );
             code.setupInitialScope();
             code.getScopeObject( 0 );
             
