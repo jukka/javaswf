@@ -34,4 +34,12 @@ public interface InstructionAdaptor<INSTRUCTION_TYPE,FRAME_TYPE> {
      * @param locals the collection to add the locals to
      */
     public void gatherReferencedLocals( INSTRUCTION_TYPE instruction, Collection<LocalValue<INSTRUCTION_TYPE>> locals );
+    
+    /**
+     * Notification of the last instruction in the lifespan of a local value
+     * 
+     * @param instruction the last instruction where the local value is alive
+     * @param local the local value
+     */
+    public void endOfLocalLifespan( INSTRUCTION_TYPE instruction, LocalValue<INSTRUCTION_TYPE> local );
 }

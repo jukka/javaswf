@@ -90,7 +90,31 @@ public class RegisterAllocator<INSTRUCTION_TYPE,FRAME_TYPE> {
             }
         }
         
+        //--notify the adaptor of lifespan ends
+        for( InterferenceNode<INSTRUCTION_TYPE> inode : inodes ) {
+            notifyOfLifespanEnds( inode );
+        }
+        
         return inodes;
+    }
+    
+    private void notifyOfLifespanEnds( InterferenceNode<INSTRUCTION_TYPE> inode ) {
+
+        for( INSTRUCTION_TYPE instruction : inode.local.getters ) {
+            InstructionNode<INSTRUCTION_TYPE, FRAME_TYPE> node = cfg.nodes.get( instruction );
+  
+            //check each downstream instruction to see if the value is alive there
+            boolean isAlive = false;
+            for( InstructionNode<INSTRUCTION_TYPE, FRAME_TYPE> next : node.outgoingEdges.keySet() ) {
+                Set<InterferenceNode<INSTRUCTION_TYPE>> values = aliveValues.get( next );
+                                
+                isAlive |=  (values != null) && values.contains( inode );
+            }
+            
+            if( ! isAlive ) {
+                cfg.adaptor.endOfLocalLifespan( instruction, inode.local );
+            }            
+        }
     }
     
     /**

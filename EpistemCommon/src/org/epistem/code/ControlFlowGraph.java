@@ -16,7 +16,7 @@ public class ControlFlowGraph<INSTRUCTION_TYPE,FRAME_TYPE> {
         new HashMap<INSTRUCTION_TYPE, InstructionNode<INSTRUCTION_TYPE,FRAME_TYPE>>();
     
     private final InstructionNode<INSTRUCTION_TYPE, FRAME_TYPE> firstNode;
-    private final InstructionAdaptor<INSTRUCTION_TYPE,FRAME_TYPE> adaptor;
+    final InstructionAdaptor<INSTRUCTION_TYPE,FRAME_TYPE> adaptor;
     
     final Set<LocalValue<INSTRUCTION_TYPE>> locals = new HashSet<LocalValue<INSTRUCTION_TYPE>>();
     
