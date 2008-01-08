@@ -1,93 +1,9 @@
-signature: FWS
-header: version=9 length=1113 width=11000 height=8000 rate=12 frame-count=1
+signature: CWS
+header: version=9 length=1174 width=11000 height=8000 rate=12 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 ABC File 'javaswf' lazy-initialization
 abc-file {
-  [1] dynamic class testfla_swf.MainTimeline {
-    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
-    protected-namespace ProtectedNamespace(testfla_swf:MainTimeline)
-
-    constructor: method  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1073741823
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              getlocal 0
-              pushstring "testfla.swf"
-              constructsuper 1
-              getglobalscope
-              dup
-              setproperty _global
-              findpropstrict addFrameScript
-              pushbyte 0
-              getlex Qname:PackageInternalNamespace(testfla_swf)::frame1
-              callpropvoid addFrameScript 2
-              getlocal 0
-              pushbyte 1
-              callpropvoid babelswf_framesAdded 1
-              returnvoid
-
-      }
-    }
-
-    static initializer: method  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1073741823
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              returnvoid
-
-      }
-    }
-
-    Qname:PackageInternalNamespace(testfla_swf)::frame1 [?] method  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1073741823
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              getlocal 0
-              pushstring "hello world"
-              callpropvoid babelswf_trace 1
-              returnvoid
-
-      }
-    }
-  }
-
   [0] sealed class babelswf.BaseMovieClip {
     extends Qname:PackageNamespace(flash.display)::MovieClip
     protected-namespace ProtectedNamespace(babelswf:BaseMovieClip)
@@ -248,6 +164,132 @@ abc-file {
     }
   }
 
+  [1] dynamic class testfla_swf.MainTimeline {
+    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
+    protected-namespace ProtectedNamespace(testfla_swf:MainTimeline)
+
+    constructor: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              getlocal 0
+              pushstring "testfla.swf"
+              constructsuper 1
+              getglobalscope
+              dup
+              setproperty _global
+              findpropstrict addFrameScript
+              pushbyte 0
+              getlex Qname:PackageInternalNamespace(testfla_swf)::frame1
+              callpropvoid addFrameScript 2
+              getlocal 0
+              kill 0
+              pushbyte 1
+              callpropvoid babelswf_framesAdded 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              returnvoid
+
+      }
+    }
+
+    Qname:PackageInternalNamespace(testfla_swf)::frame1 [?] method  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 4
+        max-registers: 2
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              pushstring "i"
+              pushbyte 1
+              setlocal 1
+              getlocal 0
+              swap
+              getlocal 1
+              kill 1
+              setproperty MultinameL:{ Public }
+        22  : label
+              pushstring "i"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              pushbyte 10
+              greaterthan
+              not
+              not
+              iftrue 83
+              getlocal 0
+              pushstring "iteration "
+              pushstring "i"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              add
+              callpropvoid babelswf_trace 1
+              pushstring "i"
+              pushstring "i"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              convert_d
+              increment
+              setlocal 1
+              getlocal 0
+              swap
+              getlocal 1
+              kill 1
+              setproperty MultinameL:{ Public }
+              jump 22
+        83  : label
+              returnvoid
+
+      }
+    }
+  }
+
   script {
     Qname:PackageNamespace(testfla_swf)::MainTimeline [0] class = Qname:PackageNamespace(testfla_swf)::MainTimeline
 
@@ -257,8 +299,8 @@ abc-file {
       parameters (
       )
       body {
-        max-stack    : 10
-        max-registers: 1073741823
+        max-stack    : 2
+        max-registers: 1
         max-scope    : 10
         scope-depth  : 1
 
