@@ -193,9 +193,6 @@ public final class AVM2Code {
         LocalValue<Instruction> tempReg1 = newLocal();
         LocalValue<Instruction> tempReg2 = newLocal();
 
-        killLocal( tempReg1 );
-        killLocal( tempReg2 );
-        
         setLocal( tempReg1 );  // -> n|o|..
         setLocal( tempReg2 );  // -> o|..
         dup();                 // -> o|o..
@@ -241,7 +238,6 @@ public final class AVM2Code {
     public void setLocalVariable() {
         LocalValue<Instruction> tempReg = newLocal();
                 
-        killLocal( tempReg );
         setLocal( tempReg );   //value,name,.. -> name,...
         getLocal( thisValue ); // -> object,name,...
         swap();                // -> name,object,...

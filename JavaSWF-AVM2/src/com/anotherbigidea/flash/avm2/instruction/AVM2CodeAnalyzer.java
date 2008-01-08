@@ -1,12 +1,12 @@
 package com.anotherbigidea.flash.avm2.instruction;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 import org.epistem.code.ControlFlowGraph;
 import org.epistem.code.InstructionAdaptor;
 import org.epistem.code.LocalValue;
 
+import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.model.AVM2ExceptionHandler;
 import com.anotherbigidea.flash.avm2.model.AVM2MethodBody;
 
@@ -19,11 +19,13 @@ import com.anotherbigidea.flash.avm2.model.AVM2MethodBody;
  */
 public class AVM2CodeAnalyzer {
     
-    private int maxReg   = 0;
     private int maxStack = 0;
     private int maxScope = 0;
     
     private ControlFlowGraph<Instruction,Frame> cfGraph;
+    
+    private Map<LocalValue<Instruction>,Set<Instruction>> valueLifespanEnds =
+        new HashMap<LocalValue<Instruction>,Set<Instruction>>();
     
     /**
      * The frame state at a given point
@@ -58,7 +60,21 @@ public class AVM2CodeAnalyzer {
         body.maxScope = body.scopeDepth + maxScope;
         body.maxStack = maxStack;
         
-        cfGraph.allocateRegisters( reservedRegisters );
+        body.maxRegisters = 1 + cfGraph.allocateRegisters( reservedRegisters );
+        killValues();
+    }
+    
+    /**
+     * Insert kill instructions after the final instruction in local value
+     * lifespans to make the AVM2 verifier less cranky about conflicting
+     * types in registers.
+     */
+    private void killValues() {
+        for( LocalValue<Instruction> value : valueLifespanEnds.keySet() ) {
+            for( Instruction death : valueLifespanEnds.get( value ) ) {
+                body.instructions.insertAfter( new Instruction( Operation.OP_kill, value ), death );
+            }
+        }
     }
     
     private ControlFlowGraph<Instruction,Frame> buildGraph() {
@@ -100,7 +116,7 @@ public class AVM2CodeAnalyzer {
             
             Frame out = new Frame(
                 maxFrameScope + instruction.getScopePushCount() - instruction.getScopePopCount(),
-                maxFrameScope + instruction.getPushCount() - instruction.getPopCount()
+                maxFrameStack + instruction.getPushCount() - instruction.getPopCount()
             );
             
             maxScope = Math.max( maxScope, out.scopeStack );
@@ -117,6 +133,19 @@ public class AVM2CodeAnalyzer {
         /** @see org.epistem.code.InstructionAdaptor#gatherReferencedLocals(java.lang.Object, java.util.Collection) */
         public void gatherReferencedLocals( Instruction instruction, Collection<LocalValue<Instruction>> locals ) {
             instruction.gatherReferencedLocals( locals );            
+        }
+
+        /** @see org.epistem.code.InstructionAdaptor#endOfLocalLifespan(java.lang.Object, org.epistem.code.LocalValue) */
+        public void endOfLocalLifespan(Instruction instruction, LocalValue<Instruction> local) {
+            
+            //save the value life ends for later kill insertion
+            Set<Instruction> lifeEnds = valueLifespanEnds.get( local );
+            if( lifeEnds == null ) {
+                lifeEnds = new HashSet<Instruction>();
+                valueLifespanEnds.put( local, lifeEnds );
+            }
+            
+            lifeEnds.add( instruction );
         }        
     }
 }
