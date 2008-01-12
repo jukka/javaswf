@@ -1,0 +1,311 @@
+signature: CWS
+header: version=9 length=817 width=11000 height=8000 rate=12 frame-count=1
+file-attributes allow-as3
+background-color  RGB(255,255,255)
+Tag 86 length=11
+    00000000 01 00 53 63 65 6e 65 20 31 00 00 -- -- -- -- -- ..Scene 1..     
+---------------
+ABC File '' lazy-initialization
+abc-file {
+  [1] sealed class test.SpriteMC {
+    extends Qname:PackageNamespace(flash.display)::MovieClip
+    protected-namespace ProtectedNamespace(test:SpriteMC)
+
+    constructor: method[4]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              findpropstrict trace
+              pushstring "in SpriteMC constructor"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[3]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 9
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [0] sealed class test.MainMC {
+    extends Qname:PackageNamespace(flash.display)::MovieClip
+    protected-namespace ProtectedNamespace(test:MainMC)
+
+    constructor: method[1]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              findpropstrict trace
+              pushstring "in MainMC constructor"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[0]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 9
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [2] dynamic class .SpriteMC {
+    extends Qname:PackageNamespace(test)::SpriteMC
+    protected-namespace ProtectedNamespace(SpriteMC)
+
+    constructor: method[7]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[6]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  script {
+    Qname:PackageNamespace(test)::MainMC [0] class = Qname:PackageNamespace(test)::MainMC
+
+    script method[2]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 9
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              newclass Qname:PackageNamespace(test)::MainMC
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(test)::MainMC
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(test)::SpriteMC [?] class = Qname:PackageNamespace(test)::SpriteMC
+
+    script method[5]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 9
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(test) }::SpriteMC
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              newclass Qname:PackageNamespace(test)::SpriteMC
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(test)::SpriteMC
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    SpriteMC [0] class = SpriteMC
+
+    script method[8]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(test)::SpriteMC
+              pushscope
+              getlex Qname:PackageNamespace(test)::SpriteMC
+              newclass SpriteMC
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty SpriteMC
+              returnvoid
+
+      }
+    }
+  }
+
+}
+Tag 83 length=87
+    00000000 01 00 6f fd 90 55 ff 62 35 00 68 00 10 40 00 02 ..o..U.b5.h..@..
+    00000010 30 00 01 01 00 ff 00 00 ff 01 14 00 00 00 00 00 0...............
+    00000020 00 ff 11 35 8d de 14 9d 09 89 48 00 1d 14 00 07 ...5......H.....
+    00000030 45 9e 52 51 68 14 92 88 01 44 a2 00 59 fa e5 16 E.RQh....D..Y...
+    00000040 86 b8 00 63 14 00 18 c2 61 ae 50 98 eb 8d 78 01 ...c....a.P...x.
+    00000050 43 5e 00 26 05 20 00 -- -- -- -- -- -- -- -- -- C^.&. .         
+---------------
+sprite id=2
+    place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+symbol classes:
+  2 --> SpriteMC
+  0 --> test.MainMC
+---------- frame ----------
+end
+---------------

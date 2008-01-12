@@ -1,15 +1,149 @@
-signature: FWS
-header: version=9 length=2693 width=11000 height=8000 rate=12 frame-count=1
+signature: CWS
+header: version=9 length=3728 width=2000 height=2000 rate=12 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,255)
 ABC File 'javaswf' lazy-initialization
 abc-file {
+  [2] dynamic class Test_swf.MainTimeline {
+    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
+    protected-namespace ProtectedNamespace(Test_swf:MainTimeline)
+
+    constructor: method[9]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(Test_swf)::MainTimeline"
+              callpropvoid trace 1
+              getlocal 0
+              pushstring "Test.swf"
+              constructsuper 1
+              findpropstrict addFrameScript
+              pushbyte 0
+              getlex Qname:PackageInternalNamespace(Test_swf)::frame1
+              callpropvoid addFrameScript 2
+              getlocal 0
+              kill 0
+              pushbyte 1
+              callpropvoid babelswf_framesAdded 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[10]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(Test_swf)::MainTimeline"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+    Qname:PackageInternalNamespace(Test_swf)::frame1 [?] method[11]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 5
+        max-registers: 2
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              pushstring "MTASC_MAIN"
+              dup
+              coerce_a
+              setlocal 1
+              pop
+              findpropstrict trace
+              pushstring "visitCallMethod main"
+              callpropvoid trace 1
+              pushstring "Test"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              dup
+              pushstring "GetVariable \"Test\" = "
+              swap
+              add
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              findpropstrict trace
+              pushstring "after object"
+              callpropvoid trace 1
+              dup
+              findpropstrict trace
+              pushstring "after dup"
+              callpropvoid trace 1
+              getproperty main
+              findpropstrict trace
+              pushstring "after getProperty"
+              callpropvoid trace 1
+              swap
+              findpropstrict trace
+              pushstring "pushing args"
+              callpropvoid trace 1
+              pushstring "this"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              dup
+              pushstring "GetVariable \"this\" = "
+              swap
+              add
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              call 1
+              pop
+              returnvoid
+
+      }
+    }
+  }
+
   [1] dynamic class babelswf.GlobalObject {
     extends Qname:PackageNamespace(flash.utils)::Proxy
     protected-namespace ProtectedNamespace(babelswf:GlobalObject)
 
-    constructor: method[12]  {
+    constructor: method[14]  {
       flags:
       return-type: *
       parameters (
@@ -34,7 +168,7 @@ abc-file {
       }
     }
 
-    static initializer: method[13]  {
+    static initializer: method[15]  {
       flags:
       return-type: *
       parameters (
@@ -57,7 +191,7 @@ abc-file {
     }
 
     Qname:PrivateNamespace()::values [?] var : Object
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextValue [?] override method[14]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextValue [?] override method[16]  {
       flags:
       return-type: *
       parameters (
@@ -93,7 +227,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::hasProperty [?] override method[15]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::hasProperty [?] override method[17]  {
       flags:
       return-type: Boolean
       parameters (
@@ -128,7 +262,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::setProperty [?] override method[16]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::setProperty [?] override method[18]  {
       flags:
       return-type: void
       parameters (
@@ -160,7 +294,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::callProperty [?] override method[17]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::callProperty [?] override method[19]  {
       flags: NeedRest
       return-type: *
       parameters (
@@ -220,7 +354,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::getProperty [?] override method[18]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::getProperty [?] override method[20]  {
       flags:
       return-type: *
       parameters (
@@ -246,7 +380,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextNameIndex [?] override method[19]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextNameIndex [?] override method[21]  {
       flags:
       return-type: int
       parameters (
@@ -314,7 +448,7 @@ abc-file {
 
       }
     }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextName [?] override method[20]  {
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextName [?] override method[22]  {
       flags:
       return-type: String
       parameters (
@@ -352,100 +486,11 @@ abc-file {
     static _global [0] var : Qname:PackageNamespace(babelswf)::GlobalObject
   }
 
-  [2] dynamic class testfla_swf.MainTimeline {
-    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
-    protected-namespace ProtectedNamespace(testfla_swf:MainTimeline)
-
-    constructor: method[9]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 3
-        max-registers: 1
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering constructor for Qname:PackageNamespace(testfla_swf)::MainTimeline"
-              callpropvoid trace 1
-              getlocal 0
-              pushstring "testfla.swf"
-              constructsuper 1
-              findpropstrict addFrameScript
-              pushbyte 0
-              getlex Qname:PackageInternalNamespace(testfla_swf)::frame1
-              callpropvoid addFrameScript 2
-              getlocal 0
-              kill 0
-              pushbyte 1
-              callpropvoid babelswf_framesAdded 1
-              returnvoid
-
-      }
-    }
-
-    static initializer: method[10]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering static initializer for Qname:PackageNamespace(testfla_swf)::MainTimeline"
-              callpropvoid trace 1
-              returnvoid
-
-      }
-    }
-
-    Qname:PackageInternalNamespace(testfla_swf)::frame1 [?] method[11]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              getlocal 0
-              kill 0
-              pushstring "Hello World !!"
-              callpropvoid babelswf_trace 1
-              returnvoid
-
-      }
-    }
-  }
-
   [0] sealed class babelswf.BaseMovieClip {
     extends Qname:PackageNamespace(flash.display)::MovieClip
     protected-namespace ProtectedNamespace(babelswf:BaseMovieClip)
 
-    constructor: method[0]  {
+    constructor: method[27]  {
       flags:
       return-type: *
       parameters (
@@ -474,7 +519,7 @@ abc-file {
       }
     }
 
-    static initializer: method[1]  {
+    static initializer: method[28]  {
       flags:
       return-type: *
       parameters (
@@ -665,10 +710,226 @@ abc-file {
     }
   }
 
+  [3] dynamic class Test_swf.MovieClip_20480 {
+    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
+    protected-namespace ProtectedNamespace(Test_swf:MovieClip_20480)
+
+    constructor: method[12]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              getlocal 0
+              pushstring "MovieClip_20480"
+              constructsuper 1
+              getlocal 0
+              kill 0
+              pushbyte 0
+              callpropvoid babelswf_framesAdded 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[13]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 5
+        max-registers: 4
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              pushstring "Test"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              dup
+              pushstring "GetVariable \"Test\" = "
+              swap
+              add
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              not
+              not
+              iftrue 182
+              findpropstrict trace
+              pushstring "@--did not jump to 0176"
+              callpropvoid trace 1
+              pushstring "_global"
+              dup
+              findproperty MultinameL:{ Public }
+              swap
+              getproperty MultinameL:{ Public }
+              dup
+              pushstring "GetVariable \"_global\" = "
+              swap
+              add
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              pushstring "Test"
+              newfunction 0
+              dup
+              coerce_a
+              setlocal 1
+              coerce_a
+              setlocal 3
+              coerce_a
+              setlocal 2
+              dup
+              pushundefined
+              ifstricteq 99
+              getlocal 2
+              kill 2
+              getlocal 3
+              kill 3
+              setproperty MultinameL:{ Public }
+              jump 101
+        99  : label
+              pop
+        101 : label
+              getlocal 1
+              pushstring "prototype"
+              swap
+              dup
+              pushundefined
+              ifstricteq 120
+              swap
+              getproperty MultinameL:{ Public }
+              jump 123
+        120 : label
+              swap
+              pop
+        123 : label
+              dup
+              coerce_a
+              setlocal 3
+              pop
+              getlocal 1
+              kill 1
+              pushstring "main"
+              newfunction 1
+              coerce_a
+              setlocal 1
+              coerce_a
+              setlocal 2
+              dup
+              pushundefined
+              ifstricteq 163
+              getlocal 2
+              kill 2
+              getlocal 1
+              kill 1
+              setproperty MultinameL:{ Public }
+              jump 165
+        163 : label
+              pop
+        165 : label
+              findpropstrict ASSetPropFlags
+              dup
+              getproperty ASSetPropFlags
+              swap
+              getlocal 3
+              kill 3
+              pushnull
+              pushbyte 1
+              call 3
+              pop
+        182 : label
+              findpropstrict trace
+              pushstring "@label 0176"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  script {
+    Qname:PackageNamespace(Test_swf)::MovieClip_20480 [0] class = Qname:PackageNamespace(Test_swf)::MovieClip_20480
+
+    script method[23]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              getscopeobject 0
+              findpropstrict trace
+              pushstring "entering class initialization script for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              newclass Qname:PackageNamespace(Test_swf)::MovieClip_20480
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(Test_swf)::MovieClip_20480
+              returnvoid
+
+      }
+    }
+  }
+
   script {
     Qname:PackageNamespace(babelswf)::BaseMovieClip [0] class = Qname:PackageNamespace(babelswf)::BaseMovieClip
 
-    script method[21]  {
+    script method[24]  {
       flags:
       return-type: *
       parameters (
@@ -715,7 +976,7 @@ abc-file {
   script {
     Qname:PackageNamespace(babelswf)::GlobalObject [?] class = Qname:PackageNamespace(babelswf)::GlobalObject
 
-    script method[22]  {
+    script method[25]  {
       flags:
       return-type: *
       parameters (
@@ -745,9 +1006,9 @@ abc-file {
   }
 
   script {
-    Qname:PackageNamespace(testfla_swf)::MainTimeline [0] class = Qname:PackageNamespace(testfla_swf)::MainTimeline
+    Qname:PackageNamespace(Test_swf)::MainTimeline [0] class = Qname:PackageNamespace(Test_swf)::MainTimeline
 
-    script method[23]  {
+    script method[26]  {
       flags:
       return-type: *
       parameters (
@@ -762,7 +1023,7 @@ abc-file {
               pushscope
               getscopeobject 0
               findpropstrict trace
-              pushstring "entering class initialization script for Qname:PackageNamespace(testfla_swf)::MainTimeline"
+              pushstring "entering class initialization script for Qname:PackageNamespace(Test_swf)::MainTimeline"
               callpropvoid trace 1
               getlex Object
               pushscope
@@ -781,7 +1042,7 @@ abc-file {
               getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
               pushscope
               getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
-              newclass Qname:PackageNamespace(testfla_swf)::MainTimeline
+              newclass Qname:PackageNamespace(Test_swf)::MainTimeline
               popscope
               popscope
               popscope
@@ -790,16 +1051,81 @@ abc-file {
               popscope
               popscope
               popscope
-              initproperty Qname:PackageNamespace(testfla_swf)::MainTimeline
+              initproperty Qname:PackageNamespace(Test_swf)::MainTimeline
               returnvoid
 
       }
     }
   }
 
+  method[0]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 2
+      max-registers: 2
+      max-scope    : 12
+      scope-depth  : 11
+
+            newobject 0
+            dup
+            pushwith
+            coerce_a
+            setlocal 1
+            getlocal 1
+            kill 1
+            getlocal 0
+            kill 0
+            setproperty this
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+  method[1]  {
+    flags:
+    return-type: *
+    parameters (
+      *
+    )
+    body {
+      max-stack    : 2
+      max-registers: 3
+      max-scope    : 12
+      scope-depth  : 11
+
+            newobject 0
+            dup
+            pushwith
+            coerce_a
+            setlocal 2
+            getlocal 2
+            getlocal 0
+            setproperty this
+            getlocal 2
+            kill 2
+            getlocal 1
+            kill 1
+            setproperty mainTimeline
+            getlocal 0
+            kill 0
+            pushstring "as2 test file 1"
+            callpropvoid babelswf_trace 1
+            pushundefined
+            returnvalue
+
+    }
+  }
+
 }
 symbol classes:
-  0 --> testfla_swf.MainTimeline
+  0 --> Test_swf.MainTimeline
+  20480 --> Test_swf.MovieClip_20480
+export
+  id=20480 name=__Packages.Test
 ---------- frame ----------
 end
 ---------------

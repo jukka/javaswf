@@ -87,7 +87,7 @@
 		<mkdir dir="runtime"/>
 		<compile-swf
 			src-path="src-as-runtime"
-			as-file ="babelswf/BaseMovieClip.as"
+			as-file ="babelswf/AVM1Runtime.as"
 			swf-file="runtime/runtime.swf"
 		/>		   
 		<swf-dump swf="runtime/runtime.swf" out="runtime/runtime.swf.txt" />
@@ -147,14 +147,20 @@
                   out="generated/test-fla.txt" />
     </target>
 
+    <!-- Dump the AS3 FLA used for reference -->
+    <target name="dump-as3-fla">
+        <swf-dump swf="/Users/dmain/Desktop/Untitled-1.swf"
+                  out="generated-as3/Untitled-1.swf.txt" />
+    </target>
+	
     <!-- Dump the DXD bouncy-ball panel SWFs -->
-    <target name="dump-bouncy-ball">    	
+    <target name="dump-bouncy-ball">        	
     	<echo>Code SWF..</echo>
-        <swf-dump swf="${dxd.sdk}/dxd/code/gad_bouncyball_code.swf"
-                  out="generated/gad_bouncyball_code.txt" />
+        <swf-dump swf="as2-testcases/gad_bouncyball_code.swf"
+                  out="as2-testcases/gad_bouncyball_code.swf.txt" />
         <echo>Asset SWF..</echo>
-        <swf-dump swf="${dxd.sdk}/dxd/components/gad_bouncyball.swf"
-                  out="generated/gad_bouncyball.txt" />
+        <swf-dump swf="as2-testcases/gad_bouncyball.swf"
+                  out="as2-testcases/gad_bouncyball.swf.txt" />
         <echo>Done</echo>
     </target>
 

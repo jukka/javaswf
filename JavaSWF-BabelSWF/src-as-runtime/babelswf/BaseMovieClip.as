@@ -14,7 +14,7 @@ package babelswf
 	public class BaseMovieClip extends MovieClip
 	{		
 		private var swfName:String;
-		
+
 		public function BaseMovieClip( swfName:String )
 		{
 			super();
@@ -43,9 +43,9 @@ package babelswf
 		/**
 		 * Simulation of the AVM1 ASSetPropFlags function.
 		 */
-		public function ASSetPropFlags( targetObject:Object, 
-		                                propertyList:Object, 
-		                                flags:int ):* {
+		public static function ASSetPropFlags( targetObject:Object, 
+		                                       propertyList:Object, 
+		                                       flags:int ):* {
 		    
 		    trace( "ASSetPropFlags called" );
 		
@@ -53,6 +53,15 @@ package babelswf
 		                                	
 		    return undefined;                                	
         }
+        
+        /**
+         * Utility to dump the props of an object 
+         */
+        public static function babelswf_dump( object:Object ):void {
+        	for( var n:String in object ) {
+        		trace( "dump >> " + n );         		
+        	}         	
+        } 
         
         /**
          * Simulate _root 
@@ -68,6 +77,16 @@ package babelswf
         public function get _parent():DisplayObjectContainer
         {
             return parent;	
+        } 
+        
+        /**
+         * Simulate _global 
+         */
+        public static function get _global():Object
+        {
+            trace( "babelswf >> accessing _global" );
+        	
+            return GlobalObject._global;  
         } 
     }    
 }

@@ -77,8 +77,9 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
                                 abc, 
                                 context.replace( '.', '_' ) + ".MainTimeline",
                                 BabelSWFRuntime.BASE_MOVIECLIP,
-                                context ) {
-
+                                context,
+                                true ) {
+            
             /** @see com.anotherbigidea.flash.avm2.model.AVM2MovieClip#afterFramesAdded(int) */
             @Override
             protected void afterFramesAdded( int frameCount ) {
@@ -89,11 +90,11 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
             }
         };
         
-        //set up the _global value
-        AVM2Code cons = mainClip.constructor();
-        cons.getGlobalScope();
-        cons.dup();
-        cons.setProperty( "_global" );
+        //set up the _global value  -- now done in class init scripts
+//        AVM2Code cons = mainClip.constructor();
+//        cons.getGlobalScope();
+//        cons.dup();
+//        cons.setProperty( "_global" );
     }
     
     private void log( String message ) {
@@ -120,6 +121,10 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 				parser.tag( tagType, longTag, contents );
 				return;
 
+			case TAG_SETBACKGROUNDCOLOR:
+			    super.tag( tagType, longTag, contents );
+			    return;
+				
             case TAG_PLACEOBJECT3:
                 //FIXME
                 throw new RuntimeException( "TAG_PLACEOBJECT3 is not yet implemented" );
@@ -135,12 +140,17 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	private void finish() throws IOException {
 	    mainClip.finish();
 	    
+	    //finish all the other clips
+	    for( AVM2MovieClip clip : clips.values() ) {
+	        clip.finish();
+	    }
+	    
 		//--emit the ABC tag
 		ABC abcFile = super.tagDoABC( DO_ABC_LAZY_INITIALIZE_FLAG, "javaswf" );
 		abc.write( abcFile );
 		
 		//--set the class for the main timeline and clips
-		Map<Integer,String> classes = new HashMap<Integer, String>();
+		Map<Integer,String> classes = new TreeMap<Integer, String>();
 		classes.put( 0, mainClip.avm2Class.name.toQualString() );
 		for( Integer clipId : clips.keySet()) {
 		    AVM2MovieClip clip = clips.get( clipId );
@@ -221,8 +231,9 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
         AVM2MovieClip clip = 
             new AVM2MovieClip( abc, 
                                context.replace( '.', '_' ) + ".MovieClip_" + id,
-                               BabelSWFRuntime.BASE_MOVIECLIP,
-                               "MovieClip_" + id ){
+                               BabelSWFRuntime.AVM1_SPRITE_CLASS,
+                               "MovieClip_" + id,
+                               false ){
 
             /** @see com.anotherbigidea.flash.avm2.model.AVM2MovieClip#afterFramesAdded(int) */
             @Override

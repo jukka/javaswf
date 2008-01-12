@@ -1,51 +1,41 @@
 signature: CWS
-header: version=8 length=170 width=11000 height=8000 rate=12 frame-count=1
+header: version=8 length=152 width=11000 height=8000 rate=12 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 AVM1 actions:
             conditions     0
-  0000:     lookupTable    
-            0:   "i"
-            1:   "iteration "
-            2:   "caught "
-            3:   "e"
-            4:   "finally"
-  0036:     try {          
-  0048:         push           lookup( 0 )
-                push           1
-  0058:         defineLocalValue 
-  0059:         push           lookup( 0 )
-  0064:         getVariable    
-  0065:         push           10
-  0073:         greaterThan    
-  0074:         not            
-  0075:         not            
-  0076:         ifJump         "0106"
-  0081:         push           lookup( 1 )
-                push           lookup( 0 )
-  0088:         getVariable    
-  0089:         typedAdd       
-  0090:         trace          
-  0091:         push           lookup( 0 )
-                push           lookup( 0 )
-  0098:         getVariable    
-  0099:         increment      
-  0100:         setVariable    
-  0101:         jump           "0059"
-  0106:         jump           "0121"
+
+  0000:     defineFunction foo( a [reg 3], b [reg 2] ) num registers = 4
+                Supress super 
+                Supress arguments 
+                Supress this 
+            {
+  0020:         push           register( 3 )
+  0025:         register       1
+  0029:         pop            
+  0030:         push           register( 1 )
+                push           register( 2 )
+  0037:         greaterThan    
+  0038:         not            
+  0039:         not            
+  0040:         ifJump         "0067"
+  0045:         push           register( 1 )
+  0050:         trace          
+  0051:         push           register( 1 )
+  0056:         increment      
+  0057:         register       1
+  0061:         pop            
+  0062:         jump           "0030"
             }
-            catch( e ) {
-  0111:         push           lookup( 2 )
-                push           lookup( 3 )
-  0118:         getVariable    
-  0119:         typedAdd       
-  0120:         trace          
-            }
-            finally {
-  0121:         push           lookup( 4 )
-  0126:         trace          
-            }
-  0127:     end            
+  0067:     push           "hello world"
+  0083:     trace          
+  0084:     push           15
+            push           5
+            push           2
+            push           "foo"
+  0107:     callFunction   
+  0108:     pop            
+  0109:     end            
 ---------- frame ----------
 end
 ---------------

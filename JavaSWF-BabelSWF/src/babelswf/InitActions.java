@@ -46,7 +46,7 @@ public class InitActions {
             //nada
         }
         
-        OperationVisitor visitor = new OperationVisitor( code );
+        OperationVisitor visitor = new OperationVisitor( clip.avm2Class, code );
         block.accept( visitor );
     }
 }

@@ -47,7 +47,7 @@ public class FrameActions  {
             //nada
         }
         
-        OperationVisitor visitor = new OperationVisitor( code );
+        OperationVisitor visitor = new OperationVisitor( clip.avm2Class, code );
         block.accept( visitor );
         code.returnVoid();
         code.calcMaxes();

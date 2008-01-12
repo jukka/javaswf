@@ -1,5 +1,5 @@
 signature: CWS
-header: version=9 length=1177 width=10000 height=7500 rate=24 frame-count=1
+header: version=9 length=1002 width=10000 height=7500 rate=24 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 Tag 77 length=458
     00000000 3c 72 64 66 3a 52 44 46 20 78 6d 6c 6e 73 3a 72 <rdf:RDF xmlns:r
@@ -27,7 +27,7 @@ Tag 77 length=458
     00000160 6b 6e 6f 77 6e 3c 2f 64 63 3a 63 72 65 61 74 6f known</dc:creato
     00000170 72 3e 3c 64 63 3a 6c 61 6e 67 75 61 67 65 3e 45 r><dc:language>E
     00000180 4e 3c 2f 64 63 3a 6c 61 6e 67 75 61 67 65 3e 3c N</dc:language><
-    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 32 2c 20 32 dc:date>Jan 2, 2
+    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 39 2c 20 32 dc:date>Jan 9, 2
     000001a0 30 30 38 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 72 008</dc:date></r
     000001b0 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e 3c df:Description><
     000001c0 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- -- /rdf:RDF>.      
@@ -36,7 +36,7 @@ script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(134,156,167)
 serial number:
   00000000 03 00 00 00 06 00 00 00 03 00 81 e5 02 00 00 00 ................
-  00000010 00 00 e8 15 6d 3b 17 01 00 00 -- -- -- -- -- -- ....m;....      
+  00000010 00 00 54 e9 7a 5f 17 01 00 00 -- -- -- -- -- -- ..T.z_....      
 
 frame-label AS3Test
 ABC File 'frame1' lazy-initialization
@@ -45,46 +45,51 @@ abc-file {
     extends Qname:PackageNamespace(flash.display)::MovieClip
     protected-namespace ProtectedNamespace(AS3Test)
 
-    constructor: method  {
-      flags:
+    constructor: method[3]  {
+      flags: NeedActivation
       return-type: *
       parameters (
       )
       body {
         max-stack    : 3
-        max-registers: 3
-        max-scope    : 11
-        scope-depth  : 10
+        max-registers: 2
+        max-scope    : 13
+        scope-depth  : 11
 
               getlocal0
               pushscope
+              newactivation
+              dup
+              setlocal1
+              pushscope
+              getscopeobject 1
+              pushundefined
+              coerce_a
+              setslot 0
               getlocal0
               constructsuper 0
-              getlocal0
-              pushstring "avalue"
-              getproperty MultinameL:{ PrivateNamespace() PackageNamespace() PackageInternalNamespace() ProtectedNamespace(AS3Test) StaticProtectedNamespace(AS3Test) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
-              convert_b
-              setlocal1
-              getlocal0
-              pushstring "bvalue"
-              getproperty MultinameL:{ PrivateNamespace() PackageNamespace() PackageInternalNamespace() ProtectedNamespace(AS3Test) StaticProtectedNamespace(AS3Test) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
-              convert_b
-              setlocal2
-              findpropstrict Qname:PackageNamespace()::trace
-              getlocal1
+              getscopeobject 1
+              pushbyte 23
               coerce_a
-              dup
-              iffalse 31
+              setslot 0
+              getscopeobject 1
+              newfunction 2
+              coerce_a
+              setslot 1
+              getscopeobject 1
+              getslot 1
+              getglobalscope
+              pushbyte 3
+              call 1
               pop
-              getlocal2
-              coerce_a
-        31  : callpropvoid Qname:PackageNamespace()::trace 1
               returnvoid
 
+        activation Qname:PackageInternalNamespace()::a [1] var : *
+        activation Qname:PackageInternalNamespace()::b [0] var : *
       }
     }
 
-    static initializer: method  {
+    static initializer: method[0]  {
       flags:
       return-type: *
       parameters (
@@ -104,10 +109,10 @@ abc-file {
 
   }
 
-   script {
-    Qname:PackageNamespace()::AS3Test [0] class = Qname:PackageNamespace()::AS3Test
+  script {
+    AS3Test [0] class = AS3Test
 
-    script method  {
+    script method[4]  {
       flags:
       return-type: *
       parameters (
@@ -121,7 +126,7 @@ abc-file {
               getlocal0
               pushscope
               getscopeobject 0
-              getlex Qname:PackageNamespace()::Object
+              getlex Object
               pushscope
               getlex Qname:PackageNamespace(flash.events)::EventDispatcher
               pushscope
@@ -136,7 +141,7 @@ abc-file {
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
-              newclass Qname:PackageNamespace()::AS3Test
+              newclass AS3Test
               popscope
               popscope
               popscope
@@ -144,10 +149,60 @@ abc-file {
               popscope
               popscope
               popscope
-              initproperty Qname:PackageNamespace()::AS3Test
+              initproperty AS3Test
               returnvoid
 
       }
+    }
+  }
+
+  method[1]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 2
+      max-registers: 1
+      max-scope    : 12
+      scope-depth  : 12
+
+            findpropstrict trace
+            getlex Qname:PackageInternalNamespace()::c
+            callpropvoid trace 1
+            returnvoid
+
+    }
+  }
+
+  method[2]  {
+    flags: NeedActivation
+    return-type: *
+    parameters (
+      int
+    )
+    body {
+      max-stack    : 3
+      max-registers: 3
+      max-scope    : 13
+      scope-depth  : 12
+
+            newactivation
+            dup
+            setlocal2
+            pushscope
+            getscopeobject 0
+            getlocal1
+            setslot 0
+            findpropstrict trace
+            pushstring " this is a "
+            getlex Qname:PackageInternalNamespace()::b
+            add
+            callpropvoid trace 1
+            newfunction 1
+            returnvalue
+
+      activation Qname:PackageInternalNamespace()::c [0] var : int
     }
   }
 

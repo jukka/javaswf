@@ -1,25 +1,42 @@
 package babelswf;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.epistem.code.LocalValue;
+import org.epistem.io.IndentingPrintWriter;
+
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
+import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.ops.*;
 import com.anotherbigidea.flash.avm1.ops.ConstantOp.*;
-import com.anotherbigidea.flash.avm2.model.AVM2Code;
+import com.anotherbigidea.flash.avm2.MethodInfoFlags;
+import com.anotherbigidea.flash.avm2.instruction.Instruction;
+import com.anotherbigidea.flash.avm2.model.*;
+import static com.anotherbigidea.flash.avm2.MethodInfoFlags.*;
+import static com.anotherbigidea.flash.avm1.ops.Function.PreloadingFlag.*;
 
 public class OperationVisitor implements AVM1OpVisitor {
 
-    private final AVM2Code code;
+    private final AVM2Class  avmClass;
+    private final AVM2Code   code;
     
-    public OperationVisitor( AVM2Code code ) {
-        this.code = code;
+    /**
+     * Mappings between AVM1 local values and AVM2
+     */
+    private final Map<LocalValue<AVM1Operation>, LocalValue<Instruction>> valueMappings =
+        new HashMap<LocalValue<AVM1Operation>, LocalValue<Instruction>>();
+    
+    public OperationVisitor( AVM2Class avmClass, AVM2Code code ) {
+        this.code      = code;
+        this.avmClass  = avmClass;
     }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitAnonymousFunction(com.anotherbigidea.flash.avm1.ops.AnonymousFunction) */
-    public void visitAnonymousFunction(AnonymousFunction op) {
-        
-        
-        
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
+    public void visitAnonymousFunction(AnonymousFunction op) {        
+        makeAndPushFunction( op );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitBinaryOp(com.anotherbigidea.flash.avm1.ops.BinaryOp) */
@@ -88,7 +105,13 @@ public class OperationVisitor implements AVM1OpVisitor {
 //                code.swap();
 //                code.convertToDouble();
 //                code.swap();
+              
+//                code.swap();
+//                code.traceValue( "A = " );
+//                code.swap();
+//                code.traceValue( "B = " );
                 code.greaterThan();
+//                code.traceValue( "GreaterThan = " );
                 break;
     
             case BinOp_And:
@@ -130,14 +153,56 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitCallFunction(com.anotherbigidea.flash.avm1.ops.CallFunction) */
     public void visitCallFunction(CallFunction op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+
+        //naive reordering...  FIXME
+        code.findPropStrict( ((ConstantOp.StringValue) op.name).value );
+        code.dup();
+        code.getProperty( ((ConstantOp.StringValue) op.name).value );
+        code.swap();
+        //now stack should be object|function|...
         
+        //push args in reverse order
+        for( int i = 0; i < op.args.length; i++ ) {
+            op.args[i].accept( this );
+        }
+
+        code.call( op.args.length );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitCallMethod(com.anotherbigidea.flash.avm1.ops.CallMethod) */
     public void visitCallMethod(CallMethod op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
         
+        code.trace( "visitCallMethod " + ((ConstantOp.StringValue) op.name).value  );
+        
+        //naive reordering...  FIXME
+
+        if( op.name instanceof ConstantOp.UndefinedValue 
+         || (  op.name instanceof ConstantOp.StringValue 
+            && ((ConstantOp.StringValue) op.name).value.length() == 0 )) {
+            
+            //name is blank - object is the function
+            op.object.accept( this );
+            code.getScopeObject( 0 ); //this
+            
+        }
+        else {
+            op.object.accept( this );
+            code.trace( "after object" );
+            code.dup();
+            code.trace( "after dup" );
+            code.getProperty( ((ConstantOp.StringValue) op.name).value );
+            code.trace( "after getProperty" );
+            code.swap();  // --> object|function|...
+        }
+        
+        code.trace( "pushing args" );
+
+        //push args in reverse order
+        for( int i = 0; i < op.args.length; i++ ) {
+            op.args[i].accept( this );
+        }
+
+        code.call( op.args.length );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitCloneSprite(com.anotherbigidea.flash.avm1.ops.CloneSprite) */
@@ -215,17 +280,138 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitFunction(com.anotherbigidea.flash.avm1.ops.Function) */
     public void visitFunction(Function op) {
         
-        // 0. Set up an activation object
-        // 1. Move this to a safe register away from reserved ranges
-        // 2. Get params into correct regs
-        // 3. Get named params set up
-        // 4. Deal with special vars
+        code.getLocal( code.thisValue );
+        code.pushString( op.name );
         
+        makeAndPushFunction( op );
         
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
+        code.setProperty( AVM2LateMultiname.EMPTY_PACKAGE );
     }
 
+    private void makeAndPushFunction( Function op ) {
+        
+        boolean needsArguments =  op.flags.contains( PRELOAD_ARGUMENTS )
+                               || (! op.flags.contains( SUPPRESS_ARGUMENTS ));
+        
+        Set<MethodInfoFlags> flags = needsArguments ? 
+                                         EnumSet.of( NeedArguments ) :
+                                         EnumSet.noneOf( MethodInfoFlags.class );    
+        
+        AVM2Method function =  avmClass.abcFile.addFunctionClosure( null, flags );
+        for( String paramName : op.paramNames ) {
+            function.addParameter( null, null, null );
+        }
+        
+        
+        AVM2MethodBody body = function.methodBody;
+        body.scopeDepth = code.scopeDepth() + 1;
+
+        AVM2Code funcCode = new AVM2Code( body, null, op.paramRegisters.length, needsArguments );
+        OperationVisitor visitor = new OperationVisitor( avmClass, funcCode );
+        
+        // make an activation object
+        funcCode.activationValue = funcCode.newLocal();
+        funcCode.newObject( 0 );
+        funcCode.dup();
+        funcCode.pushWith();
+        funcCode.setLocal( funcCode.activationValue );
+         
+        //--set up this
+        if( ! op.flags.contains( SUPPRESS_THIS ) ) {
+            funcCode.setThis();
+        }
+        if( op.thisRegister != null ) {
+            visitor.valueMappings.put( op.thisRegister.localValue, funcCode.thisValue );
+        }
+        
+        //--set up arguments
+        if( ! op.flags.contains( SUPPRESS_ARGUMENTS ) ) {
+            funcCode.getLocal( funcCode.activationValue );
+            funcCode.getLocal( funcCode.argumentsValue );
+            funcCode.setProperty( "arguments" );  //FIXME: make this object be set up by the runtime
+        }
+        if( op.argumentsRegister != null ) {
+            visitor.valueMappings.put( op.argumentsRegister.localValue, funcCode.argumentsValue );
+        }
+
+        //--set up super
+        // FIXME
+        
+//        if( ! op.flags.contains( SUPPRESS_SUPER ) ) {
+//            throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION - super variable");  // TODO
+//        }
+//        if( op.superRegister != null ) {
+//            throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION - super register");  // TODO
+//        }
+
+        //--set up root
+        if( op.rootRegister != null ) {
+            LocalValue<Instruction> rootValue = funcCode.newLocal();
+            
+            funcCode.pushString( "_root" );
+            funcCode.getVariable();
+            funcCode.setLocal( rootValue );
+            
+            visitor.valueMappings.put( op.rootRegister.localValue, rootValue );
+        }
+
+        //--set up parent
+        if( op.parentRegister != null ) {
+            LocalValue<Instruction> parentValue = funcCode.newLocal();
+            
+            funcCode.pushString( "_parent" );
+            funcCode.getVariable();
+            funcCode.setLocal( parentValue );
+            
+            visitor.valueMappings.put( op.parentRegister.localValue, parentValue );
+        }
+        
+        //--set up global
+        if( op.globalRegister != null ) {
+            LocalValue<Instruction> globalValue = funcCode.newLocal();
+            
+            funcCode.pushString( "_global" );
+            funcCode.getVariable();
+            funcCode.setLocal( globalValue );
+            
+            visitor.valueMappings.put( op.globalRegister.localValue, globalValue );
+        }
+        
+        //make the parameter mappings
+        for( int i = 0; i < op.paramRegisters.length; i++ ) {
+            if( op.paramRegisters[i] != null ) {
+                visitor.valueMappings.put( op.paramRegisters[i].localValue, funcCode.paramValues[i] );
+            }
+            
+            //set the param as a named var
+            String paramName = op.paramNames[i];
+            if( paramName != null && paramName.length() > 0 ) {
+                funcCode.getLocal( funcCode.activationValue );
+                funcCode.getLocal( funcCode.paramValues[i] );
+                funcCode.setProperty( paramName );
+            }
+            
+            //trace the param value
+//            funcCode.getLocal( funcCode.paramValues[i] );
+//            funcCode.traceValue( "arg " + i + " = " );
+//            funcCode.pop();
+            
+        }
+        
+        code.newFunction( function );
+
+        op.body.accept( visitor );
+
+//        funcCode.dump( IndentingPrintWriter.SYSERR );
+//        IndentingPrintWriter.SYSERR.flush();
+
+        //make sure there is a return at the end
+        funcCode.pushUndefined();
+        funcCode.returnValue();
+        
+        funcCode.calcMaxes();
+    }
+    
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitGetMember(com.anotherbigidea.flash.avm1.ops.GetMember) */
     public void visitGetMember(GetMember op) {
         op.visitAggregated( this );        
@@ -263,7 +449,8 @@ public class OperationVisitor implements AVM1OpVisitor {
         op.visitAggregated( this );
         code.getVariable();
         
-        //code.traceValue( "GetVariable" );
+        code.traceValue( "GetVariable " + op.name + " = " );
+        //BabelSWFRuntime.dumpObject( code );
         //code.checkIsNotNan( "GetVariable " + ((ConstantOp.StringValue) op.name).value );
         
         //FIXME: handle path prefixes on the variable name
@@ -279,6 +466,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     public void visitIfJump(IfJump op) {
         op.visitAggregated( this );
         code.iftrue( op.jumpLabel );
+        code.trace( "@--did not jump to " + op.jumpLabel );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitImplements(com.anotherbigidea.flash.avm1.ops.Implements) */
@@ -320,6 +508,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     public void visitJumpLabel(JumpLabel op) {
         code.target( op.label );
         code.label();
+        code.trace( "@label " + op.label );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitNewMethod(com.anotherbigidea.flash.avm1.ops.NewMethod) */
@@ -353,8 +542,14 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitPop(com.anotherbigidea.flash.avm1.ops.Pop) */
     public void visitPop(Pop op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
         
+        op.visitAggregated( this );
+        
+        //do not pop if prev was a store register since that will already have
+        //anticipated this pop and optimized
+        if( op.prev() != null && op.prev() instanceof StoreInRegister ) return;
+
+        code.pop();
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitPrevFrame(com.anotherbigidea.flash.avm1.ops.PrevFrame) */
@@ -365,8 +560,16 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitPushRegister(com.anotherbigidea.flash.avm1.ops.PushRegister) */
     public void visitPushRegister(PushRegister op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
         
+        LocalValue<AVM1Operation> val1 = op.localValue;
+        LocalValue<Instruction>   val2 = valueMappings.get( val1 );
+        
+        if( val2 == null ) {
+            val2 = code.newLocal();
+            valueMappings.put( val1, val2 );
+        }
+        
+        code.getLocal( val2 );        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitRandomNumber(com.anotherbigidea.flash.avm1.ops.RandomNumber) */
@@ -391,6 +594,14 @@ public class OperationVisitor implements AVM1OpVisitor {
     public void visitSetMember(SetMember op) {
         op.visitAggregated( this );
         code.setMember_Safe();
+        
+        //dump the object
+//        code.trace( ">>> dumping object just set >>>" );
+//        op.object.accept( this );
+//        BabelSWFRuntime.dumpObject( code );
+//        code.pop();
+//        code.trace( "<<<-------------------------<<<" );
+        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitSetProperty(com.anotherbigidea.flash.avm1.ops.SetProperty) */
@@ -408,6 +619,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitSetVariable(com.anotherbigidea.flash.avm1.ops.SetVariable) */
     public void visitSetVariable(SetVariable op) {
         op.visitAggregated( this );
+        
         code.setLocalVariable();
         
         //FIXME: handle path prefixes on the variable name
@@ -439,11 +651,25 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStoreInRegister(com.anotherbigidea.flash.avm1.ops.StoreInRegister) */
     public void visitStoreInRegister(StoreInRegister op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-//        op.visitAggregated( this );
-//        code.dup();
-//        code.killLocal( op.registerNumber ); //to make sure AVM2 verifier doesn't object
-//        code.setLocal( op.registerNumber );
+        
+        op.visitAggregated( this );
+        
+        if( op.next() != null && op.next() instanceof Pop ) {
+            //do not duplicate the value since it will be popped anyway
+        }
+        else {
+            code.dup();
+        }
+
+        LocalValue<AVM1Operation> val1 = op.localValue;
+        LocalValue<Instruction>   val2 = valueMappings.get( val1 );
+        
+        if( val2 == null ) {
+            val2 = code.newLocal();
+            valueMappings.put( val1, val2 );
+        }
+        
+        code.setLocal( val2 ); 
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStringValue(com.anotherbigidea.flash.avm1.ops.ConstantOp.StringValue) */
@@ -530,6 +756,30 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWith(com.anotherbigidea.flash.avm1.ops.With) */
     public void visitWith(With op) {
+        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+        
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryCatch(com.anotherbigidea.flash.avm1.ops.TryCatch) */
+    public void visitTryCatch( TryCatch op ) {
+        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+        
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryEnd(com.anotherbigidea.flash.avm1.ops.TryEnd) */
+    public void visitTryEnd( TryEnd op ) {
+        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+        
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryFinally(com.anotherbigidea.flash.avm1.ops.TryFinally) */
+    public void visitTryFinally( TryFinally op ) {
+        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+        
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWithEnd(com.anotherbigidea.flash.avm1.ops.WithEnd) */
+    public void visitWithEnd( WithEnd op ) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
         
     }
