@@ -1,5 +1,5 @@
 signature: CWS
-header: version=9 length=903 width=10000 height=7500 rate=24 frame-count=1
+header: version=9 length=988 width=10000 height=7500 rate=24 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 Tag 77 length=458
     00000000 3c 72 64 66 3a 52 44 46 20 78 6d 6c 6e 73 3a 72 <rdf:RDF xmlns:r
@@ -27,7 +27,7 @@ Tag 77 length=458
     00000160 6b 6e 6f 77 6e 3c 2f 64 63 3a 63 72 65 61 74 6f known</dc:creato
     00000170 72 3e 3c 64 63 3a 6c 61 6e 67 75 61 67 65 3e 45 r><dc:language>E
     00000180 4e 3c 2f 64 63 3a 6c 61 6e 67 75 61 67 65 3e 3c N</dc:language><
-    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 31 2c 20 32 dc:date>Jan 1, 2
+    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 37 2c 20 32 dc:date>Jan 7, 2
     000001a0 30 30 38 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 72 008</dc:date></r
     000001b0 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e 3c df:Description><
     000001c0 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- -- /rdf:RDF>.      
@@ -36,7 +36,7 @@ script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(134,156,167)
 serial number:
   00000000 03 00 00 00 06 00 00 00 03 00 81 e5 02 00 00 00 ................
-  00000010 00 00 e9 80 fe 37 17 01 00 00 -- -- -- -- -- -- .....7....      
+  00000010 00 00 bf 83 32 56 17 01 00 00 -- -- -- -- -- -- ....2V....      
 
 frame-label test_Test
 ABC File 'frame1' lazy-initialization
@@ -46,33 +46,63 @@ abc-file {
     protected-namespace ProtectedNamespace(test:Test)
 
     constructor: method  {
-      flags:
+      flags: NeedActivation
       return-type: *
       parameters (
       )
       body {
-        max-stack    : 2
-        max-registers: 2
-        max-scope    : 11
-        scope-depth  : 10
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 16
+        scope-depth  : 11
 
               getlocal0
               pushscope
+              newactivation
+              dup
+              setlocal1
+              pushscope
               getlocal0
               constructsuper 0
+              getscopeobject 1
               pushbyte 1
-              setlocal1
-              jump 21
-        12  : label
-              findpropstrict Qname:PackageNamespace()::trace
+              setslot 0
+              jump 66
+        19  : label
+        20  : findpropstrict trace
+              getscopeobject 1
+              getslot 0
+              callpropvoid trace 1
+        29  : jump 56
+        33  : getlocal0
+              pushscope
               getlocal1
-              callpropvoid Qname:PackageNamespace()::trace 1
-              inclocal_i 1
-        21  : getlocal1
+              pushscope
+              newcatch 0
+              dup
+              setlocal2
+              dup
+              pushscope
+              swap
+              setslot 0
+              findpropstrict trace
+              pushstring "caught"
+              callpropvoid trace 1
+              popscope
+              kill 2
+        56  : getscopeobject 1
+              getslot 0
+              increment_i
+              getscopeobject 1
+              swap
+              setslot 0
+        66  : getscopeobject 1
+              getslot 0
               pushbyte 10
-              ifle 12
+              ifle 19
               returnvoid
 
+        try { 20 .. 29 } catch( ex : Object ) --> 33
       }
     }
 
@@ -96,7 +126,7 @@ abc-file {
 
   }
 
-   script {
+  script {
     Qname:PackageNamespace(test)::Test [0] class = Qname:PackageNamespace(test)::Test
 
     script method  {
@@ -113,7 +143,7 @@ abc-file {
               getlocal0
               pushscope
               getscopeobject 0
-              getlex Qname:PackageNamespace()::Object
+              getlex Object
               pushscope
               getlex Qname:PackageNamespace(flash.events)::EventDispatcher
               pushscope

@@ -1,6 +1,6 @@
 <project name="AVM2 Tests and Experiments" basedir="." >
 	
-	<property name="mxmlc" value="/Languages/Flash/flex3sdk_b3/bin/mxmlc"/>
+	<property name="mxmlc" value="/Applications/Adobe Flex Builder 3/sdks/3.0.0/bin/mxmlc"/>
 	
 	<path id="javaswf">
 		<pathelement location="../JavaSWF-FileFormat/eclipse-build"/>

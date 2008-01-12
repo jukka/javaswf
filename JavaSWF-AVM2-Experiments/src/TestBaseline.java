@@ -349,7 +349,7 @@ public class AVM2ClassEmitter implements TranslationStep {
         AVM2Code code = new AVM2Code( body.instructions );
         code.setupInitialScope();
         
-        InstructionVisitor visitor = new InstructionVisitor( code );        
+        InstructionAdaptor visitor = new InstructionAdaptor( code );        
         visitor.walk( javaClass, method );
                         
         //TODO: these values need further thought..

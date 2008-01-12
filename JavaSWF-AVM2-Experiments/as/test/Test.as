@@ -6,7 +6,11 @@ package test {
         
         public function Test() {            
             for( var i:int = 1; i <= 10; i++ ) {
-                trace(i);            
+                try {
+                    trace(i);
+                } catch( ex:Object ) {
+                    trace( "caught" );
+                }            
             }
         }
     }
