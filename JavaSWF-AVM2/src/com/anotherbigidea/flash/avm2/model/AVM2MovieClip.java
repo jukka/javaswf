@@ -32,7 +32,7 @@ public class AVM2MovieClip {
 	
 	private final AVM2Code constructorCode; 
 	private final AVM2Code staticInitializerCode;
-	private final int instanceScopeDepth;
+	public  final int instanceScopeDepth;
 	private final SortedMap<Integer, AVM2QName> frames = new TreeMap<Integer, AVM2QName>();
 	
 	private int classScopeDepth;
@@ -45,7 +45,8 @@ public class AVM2MovieClip {
 	 */
 	public AVM2MovieClip( AVM2ABCFile abc, String className,
 	                      AVM2QName superClassName,
-	                      String superArg ) {
+	                      String superArg,
+	                      boolean isMainClip ) {
 
 		AVM2QName name       = new AVM2QName( className );
 		AVM2QName superclass = (superClassName != null) ? 
@@ -61,7 +62,7 @@ public class AVM2MovieClip {
 	                        new AVM2Namespace( 
 	                                NamespaceKind.ProtectedNamespace, protName ));
 		
-		AVM2Code.ClassInitializationScript clinit = AVM2Code.classInitializationScript( avm2Class );
+		AVM2Code.ClassInitializationScript clinit = AVM2Code.classInitializationScript( avm2Class, isMainClip );
 		clinit.addSuperclass( "Object" );
 		clinit.addSuperclass( "flash.events.EventDispatcher" );
 		clinit.addSuperclass( "flash.display.DisplayObject" );
@@ -126,15 +127,17 @@ public class AVM2MovieClip {
 	    staticInitializerCode.calcMaxes();
 	    
 	    //--write out the call to register the frame scripts
-	    constructorCode.findPropStrict( "addFrameScript" );
-        for( Map.Entry<Integer, AVM2QName> entry : frames.entrySet() ) {
-	        int       frameNumber = entry.getKey();
-	        AVM2QName scriptName  = entry.getValue();
-	        
-	        constructorCode.pushInt( frameNumber );
-	        constructorCode.getLex( scriptName );
+	    if( ! frames.isEmpty() ) {
+    	    constructorCode.findPropStrict( "addFrameScript" );
+            for( Map.Entry<Integer, AVM2QName> entry : frames.entrySet() ) {
+    	        int       frameNumber = entry.getKey();
+    	        AVM2QName scriptName  = entry.getValue();
+    	        
+    	        constructorCode.pushInt( frameNumber );
+    	        constructorCode.getLex( scriptName );
+    	    }
+            constructorCode.callPropVoid( "addFrameScript", frames.size() * 2 );
 	    }
-        constructorCode.callPropVoid( "addFrameScript", frames.size() * 2 );
 	    
         afterFramesAdded( frames.size() );
         

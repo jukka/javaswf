@@ -39,7 +39,7 @@ public enum Operation {
     OP_coerce_o         ( 0x89, 1, 1, 0, 0 ),
     OP_coerce_s         ( 0x85, 1, 1, 0, 0 ),
     OP_coerce_u         ( 0x88, 1, 1, 0, 0 ),
-    OP_construct        ( 0x42, 1, 1, 0, 0 ),
+    OP_construct        ( 0x42, 1, 1, 0, 0, ARG_COUNT ),
     OP_constructprop    ( 0x4A, 1, 1, 0, 0, NAME_INDEX, ARG_COUNT ),
     OP_constructsuper   ( 0x49, 1, 0, 0, 0, ARG_COUNT ),
     OP_convert_b        ( 0x76, 1, 1, 0, 0 ),

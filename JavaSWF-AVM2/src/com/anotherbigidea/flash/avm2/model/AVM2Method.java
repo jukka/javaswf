@@ -18,6 +18,12 @@ import com.anotherbigidea.flash.avm2.MethodInfoFlags;
  */
 public class AVM2Method {
 
+    /**
+     * The method index - only for methods that are not used by any class or
+     * script
+     */
+    public final int index;
+    
     /** The method name - usually not used (is null) */
     public String name;
     
@@ -53,12 +59,24 @@ public class AVM2Method {
      * @param flags the initial method flags
      */
     public AVM2Method( AVM2Name returnType, Set<MethodInfoFlags> flags ) {
+        this( returnType, flags, -1 );     
+    }
+
+    /**
+     * @param returnType the return type - null for any type
+     * @param flags the initial method flags
+     * @param index used for anon function closures
+     */
+    public AVM2Method( AVM2Name returnType, Set<MethodInfoFlags> flags, int index ) {
         
         this.returnType = returnType;     
         
         if( flags == null ) flags = EnumSet.noneOf( MethodInfoFlags.class ); 
         this.flags = flags;
+        
+        this.index = index;
     }
+
     
     /**
      * Add a parameter.
@@ -76,7 +94,13 @@ public class AVM2Method {
     
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
-        out.print( "method " );        
+        if( index >= 0 ) {
+            out.print( "method[" + index + "] " );                    
+        }
+        else {
+            out.print( "method " );
+        }
+        
         if(name != null ) out.print( name );
         out.println( " {" );
         out.indent();
@@ -136,9 +160,17 @@ public class AVM2Method {
         for( AVM2Method meth : context.methods ) {
             if( meth == this ) return;  //already there
         }
-        
+                       
         context.methods.add( this );
         
+        initPool_2( context );
+    }
+        
+    /**
+     * Initialize a write-context
+     */
+    public void initPool_2( AVM2ABCFile.WriteContext context ) {
+
         if( name != null ) context.pool.stringIndex( name );
         
         if( returnType != null ) returnType.initPool( context );

@@ -1,11 +1,6 @@
 package com.anotherbigidea.flash.avm2.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.epistem.io.IndentingPrintWriter;
 
@@ -25,7 +20,10 @@ public class AVM2ABCFile {
     
     /** Read-only map of class name to class */
     public final Map<AVM2QName,AVM2Class> classes;
-        
+
+    /** Read-only list of methods that are not part of classes */
+    public final List<AVM2Method> methods;
+    
     /** Read-only list of scripts */
     public final List<AVM2Script> scripts;
     
@@ -35,6 +33,9 @@ public class AVM2ABCFile {
     private final List<AVM2Script> scripts_internal = new ArrayList<AVM2Script>();
     { scripts = Collections.unmodifiableList( scripts_internal ); }
 
+    private final List<AVM2Method> methods_internal = new ArrayList<AVM2Method>();
+    { methods = Collections.unmodifiableList( methods_internal ); }
+    
     /**
      * Use the default (most current) major and minor versions
      */
@@ -61,6 +62,25 @@ public class AVM2ABCFile {
         }
         return null;
     }
+    
+    /**
+     * Add an anon function closure.  The function should have a fixed index.
+     */
+    public void addFunctionClosure( AVM2Method func ) {
+        methods_internal.add( func );
+    }
+    
+    /**
+     * Add an anon function closure.  The function will have a fixed index.
+     */
+    public AVM2Method addFunctionClosure( AVM2Name returnType, Set<MethodInfoFlags> flags ) {
+        
+        AVM2Method func = new AVM2Method( returnType, flags, methods_internal.size() );
+        methods_internal.add( func );
+        
+        return func;
+    }
+
     
     /**
      * Add a new class (or replace the one with the same name).
@@ -150,6 +170,11 @@ public class AVM2ABCFile {
             out.println();
         }
         
+        for( AVM2Method m : methods ) {
+            m.dump( out );
+            out.println();
+        }
+        
         out.unindent();
         out.println( "}" );        
     }
@@ -179,6 +204,14 @@ public class AVM2ABCFile {
         }
         for( AVM2Script s : scripts ) {
             s.initPool( context );
+        }        
+        for( AVM2Method m : methods ) {
+            m.initPool_2( context );
+            
+            //put the closure function in the correct index position
+            int index = m.index;
+            context.methods.add( context.methods.get( index ));
+            context.methods.set( index, m );
         }
         
         context.pool.write( file );

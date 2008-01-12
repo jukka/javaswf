@@ -51,6 +51,7 @@ public class AVM2ABCBuilder implements ABC {
     final ConstantPool pool = new ConstantPool();
     
     final List<AVM2Method>   methods  = new ArrayList<AVM2Method>();
+    final List<AVM2Method>   closures = new ArrayList<AVM2Method>();
     final List<AVM2Metadata> metadata = new ArrayList<AVM2Metadata>();
     
     /** @see com.anotherbigidea.flash.avm2.ABC#version(int, int) */
@@ -76,6 +77,7 @@ public class AVM2ABCBuilder implements ABC {
                 classIndex++;
                 
                 clazz.staticInitializer = methods.get( constructorIndex );
+                closures.set( constructorIndex, null );
                 
                 return new TraitsImpl( clazz.staticTraits );
             }
@@ -93,7 +95,8 @@ public class AVM2ABCBuilder implements ABC {
                 
                 AVM2Class clazz = file.addClass(name, superclass, isSealed, isFinal, isInterface, protectedNamespace);
                 clazz.constructor = methods.get( constructorIndex );
-                
+                closures.set( constructorIndex, null );
+
                 for( int i : interfaces ) {
                     clazz.addInterface( AVM2Name.atIndex( pool, i ));
                 }
@@ -205,12 +208,15 @@ public class AVM2ABCBuilder implements ABC {
     /** @see com.anotherbigidea.flash.avm2.ABC.ABCFile#methods(int) */
     public MethodInfos methods(int count) {
         return new ABC.MethodInfos() {
+            int index = 0;
+            
             /** @see com.anotherbigidea.flash.avm2.ABC.MethodInfos#methodInfo(int, int, int, int[], int[], int[], int[]) */
             public void methodInfo(int nameIndex, int flags, int returnType, int[] paramTypes, int[] optValues, int[] optValKinds, int[] paramNames) {
                 
                 AVM2Name retType = AVM2Name.atIndex( pool, returnType );                    
-                AVM2Method m = new AVM2Method( retType, MethodInfoFlags.decode( flags ) );
+                AVM2Method m = new AVM2Method( retType, MethodInfoFlags.decode( flags ), index++ );
                 methods.add( m );
+                closures.add( m );
                 
                 if( nameIndex > 0 ) m.name = pool.stringAt( nameIndex );
                 
@@ -298,6 +304,8 @@ public class AVM2ABCBuilder implements ABC {
             /** @see com.anotherbigidea.flash.avm2.ABC.Scripts#script(int, int) */
             public Traits script(int initializerIndex, int traitCount) {                    
                 AVM2Script script = file.addScript( methods.get( initializerIndex ));
+                closures.set( initializerIndex, null );
+
                 return new TraitsImpl( script.traits );
             }
 
@@ -320,7 +328,13 @@ public class AVM2ABCBuilder implements ABC {
 
     /** @see org.epistem.io.PipelineInterface#done() */
     public void done() {
-        // nada            
+        //save the methods that were not used
+        
+        for( AVM2Method method : closures ) {
+            if( method != null ) {
+                file.addFunctionClosure( method );
+            }
+        }
     }        
  
    
@@ -377,6 +391,7 @@ public class AVM2ABCBuilder implements ABC {
         public void function(int nameIndex, int slotId, int methIndex, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
             AVM2Method method = methods.get( methIndex );
+            closures.set( methIndex, null );
             
             AVM2FunctionSlot slot = traits.addFunction( name, method );
             slot.indexId = slotId - 1;
@@ -387,7 +402,8 @@ public class AVM2ABCBuilder implements ABC {
         public void getter(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
             AVM2Method method = methods.get( methIndex );
-            
+            closures.set( methIndex, null );
+
             AVM2Getter slot = traits.addGetter( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
             initMetadata( metadataIndices, slot );            
@@ -397,7 +413,8 @@ public class AVM2ABCBuilder implements ABC {
         public void method(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
             AVM2Method method = methods.get( methIndex );
-            
+            closures.set( methIndex, null );
+
             AVM2MethodSlot slot = traits.addMethod( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
             initMetadata( metadataIndices, slot );            
@@ -407,7 +424,8 @@ public class AVM2ABCBuilder implements ABC {
         public void setter(int nameIndex, int dispId, int methIndex, boolean isFinal, boolean isOverride, int[] metadataIndices) {
             AVM2QName name = (AVM2QName) AVM2Name.atIndex( pool, nameIndex );
             AVM2Method method = methods.get( methIndex );
-            
+            closures.set( methIndex, null );
+
             AVM2Setter slot = traits.addSetter( name, method, isFinal, isOverride );
             slot.indexId = dispId - 1;
             initMetadata( metadataIndices, slot );            

@@ -228,7 +228,7 @@ public interface ABC extends PipelineInterface {
         public void coerce_o( );
         public void coerce_s( );
         public void coerce_u( );
-        public void construct( );
+        public void construct( int arg_count );
         public void constructprop( int name_index, int arg_count );
         public void constructsuper( int arg_count );
         public void convert_b( );

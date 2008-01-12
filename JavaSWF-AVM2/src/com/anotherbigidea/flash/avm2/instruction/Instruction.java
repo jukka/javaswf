@@ -482,7 +482,7 @@ public class Instruction {
             case OP_coerce_o : instrs.coerce_o( ); break;
             case OP_coerce_s : instrs.coerce_s( ); break;
             case OP_coerce_u : instrs.coerce_u( ); break;
-            case OP_construct : instrs.construct( ); break;
+            case OP_construct : instrs.construct( (Integer) arguments[0] ); break;
             case OP_constructprop : instrs.constructprop( (Integer) arguments[0], (Integer) arguments[1] ); break;
             case OP_constructsuper : instrs.constructsuper( (Integer) arguments[0] ); break;
             case OP_convert_b : instrs.convert_b( ); break;

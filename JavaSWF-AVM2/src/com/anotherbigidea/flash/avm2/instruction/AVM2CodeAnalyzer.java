@@ -5,6 +5,7 @@ import java.util.*;
 import org.epistem.code.ControlFlowGraph;
 import org.epistem.code.InstructionAdaptor;
 import org.epistem.code.LocalValue;
+import org.epistem.io.IndentingPrintWriter;
 
 import com.anotherbigidea.flash.avm2.Operation;
 import com.anotherbigidea.flash.avm2.model.AVM2ExceptionHandler;
@@ -60,7 +61,12 @@ public class AVM2CodeAnalyzer {
         body.maxScope = body.scopeDepth + maxScope;
         body.maxStack = maxStack;
         
-        body.maxRegisters = 1 + cfGraph.allocateRegisters( reservedRegisters );
+        //make sure max regs reflects the reserved regs
+        for( int i : reservedRegisters ) {
+            body.maxRegisters = Math.max( body.maxRegisters, i + 1 );
+        }
+        
+        body.maxRegisters = Math.max( body.maxRegisters, 1 + cfGraph.allocateRegisters( reservedRegisters ));
         killValues();
     }
     
@@ -132,6 +138,7 @@ public class AVM2CodeAnalyzer {
 
         /** @see org.epistem.code.InstructionAdaptor#gatherReferencedLocals(java.lang.Object, java.util.Collection) */
         public void gatherReferencedLocals( Instruction instruction, Collection<LocalValue<Instruction>> locals ) {
+            //instruction.dump( IndentingPrintWriter.SYSERR ); IndentingPrintWriter.SYSERR.flush();
             instruction.gatherReferencedLocals( locals );            
         }
 

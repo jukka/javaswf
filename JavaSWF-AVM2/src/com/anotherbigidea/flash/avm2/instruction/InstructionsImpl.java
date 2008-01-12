@@ -165,9 +165,9 @@ public abstract class InstructionsImpl implements ABC.Instructions {
         if( instructions != null ) instructions. coerce( name_index );
     }
 
-    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#construct() */
-    public void construct() {
-        if( instructions != null ) instructions. construct();
+    /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#construct(int) */
+    public void construct( int arg_count ) {
+        if( instructions != null ) instructions. construct( arg_count );
     }
 
     /** @see com.anotherbigidea.flash.avm2.ABC.Instructions#constructprop(int, int) */

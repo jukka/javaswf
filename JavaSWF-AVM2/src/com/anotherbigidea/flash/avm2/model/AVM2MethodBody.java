@@ -108,7 +108,7 @@ public class AVM2MethodBody {
     
     /** Dump for debug purposes */
     public void dump( IndentingPrintWriter out ) {
-        if( maxStack == -1 ) return;  //this body does not exist
+        //if( maxStack == -1 ) return;  //this body does not exist
         
         out.println( "body {" );
         out.indent();
@@ -139,6 +139,11 @@ public class AVM2MethodBody {
         out.println( );                
         for( AVM2ExceptionHandler handler : exceptionHandlers ) {
             handler.dump( out );
+        }
+        
+        for( AVM2Trait trait : activationTraits.traits ) {
+            out.print( "activation " );
+            trait.dump( out );
         }
         
         out.unindent();
