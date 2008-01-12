@@ -22,6 +22,11 @@ public class IndentingPrintWriter extends PrintWriter {
      * Writer to system out.
      */
     public static final IndentingPrintWriter SYSOUT = new IndentingPrintWriter( System.out );
+
+    /**
+     * Writer to system err.
+     */
+    public static final IndentingPrintWriter SYSERR = new IndentingPrintWriter( System.err );
     
     private String mIndent;
     private int    mIndentLevel = 0;
