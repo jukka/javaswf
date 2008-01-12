@@ -45,45 +45,44 @@ public class AVM1BlockBuilder implements SWFActionBlock {
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#_try(int) */
     public TryCatchFinally _try(int catchRegisterNumber) throws IOException {
-        return _try( new Try( catchRegisterNumber ));
+        return _try( catchRegisterNumber, null );
     }
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#_try(java.lang.String) */
     public TryCatchFinally _try(String catchVarName) throws IOException {
-        return _try( new Try( catchVarName ));
+        return _try( -1, catchVarName );
     }
-
-    private class TryBlockBuilder extends AVM1BlockBuilder {
-        String label;
+           
+    private TryCatchFinally _try( final int catchRegisterNumber,
+                                  final String catchVarName ) {
         
-        private TryBlockBuilder() {
-            super( block, lookupTable );
-        }
-        @Override public void jumpLabel(String label) throws IOException {
-            this.label = label;
-            super.jumpLabel( label );
-        }
-        @Override public void end() throws IOException {
-            //suppress
-        }
-    };         
-    
-    private TryCatchFinally _try( final Try tryOp ) {
+        final Try tryOp = new Try();
         block.append( tryOp );
         
         return new TryCatchFinally() {
 
-            final TryBlockBuilder tryBB     = new TryBlockBuilder();
-            final TryBlockBuilder catchBB   = new TryBlockBuilder();
-            final TryBlockBuilder finallyBB = new TryBlockBuilder();
+            public SWFActionBlock tryBlock() { 
+                return new AVM1BlockBuilder( block, lookupTable ); 
+            }
             
-            public SWFActionBlock tryBlock()     { return tryBB; }
-            public SWFActionBlock catchBlock()   { return catchBB; }
-            public SWFActionBlock finallyBlock() { return finallyBB; }
-            public void endTry() { 
-                tryOp.endTryLabel     = tryBB.label; 
-                tryOp.endCatchLabel   = catchBB.label;
-                tryOp.endFinallyLabel = finallyBB.label;                
+            public SWFActionBlock catchBlock() {
+                tryOp.tryCatch = (catchVarName != null) ?
+                                     new TryCatch( tryOp, catchVarName ) :
+                                     new TryCatch( tryOp, catchRegisterNumber );
+                
+                block.append( tryOp.tryCatch );
+                return new AVM1BlockBuilder( block, lookupTable ); 
+            }
+            
+            public SWFActionBlock finallyBlock() { 
+                tryOp.tryFinally = new TryFinally( tryOp );
+                block.append( tryOp.tryFinally );                
+                return new AVM1BlockBuilder( block, lookupTable ); 
+            }
+            
+            public void endTry() {
+                tryOp.tryEnd = new TryEnd( tryOp );
+                block.append( tryOp.tryEnd );                
             }
         };
     }
@@ -95,15 +94,9 @@ public class AVM1BlockBuilder implements SWFActionBlock {
         block.append( with );
         
         return new AVM1BlockBuilder( block, lookupTable ) {
-            private String lastLabel;
-            
-            @Override public void jumpLabel(String label) throws IOException {
-                lastLabel = label;
-                super.jumpLabel( label );
-            }
-
             @Override public void end() throws IOException {
-                with.endLabel = lastLabel;
+                with.withEnd = new WithEnd( with );
+                block.append( with.withEnd );
             }
         };        
     }
@@ -350,7 +343,15 @@ public class AVM1BlockBuilder implements SWFActionBlock {
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#jumpLabel(java.lang.String) */
     public void jumpLabel(String label) throws IOException {
-        block.append( new JumpLabel( label ) );
+        AVM1Operation op = new JumpLabel( label );
+        block.append( op );
+        
+        //if the previous was a function then this label should also go at
+        //the end of the body
+        System.err.println( label + " ---> " + op.prev );
+        if( op.prev != null && op.prev instanceof Function ) {
+            ((Function) op.prev).body.append( new JumpLabel( label ) );            
+        }
     }
 
     /** @see com.anotherbigidea.flash.interfaces.SWFActionBlock#lessThan() */

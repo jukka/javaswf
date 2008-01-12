@@ -21,7 +21,7 @@ public abstract class AVM1OperationAggregation extends AVM1Operation
     /**
      * The aggregated ops
      */
-    private List<AVM1Operation> ops = new ArrayList<AVM1Operation>();
+    protected List<AVM1Operation> ops = new ArrayList<AVM1Operation>();
     
     /**
      * The count of aggregated operations

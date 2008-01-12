@@ -64,10 +64,16 @@ public interface AVM1OpVisitor {
     public void visitThrowException( ThrowException op );
     public void visitToggleQuality( ToggleQuality op );
     public void visitTrace( Trace op );
+    
     public void visitTry( Try op );
+    public void visitTryCatch( TryCatch op );
+    public void visitTryFinally( TryFinally op );
+    public void visitTryEnd( TryEnd op );
+    
     public void visitUnaryOp( UnaryOp op );
     public void visitWaitForFrame( WaitForFrame op );
     public void visitWith( With op );
+    public void visitWithEnd( WithEnd op );
     
     public void visitIntValue       ( IntValue op );
     public void visitBooleanValue   ( BooleanValue op );
@@ -421,5 +427,27 @@ public interface AVM1OpVisitor {
         public void visitWith(With op) {
             if( visitor != null ) visitor.visitWith( op );
         }
+
+        /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWithEnd(com.anotherbigidea.flash.avm1.ops.WithEnd) */
+        public void visitWithEnd( WithEnd op ) {
+            if( visitor != null ) visitor.visitWithEnd( op );
+        }
+
+        /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryCatch(com.anotherbigidea.flash.avm1.ops.TryCatch) */
+        public void visitTryCatch( TryCatch op ) {
+            if( visitor != null ) visitor.visitTryCatch( op );
+        }
+
+        /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryEnd(com.anotherbigidea.flash.avm1.ops.TryEnd) */
+        public void visitTryEnd( TryEnd op ) {
+            if( visitor != null ) visitor.visitTryEnd( op );
+        }
+
+        /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryFinally(com.anotherbigidea.flash.avm1.ops.TryFinally) */
+        public void visitTryFinally( TryFinally op ) {
+            if( visitor != null ) visitor.visitTryFinally( op );
+        }        
+        
+        
     }
 }

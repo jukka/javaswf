@@ -23,6 +23,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public int intValue() { return value; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitIntValue( this ); }
+        
+        public String toString() { return "" + value; }
     }
 
     public static final class BooleanValue extends ConstantOp {
@@ -34,7 +36,9 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public int intValue() { return value ? 1 : 0; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitBooleanValue( this ); }
-    }
+        
+        public String toString() { return "" + value; }
+}
 
     public static final class FloatValue extends ConstantOp {
         public final float value;        
@@ -45,6 +49,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public int intValue() { return (int) value; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitFloatValue( this ); }
+        
+        public String toString() { return "" + value; }
     }
 
     public static final class DoubleValue extends ConstantOp {
@@ -56,6 +62,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public int intValue() { return (int) value; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitDoubleValue( this ); }
+        
+        public String toString() { return "" + value; }
     }
 
     public static final class NullValue extends ConstantOp {
@@ -65,6 +73,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public boolean isNonZero() { return false; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitNullValue( this ); }
+        
+        public String toString() { return "<null>"; }
     }
 
     public static final class UndefinedValue extends ConstantOp {
@@ -74,6 +84,8 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public boolean isNonZero() { return false; }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitUndefinedValue( this ); }
+        
+        public String toString() { return "<undefined>"; }
     }
 
     public static final class StringValue extends ConstantOp {
@@ -84,5 +96,7 @@ public abstract class ConstantOp extends AVM1Operation implements AVM1ValueProdu
         public int intValue() { return Integer.parseInt( value ); }
         
         public void accept(AVM1OpVisitor visitor) { visitor.visitStringValue( this ); }
+        
+        public String toString() { return "\"" + value + "\""; }
     }
 }

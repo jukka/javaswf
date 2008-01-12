@@ -1,7 +1,10 @@
 package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
+import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
@@ -51,5 +54,14 @@ public final class WaitForFrame extends AVM1OperationAggregation {
     @Override
     public void accept(AVM1OpVisitor visitor) {
         visitor.visitWaitForFrame( this );        
+    }
+
+    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#getFollowOnInstructions(com.anotherbigidea.flash.avm1.AVM1ActionBlock) */
+    @Override
+    public Collection<AVM1Operation> getFollowOnInstructions( AVM1ActionBlock block ) {
+        Collection<AVM1Operation> ops = new HashSet<AVM1Operation>();
+        ops.add( block.findLabel( jumpLabel ) );
+        ops.add( next() );
+        return ops;
     }
 }

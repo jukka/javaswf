@@ -2,6 +2,8 @@ package com.anotherbigidea.flash.avm1.ops;
 
 import java.io.IOException;
 
+import org.epistem.code.LocalValue;
+
 import com.anotherbigidea.flash.avm1.AVM1OpVisitor;
 import com.anotherbigidea.flash.avm1.AVM1Operation;
 import com.anotherbigidea.flash.avm1.AVM1OperationAggregation;
@@ -15,9 +17,13 @@ import com.anotherbigidea.flash.interfaces.SWFActionBlock;
  */
 public class StoreInRegister extends AVM1OperationAggregation implements AVM1ValueProducer {
 
-    
     public final int registerNumber;    
     public AVM1Operation value;
+
+    /**
+     * The abstracted value that this register contains
+     */
+    public LocalValue<AVM1Operation> localValue;
     
     public StoreInRegister( int registerNumber ) {
         this.registerNumber = registerNumber;
@@ -32,7 +38,7 @@ public class StoreInRegister extends AVM1OperationAggregation implements AVM1Val
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#writeOp(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     protected void writeOp( SWFActionBlock block ) throws IOException {
-        block.storeInRegister( registerNumber );
+        block.storeInRegister( ( localValue  != null ) ? localValue.hashCode() : registerNumber );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */

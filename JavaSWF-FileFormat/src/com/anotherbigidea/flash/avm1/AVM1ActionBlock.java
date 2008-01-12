@@ -3,12 +3,10 @@ package com.anotherbigidea.flash.avm1;
 import java.io.IOException;
 import java.util.*;
 
+import org.epistem.code.LocalValue;
 import org.epistem.io.IndentingPrintWriter;
 
-import com.anotherbigidea.flash.avm1.ops.Function;
-import com.anotherbigidea.flash.avm1.ops.JumpLabel;
-import com.anotherbigidea.flash.avm1.ops.PushRegister;
-import com.anotherbigidea.flash.avm1.ops.StoreInRegister;
+import com.anotherbigidea.flash.avm1.ops.*;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
 
@@ -33,6 +31,9 @@ public class AVM1ActionBlock {
     private final Map<String, JumpLabel> labels = new HashMap<String, JumpLabel>();
     private final Map<String, Collection<AVM1Operation>> labelReferences = 
         new HashMap<String, Collection<AVM1Operation>>();
+    
+    private final Set<StoreInRegister> registerStores = new HashSet<StoreInRegister>();
+    private final Set<Try>             tryBlocks      = new HashSet<Try>();
     
     public AVM1ActionBlock() {
         this( null );
@@ -141,6 +142,11 @@ public class AVM1ActionBlock {
      * Called when all operations have been added to the block.
      */
     public void complete() {
+        //only do this for outer block
+        if( owner == null ) complete_internal();
+    }
+    
+    private void complete_internal() {
         //remove extraneous labels        
         Set<JumpLabel> extraneousLabels = new HashSet<JumpLabel>();
         for( String label : labels.keySet() ) {
@@ -154,7 +160,132 @@ public class AVM1ActionBlock {
             label.remove();
         }
         
+        determineLocalValues();        
         aggregateAll();
+    }
+    
+    /**
+     * Wire up the initial "fake" register stores for a function body
+     */
+    private void wireUpInitialRegisterStores() {
+        if( owner != null && owner instanceof Function ) {
+            Function func = (Function) owner;
+            
+            for( int i = 0; i < func.paramRegisters.length; i++ ) {
+                StoreInRegister store = func.paramRegisters[i];
+                if( store == null ) continue;
+                
+                registerStores.add( store );
+                ((AVM1Operation) store).next = first;                    
+            }
+            
+            StoreInRegister[] specialRegs = {
+                    func.thisRegister,
+                    func.argumentsRegister,
+                    func.superRegister,
+                    func.rootRegister,
+                    func.parentRegister,
+                    func.globalRegister 
+            };
+            
+            for( int i = 0; i < specialRegs.length; i++ ) {
+                StoreInRegister store = specialRegs[i];
+                if( store == null ) continue;
+                
+                registerStores.add( store );
+                ((AVM1Operation) store).next = first;                    
+            }
+        }
+    }
+    
+    /**
+     * Determine the local values for the registers.  A local value represents
+     * a value stored in a register that has a defined lifespan.  More than
+     * one local value may use the same register, if the lifespans do not
+     * overlap.
+     * 
+     * (Should be done before aggregation)
+     */
+    private void determineLocalValues() {
+        
+        wireUpInitialRegisterStores();
+        
+        //iterate over the register stores - for each, follow the control-flow
+        // to find all the register pushes
+        for( StoreInRegister store : registerStores ) {
+            LocalValue<AVM1Operation> local = new LocalValue<AVM1Operation>( store.registerNumber );
+            local.setters.add( store );
+            store.localValue = local;
+            
+            //find all uses
+            LinkedList<AVM1Operation> queue = new LinkedList<AVM1Operation>();
+            Set<AVM1Operation> visited = new HashSet<AVM1Operation>();
+            queue.addAll( store.getFollowOnInstructions( this ) );
+            
+            System.err.println( "---------------------" );
+            
+            while( ! queue.isEmpty() ) {
+                
+                for( AVM1Operation op : queue ) {
+                    if( op == null ) System.err.print( "null " );
+                    else System.err.print( op.getClass().getSimpleName() + " " );                    
+                }
+                System.err.println();
+                
+                AVM1Operation op = queue.remove();
+                if( visited.contains( op ) ) continue;
+                visited.add( op );
+                
+                if( op instanceof StoreInRegister ) {
+                    StoreInRegister s = (StoreInRegister) op;
+                    
+                    //another store for this register is the end of the
+                    //local value's lifespan
+                    if( s.registerNumber == store.registerNumber ) continue;
+                }
+                
+                if( op instanceof PushRegister ) {
+                    PushRegister p = (PushRegister) op;
+                    
+                    //push of this value
+                    if( p.registerNumber == store.registerNumber ) {
+                        
+                        //if this push is already associated with a value
+                        //from an alternate store then we need to change
+                        //all the setters and getters of that value to use this
+                        //one
+                        if( p.localValue != null ) {
+                            LocalValue<AVM1Operation> otherLocal = p.localValue;
+                            
+                            for( AVM1Operation setter : otherLocal.setters ) {
+                                StoreInRegister otherStore = (StoreInRegister) setter;
+                                otherStore.localValue = local;
+                                local.setters.add( otherStore );
+                            }
+                            
+                            for( AVM1Operation getter : otherLocal.getters ) {
+                                PushRegister otherPush =  (PushRegister) getter;
+                                otherPush.localValue = local;
+                                local.getters.add( otherPush );                                
+                            }
+                        }
+                        
+                        p.localValue = local;
+                        local.getters.add( p );
+                    }
+                }
+
+                //visit downstream operations
+                queue.addAll( op.getFollowOnInstructions( this ) );
+
+                //make sure that the visit goes into catch and finally blocks
+                if( op instanceof Try ) {
+                    Try _try = (Try) op;
+                    if( _try.tryCatch   != null ) queue.add( _try.tryCatch.next() );
+                    if( _try.tryFinally != null ) queue.add( _try.tryFinally.next() );
+                }
+            }
+        }
     }
     
     /**
@@ -162,6 +293,10 @@ public class AVM1ActionBlock {
      */
     public void aggregateAll() {
         for( AVM1Operation op = first; op != null; op = op.next() ) {
+            if( op instanceof Function ) {
+                ((Function) op).body.complete_internal();
+            }
+            
             if( op instanceof AVM1OperationAggregation ) {
                 AVM1OperationAggregation agg = (AVM1OperationAggregation) op;                
                 agg.aggregate();
@@ -266,9 +401,13 @@ public class AVM1ActionBlock {
 
         if( op instanceof StoreInRegister ) {
             registerCount = Math.max( registerCount, ((StoreInRegister) op).registerNumber + 1 );
+            registerStores.add( (StoreInRegister) op );
         }
         else if( op instanceof PushRegister ) {
             registerCount = Math.max( registerCount, ((PushRegister) op).registerNumber + 1 );
+        }
+        else if( op instanceof Try ) {
+            tryBlocks.add( (Try) op );
         }
         
         count++;

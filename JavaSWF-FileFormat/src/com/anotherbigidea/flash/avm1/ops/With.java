@@ -16,9 +16,9 @@ import com.anotherbigidea.flash.writers.ActionTextWriter;
 public class With extends AVM1OperationAggregation {
 
     /**
-     * Label of the instruction after the end of the with-block
+     * The end of the with-block
      */
-    public String endLabel;
+    public WithEnd withEnd;
     
     public AVM1Operation object;
     
@@ -28,18 +28,12 @@ public class With extends AVM1OperationAggregation {
         if( object == null ) object = consumePrevious();
     }
 
-    /** @see com.anotherbigidea.flash.avm1.AVM1Operation#labelReferences() */
-    @Override
-    public String[] labelReferences() {
-        return new String[] { endLabel };
-    }
-
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#writeOp(com.anotherbigidea.flash.interfaces.SWFActionBlock) */
     @Override
     protected void writeOp( SWFActionBlock block ) throws IOException {
         SWFActionBlock withBlock = block.startWith();    
         for( AVM1Operation op = next(); op != null; op = op.next() ) {
-            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endLabel ) ) {
+            if( op == withEnd ) {
                 withBlock.end();
                 op.write( block );
                 break;
@@ -64,11 +58,9 @@ public class With extends AVM1OperationAggregation {
         writer.startWith();
 
         for( AVM1Operation op = next(); op != null; op = op.next() ) {
-            if( op instanceof JumpLabel && ((JumpLabel) op).label.equals( endLabel ) ) {
-                op.print( writer );
-                break;
-            }
-            
+            if( op == withEnd ) break;
+
+            op.print( writer );
         }
         
         writer.end();

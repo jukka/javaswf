@@ -1,6 +1,8 @@
 package com.anotherbigidea.flash.avm1;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.writers.ActionTextWriter;
@@ -82,4 +84,12 @@ public abstract class AVM1Operation {
      * Accept a visitor
      */
     public abstract void accept( AVM1OpVisitor visitor );
+    
+    /**
+     * Get the instructions that may follow this one in normal execution flow
+     */
+    public Collection<AVM1Operation> getFollowOnInstructions( AVM1ActionBlock block ) {
+        if( next == null ) return Collections.emptySet();
+        return Collections.singleton( next );
+    }
 }

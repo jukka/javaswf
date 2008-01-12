@@ -1,6 +1,7 @@
 package com.anotherbigidea.flash.avm1.ops;
 
 import static com.anotherbigidea.flash.SWFActionCodes.*;
+import static com.anotherbigidea.flash.avm1.ops.Function.PreloadingFlag.*;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -20,15 +21,15 @@ import com.anotherbigidea.flash.writers.ActionTextWriter;
 public class Function extends AVM1Operation {
 
     public static enum PreloadingFlag {        
-        PRELOAD_PARENT   (START_FUNCTION2_PRELOAD_PARENT   ),
-        PRELOAD_ROOT     (START_FUNCTION2_PRELOAD_ROOT     ),
-        SUPRESS_SUPER    (START_FUNCTION2_SUPRESS_SUPER    ),
-        PRELOAD_SUPER    (START_FUNCTION2_PRELOAD_SUPER    ),
-        SUPRESS_ARGUMENTS(START_FUNCTION2_SUPRESS_ARGUMENTS),
-        PRELOAD_ARGUMENTS(START_FUNCTION2_PRELOAD_ARGUMENTS),
-        SUPRESS_THIS     (START_FUNCTION2_SUPRESS_THIS     ),
-        PRELOAD_THIS     (START_FUNCTION2_PRELOAD_THIS     ),
-        PRELOAD_GLOBAL   (START_FUNCTION2_PRELOAD_GLOBAL   );
+        PRELOAD_PARENT    (START_FUNCTION2_PRELOAD_PARENT   ),
+        PRELOAD_ROOT      (START_FUNCTION2_PRELOAD_ROOT     ),
+        SUPPRESS_SUPER    (START_FUNCTION2_SUPRESS_SUPER    ),
+        PRELOAD_SUPER     (START_FUNCTION2_PRELOAD_SUPER    ),
+        SUPPRESS_ARGUMENTS(START_FUNCTION2_SUPRESS_ARGUMENTS),
+        PRELOAD_ARGUMENTS (START_FUNCTION2_PRELOAD_ARGUMENTS),
+        SUPPRESS_THIS     (START_FUNCTION2_SUPRESS_THIS     ),
+        PRELOAD_THIS      (START_FUNCTION2_PRELOAD_THIS     ),
+        PRELOAD_GLOBAL    (START_FUNCTION2_PRELOAD_GLOBAL   );
         
         public final int bits;
         private PreloadingFlag( int bits ) { this.bits = bits; }
@@ -58,6 +59,15 @@ public class Function extends AVM1Operation {
     public final String[] paramNames;
     public final int[] registersForArguments;
     
+    //--Fake register stores for the common values and params
+    public final StoreInRegister[] paramRegisters;
+    public final StoreInRegister   thisRegister;
+    public final StoreInRegister   argumentsRegister;
+    public final StoreInRegister   superRegister;
+    public final StoreInRegister   rootRegister;
+    public final StoreInRegister   parentRegister;
+    public final StoreInRegister   globalRegister;    
+    
     public Function( String name, int numRegistersToAllocate,
                      String[] paramNames,
                      int[] registersForArguments ) {
@@ -68,6 +78,21 @@ public class Function extends AVM1Operation {
         this.numRegistersToAllocate = numRegistersToAllocate;
         this.paramNames = paramNames;
         this.registersForArguments = registersForArguments;
+        
+        int regNum = 1;
+        
+        thisRegister      = flags.contains( PRELOAD_THIS      ) ? new StoreInRegister( regNum++ ) : null; 
+        argumentsRegister = flags.contains( PRELOAD_ARGUMENTS ) ? new StoreInRegister( regNum++ ) : null; 
+        superRegister     = flags.contains( PRELOAD_SUPER     ) ? new StoreInRegister( regNum++ ) : null; 
+        rootRegister      = flags.contains( PRELOAD_ROOT      ) ? new StoreInRegister( regNum++ ) : null; 
+        parentRegister    = flags.contains( PRELOAD_PARENT    ) ? new StoreInRegister( regNum++ ) : null; 
+        globalRegister    = flags.contains( PRELOAD_GLOBAL    ) ? new StoreInRegister( regNum++ ) : null; 
+        
+        paramRegisters = new StoreInRegister[ registersForArguments.length ];
+        for( int i = 0; i < paramRegisters.length; i++ ) {
+            if( registersForArguments[i] == 0 ) continue;            
+            paramRegisters[i] = new StoreInRegister( registersForArguments[i] );
+        }
     }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#write(com.anotherbigidea.flash.interfaces.SWFActionBlock) */

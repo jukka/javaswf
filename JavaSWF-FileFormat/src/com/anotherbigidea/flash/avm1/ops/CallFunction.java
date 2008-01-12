@@ -17,7 +17,7 @@ public class CallFunction extends AVM1OperationAggregation implements AVM1ValueP
 
     public AVM1Operation name;
     public AVM1Operation numArgs;
-    public AVM1Operation[] args;
+    public AVM1Operation[] args;  //in reverse execution order
     
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#aggregate() */
     @Override
