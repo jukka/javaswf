@@ -106,7 +106,7 @@ public final class AVM2Code {
 	 * Calculate and set the max-registers, max-stack, and max-scope for the
 	 * method body, given the current instructions
 	 */
-	public void calcMaxes() {
+	public void analyze() {
 	    new AVM2CodeAnalyzer( body ).analyze( reservedRegisters );
 	}
 	
@@ -630,7 +630,7 @@ public final class AVM2Code {
 	/**
 	 * Push a value, according to type
 	 */
-	private void push( Object obj ) {
+	public void push( Object obj ) {
 		if( obj == null ) {
 			pushNull();
 		}
@@ -884,6 +884,14 @@ public final class AVM2Code {
 	}
 	
 	/**
+	 * Create a new array and initialize it by popping values from the stack
+	 * @param length the array size
+	 */
+	public void newArray( int length ) {
+	    instructions.append( OP_newarray, length );
+	}
+	
+	/**
 	 * Push a function closure
 	 * 
 	 * @param function the function - which must have a fixed index
@@ -928,11 +936,11 @@ public final class AVM2Code {
 	 * static initializer has already been generated.  The constructor is left
 	 * open (no return operation).
 	 * 
-	 * @param superArg an argument to send to the super-contructor, null for none
+	 * @param superArgs arguments to send to the super-contructor
 	 * 
 	 * @return the wrapper for adding to the constructor
 	 */
-	public static AVM2Code startNoArgConstructor( AVM2Class avm2Class, String superArg ) {
+	public static AVM2Code startNoArgConstructor( AVM2Class avm2Class, Object... superArgs ) {
 		
         AVM2Method cons = avm2Class.constructor = 
             new AVM2Method( null, EnumSet.noneOf( MethodInfoFlags.class ));
@@ -948,9 +956,9 @@ public final class AVM2Code {
 		code.getLocal( code.thisValue );
 
 		int argCount = 0;
-		if( superArg != null ) {
-		    argCount = 1;
-		    code.pushString( superArg );
+		for( Object superArg : superArgs ) {
+		    argCount++;
+		    code.push( superArg );
 		}
 		
 		code.constructSuper( argCount );
@@ -996,7 +1004,7 @@ public final class AVM2Code {
         AVM2Code code = new AVM2Code( initBody );
         code.setupInitialScope();
         code.returnVoid();
-        code.calcMaxes();
+        code.analyze();
     }
     
     /**
@@ -1089,7 +1097,7 @@ public final class AVM2Code {
             code.initProperty( avm2Class.name );
             
             code.returnVoid();
-            code.calcMaxes();
+            code.analyze();
             
             return code.body.maxScope;
         }

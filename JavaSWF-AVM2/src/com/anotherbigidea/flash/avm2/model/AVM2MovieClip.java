@@ -1,10 +1,5 @@
 package com.anotherbigidea.flash.avm2.model;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import com.anotherbigidea.flash.avm2.NamespaceKind;
 
 /**
@@ -33,25 +28,24 @@ public class AVM2MovieClip {
 	private final AVM2Code constructorCode; 
 	private final AVM2Code staticInitializerCode;
 	public  final int instanceScopeDepth;
-	private final SortedMap<Integer, AVM2QName> frames = new TreeMap<Integer, AVM2QName>();
 	
 	private int classScopeDepth;
 	
 	/**
 	 * @param abc the ABC file to add to
 	 * @param className the name of the new class
-	 * @param superClassName the superclass to use - if null defaults to FLASH_DISPLAY_MOVIECLIP
+	 * @param superClassNames the superclasses to use beneath flash-display-MovieClip
 	 * @param superArg an argument to send to the super-constructor - null for none
 	 */
 	public AVM2MovieClip( AVM2ABCFile abc, String className,
-	                      AVM2QName superClassName,
-	                      String superArg,
-	                      boolean isMainClip ) {
+	                      Object superArg,
+	                      boolean isMainClip,
+	                      AVM2QName... superClassNames ) {
 
 		AVM2QName name       = new AVM2QName( className );
-		AVM2QName superclass = (superClassName != null) ? 
-		                           superClassName :
-		                           FLASH_DISPLAY_MOVIECLIP;
+        AVM2QName superclass = (superClassNames.length == 0) ? 
+                                    FLASH_DISPLAY_MOVIECLIP :
+                                    superClassNames[superClassNames.length-1];
 		String packName = name.namespace.name;
 		String protName = packName + ":" + name.name;
 		
@@ -71,8 +65,8 @@ public class AVM2MovieClip {
 		clinit.addSuperclass( "flash.display.Sprite" );
 		clinit.addSuperclass( "flash.display.MovieClip" );
 
-		if( ! superclass.equals( FLASH_DISPLAY_MOVIECLIP ) ) {
-	        clinit.addSuperclass( superclass );		    
+		for( AVM2QName supername : superClassNames ) {
+		    clinit.addSuperclass( supername );
 		}
 		
 		classScopeDepth = clinit.finish();
@@ -86,21 +80,45 @@ public class AVM2MovieClip {
 	 * Add a frame script.
 	 * 
 	 * @param frameNumber the zero-based frame number
+     * @param the name of the method to call in order to add each frame
 	 * @return the wrapper for adding code to the frame script
 	 */
-	public final AVM2Code addFrame( int frameNumber ) {
-	    AVM2Method frameMethod = new AVM2Method( null, null );
-	    AVM2QName name = new AVM2QName( packageInternal, "frame" + (frameNumber+1));
-	    avm2Class.traits.addMethod( name, frameMethod, false, false );
-	    frames.put( frameNumber, name );
+	public final AVM2Code addFrame( int frameNumber, AVM2QName frameAddMethod ) {
+	    AVM2Method frameFunction = avm2Class.abcFile.addFunctionClosure( null, null );
 	    
-	    AVM2MethodBody body = frameMethod.methodBody;
-	    body.scopeDepth = instanceScopeDepth;
+        constructorCode.getLocal( constructorCode.thisValue );
+        constructorCode.pushInt( frameNumber );
+        constructorCode.newFunction( frameFunction );
+        constructorCode.callPropVoid( frameAddMethod, 2 );
+
+	    AVM2MethodBody body = frameFunction.methodBody;
+	    body.scopeDepth = instanceScopeDepth + 1;
 	    
 	    AVM2Code code = new AVM2Code( body );
-	    code.setupDynamicScope();
-	    
 	    return code;
+	}
+
+	/**
+	 * Add init actions to a frame
+	 * 
+	 * @param frameNumber the frame number
+	 * @param symbolId the symbol id for the actions
+	 * @return the code for the actions
+	 */
+	public final AVM2Code addInitActions( int frameNumber, int symbolId, AVM2QName initAddMethod  ) {
+        AVM2Method initFunction = avm2Class.abcFile.addFunctionClosure( null, null );
+        
+        constructorCode.getLocal( constructorCode.thisValue );
+        constructorCode.pushInt( frameNumber );
+        constructorCode.pushInt( symbolId );
+        constructorCode.newFunction( initFunction );
+        constructorCode.callPropVoid( initAddMethod, 3 );
+
+        AVM2MethodBody body = initFunction.methodBody;
+        body.scopeDepth = instanceScopeDepth + 1;
+        
+        AVM2Code code = new AVM2Code( body );
+        return code;	    
 	}
 	
 	/**
@@ -121,35 +139,10 @@ public class AVM2MovieClip {
 	 * Finish the movieclip.
 	 */
 	public final void finish() {
-	    	    
-	    //--complete the static initializer
 	    staticInitializerCode.returnVoid();
-	    staticInitializerCode.calcMaxes();
-	    
-	    //--write out the call to register the frame scripts
-	    if( ! frames.isEmpty() ) {
-    	    constructorCode.findPropStrict( "addFrameScript" );
-            for( Map.Entry<Integer, AVM2QName> entry : frames.entrySet() ) {
-    	        int       frameNumber = entry.getKey();
-    	        AVM2QName scriptName  = entry.getValue();
-    	        
-    	        constructorCode.pushInt( frameNumber );
-    	        constructorCode.getLex( scriptName );
-    	    }
-            constructorCode.callPropVoid( "addFrameScript", frames.size() * 2 );
-	    }
-	    
-        afterFramesAdded( frames.size() );
+	    staticInitializerCode.analyze();
         
         constructorCode.returnVoid();	   
-        constructorCode.calcMaxes();
-	}
-	
-	/**
-	 * Called after frame scripts have been added to the movie to allow
-	 * other code to be inserted.
-	 */
-	protected void afterFramesAdded( int frameCount ) {
-	    //intended for overriding
+        constructorCode.analyze();
 	}
 }
