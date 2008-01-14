@@ -29,10 +29,11 @@ import com.anotherbigidea.flash.writers.SWFTagTypesImpl;
  */
 public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 
-	private static final Logger log = AVM1BytecodeTranslator.log;
+	private static final Logger log = AVMTranslator.log;
 	
 	private final String context;
 	private final AVM2MovieClip mainClip;
+    private final AVM2MovieClip thisClip;
 	
 	//map of symbol id to movieclip
 	private final Map<Integer, AVM2MovieClip> clips = new HashMap<Integer, AVM2MovieClip>();
@@ -43,6 +44,9 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
     
     private final TagParser parser = new TagParser( this );
     private int frameNumber = 0;
+    
+    private FrameActions frameActions;  //current frame actions
+    private List<InitActions> frameInitActions = new ArrayList<InitActions>(); //init actions in current frame
 
     private static class Tag {
         final int    tagType;
@@ -76,19 +80,13 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
         this.mainClip = new AVM2MovieClip( 
                                 abc, 
                                 context.replace( '.', '_' ) + ".MainTimeline",
-                                BabelSWFRuntime.BASE_MOVIECLIP,
                                 context,
-                                true ) {
-            
-            /** @see com.anotherbigidea.flash.avm2.model.AVM2MovieClip#afterFramesAdded(int) */
-            @Override
-            protected void afterFramesAdded( int frameCount ) {
-                AVM2Code cons = constructor();
-                cons.getLocal( cons.thisValue );
-                cons.pushInt( frameCount );
-                cons.callPropVoid( BabelSWFRuntime.FRAMES_POST_CALL, 1 );
-            }
-        };
+                                true,
+                                BabelSWFRuntime.AVM1_BASE_CLIP_CLASS,
+                                BabelSWFRuntime.AVM1_MAIN_TIMELINE_CLASS
+                            );
+        
+        thisClip = mainClip;
         
         //set up the _global value  -- now done in class init scripts
 //        AVM2Code cons = mainClip.constructor();
@@ -187,8 +185,27 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagShowFrame() */
 	@Override
 	public void tagShowFrame() throws IOException {
+	    
+	    //add the init actions for the frame
+	    if( ! frameInitActions.isEmpty() ) {
+	        if( frameActions == null ) {
+	            frameActions = new FrameActions(  thisClip, frameNumber );
+	            frameActions.block().complete();
+	        }
+	        
+	        for( InitActions acts : frameInitActions ) {
+	            frameActions.addInitActions( acts );
+	        }
+	        frameInitActions.clear();
+	    }
+	    
+	    if( frameActions != null ) {
+	        frameActions.translate();
+	    }
+	    
 		frameNumber++;
 		tags.add( new Tag( TAG_SHOWFRAME ) );
+		
 	}
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDefineButton(int, java.util.Vector) */
@@ -231,19 +248,11 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
         AVM2MovieClip clip = 
             new AVM2MovieClip( abc, 
                                context.replace( '.', '_' ) + ".MovieClip_" + id,
-                               BabelSWFRuntime.AVM1_SPRITE_CLASS,
-                               "MovieClip_" + id,
-                               false ){
-
-            /** @see com.anotherbigidea.flash.avm2.model.AVM2MovieClip#afterFramesAdded(int) */
-            @Override
-            protected void afterFramesAdded( int frameCount ) {
-                AVM2Code cons = constructor();
-                cons.getLocal( cons.thisValue );
-                cons.pushInt( frameCount );
-                cons.callPropVoid( BabelSWFRuntime.FRAMES_POST_CALL, 1 );
-            }
-        };
+                               id,
+                               false,
+                               BabelSWFRuntime.AVM1_BASE_CLIP_CLASS,
+                               BabelSWFRuntime.AVM1_SPRITE_CLASS                   
+                             );
         
         clips.put( id, clip );
 		
@@ -257,7 +266,8 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 		log( "tag DoInitAction - id=" + spriteId );
 		
 		AVM2MovieClip clip = clips.get( spriteId );
-        InitActions initActions = new InitActions( clip );
+        InitActions initActions = new InitActions( clip, spriteId );
+        frameInitActions.add( initActions );
         
         final AVM1BlockBuilder builder = new AVM1BlockBuilder( initActions.block() );
         
@@ -286,9 +296,10 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagPlaceObject2(boolean, int, int, int, com.anotherbigidea.flash.structs.Matrix, com.anotherbigidea.flash.structs.AlphaTransform, int, java.lang.String, int) */
 	@Override
-	public SWFActions tagPlaceObject2( boolean isMove, int clipDepth,
-			int depth, int charId, Matrix matrix, AlphaTransform cxform,
-			int ratio, String name, int clipActionFlags ) throws IOException {
+	public SWFActions tagPlaceObject2( 
+	           boolean isMove, int clipDepth,
+			   int depth, int charId, Matrix matrix, AlphaTransform cxform,
+			   int ratio, String name, int clipActionFlags ) throws IOException {
 		log( "tag PlaceObject2 - id=" + charId );
 		
 		// TODO intercept intance actions
@@ -309,7 +320,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	public SWFActions tagDoAction() throws IOException {
 		log( "tag DoAction" );
 				
-		FrameActions frameActions = new FrameActions( mainClip, frameNumber );
+		frameActions = new FrameActions( thisClip, frameNumber );
 		
 		final AVM1BlockBuilder builder = new AVM1BlockBuilder( frameActions.block() );
 		

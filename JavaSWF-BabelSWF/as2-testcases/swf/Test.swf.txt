@@ -1,5 +1,5 @@
 signature: CWS
-header: version=8 length=325 width=2000 height=2000 rate=12 frame-count=1
+header: version=8 length=429 width=2000 height=2000 rate=12 frame-count=1
 background-color  RGB(255,255,255)
 sprite id=20480
     end
@@ -11,52 +11,79 @@ init actions for sprite 20480:
   0000:     lookupTable    
             0:   "Test"
             1:   "_global"
-            2:   "prototype"
-            3:   "main"
-            4:   "as2 test file 1"
-            5:   "ASSetPropFlags"
-  0064:     push           lookup( 0 )
-  0069:     getVariable    
-  0070:     not            
-  0071:     not            
-  0072:     ifJump         "0176"
-  0077:     push           lookup( 1 )
-  0082:     getVariable    
-  0083:     push           lookup( 0 )
+            2:   "*** Test Constructor ***"
+            3:   "doit"
+            4:   "prototype"
+            5:   "main"
+            6:   "as2 test file 1"
+            7:   "*** doit ***"
+            8:   "ASSetPropFlags"
+  0107:     push           lookup( 0 )
+  0112:     getVariable    
+  0113:     not            
+  0114:     not            
+  0115:     ifJump         "0280"
+  0120:     push           lookup( 1 )
+  0125:     getVariable    
+  0126:     push           lookup( 0 )
 
-  0088:     defineFunction () num registers = 3
-                Preload this      [reg 1] 
-                Preload super     [reg 2] 
-                Supress arguments 
-            {
-            }
-  0099:     register       0
-  0103:     setMember      
-  0104:     push           register( 0 )
-            push           lookup( 2 )
-  0111:     getMember      
-  0112:     register       1
-  0116:     pop            
-  0117:     push           register( 0 )
-            push           lookup( 3 )
-
-  0124:     defineFunction ( mainTimeline [reg 2] ) num registers = 3
+  0131:     defineFunction () num registers = 2
                 Preload this      [reg 1] 
                 Supress super 
                 Supress arguments 
             {
-  0149:         push           lookup( 4 )
-  0154:         trace          
+  0142:         push           lookup( 2 )
+  0147:         trace          
+  0148:         push           0
+                push           register( 1 )
+                push           lookup( 3 )
+  0160:         callMethod     
+  0161:         pop            
             }
-  0155:     setMember      
-  0156:     push           1
+  0162:     register       0
+  0166:     setMember      
+  0167:     push           register( 0 )
+            push           lookup( 4 )
+  0174:     getMember      
+  0175:     register       1
+  0179:     pop            
+  0180:     push           register( 0 )
+            push           lookup( 5 )
+
+  0187:     defineFunction ( mainTimeline [reg 2] ) num registers = 4
+                Preload this      [reg 1] 
+                Supress super 
+                Supress arguments 
+            {
+  0212:         push           lookup( 6 )
+  0217:         trace          
+  0218:         push           0
+                push           lookup( 0 )
+  0228:         newObject      
+  0229:         register       3
+  0233:         pop            
+            }
+  0234:     setMember      
+  0235:     push           register( 1 )
+            push           lookup( 3 )
+
+  0242:     defineFunction () num registers = 2
+                Preload this      [reg 1] 
+                Supress super 
+                Supress arguments 
+            {
+  0253:         push           lookup( 7 )
+  0258:         trace          
+            }
+  0259:     setMember      
+  0260:     push           1
             push           null
             push           register( 1 )
             push           3
-            push           lookup( 5 )
-  0174:     callFunction   
-  0175:     pop            
-  0176:     end            
+            push           lookup( 8 )
+  0278:     callFunction   
+  0279:     pop            
+  0280:     end            
 AVM1 actions:
             conditions     0
   0000:     lookupTable    

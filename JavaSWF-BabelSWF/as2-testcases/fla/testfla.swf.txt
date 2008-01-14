@@ -1,41 +1,58 @@
 signature: CWS
-header: version=8 length=152 width=11000 height=8000 rate=12 frame-count=1
+header: version=8 length=213 width=11000 height=8000 rate=12 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 AVM1 actions:
             conditions     0
 
-  0000:     defineFunction foo( a [reg 3], b [reg 2] ) num registers = 4
+  0000:     defineFunction foo( a, b ) num registers = 2
                 Supress super 
                 Supress arguments 
                 Supress this 
             {
-  0020:         push           register( 3 )
-  0025:         register       1
-  0029:         pop            
-  0030:         push           register( 1 )
-                push           register( 2 )
-  0037:         greaterThan    
-  0038:         not            
-  0039:         not            
-  0040:         ifJump         "0067"
-  0045:         push           register( 1 )
-  0050:         trace          
-  0051:         push           register( 1 )
-  0056:         increment      
-  0057:         register       1
-  0061:         pop            
-  0062:         jump           "0030"
+
+  0020:         defineFunction () num registers = 2
+                    Supress super 
+                    Supress arguments 
+                    Supress this 
+                {
+  0031:             push           "a"
+  0037:             getVariable    
+  0038:             register       1
+  0042:             pop            
+  0043:             push           register( 1 )
+                    push           "b"
+  0051:             getVariable    
+  0052:             greaterThan    
+  0053:             not            
+  0054:             not            
+  0055:             ifJump         "0089"
+  0060:             push           "foo "
+                    push           register( 1 )
+  0071:             typedAdd       
+  0072:             trace          
+  0073:             push           register( 1 )
+  0078:             increment      
+  0079:             register       1
+  0083:             pop            
+  0084:             jump           "0043"
+                }
+  0089:         return         
             }
-  0067:     push           "hello world"
-  0083:     trace          
-  0084:     push           15
-            push           5
+  0090:     push           "before foo call"
+  0110:     trace          
+  0111:     push           double 0.0
+            push           15
+            push           10
             push           2
             push           "foo"
-  0107:     callFunction   
-  0108:     pop            
-  0109:     end            
+  0143:     callFunction   
+  0144:     push           undefined
+  0148:     callMethod     
+  0149:     pop            
+  0150:     push           "after foo call"
+  0169:     trace          
+  0170:     end            
 ---------- frame ----------
 end
 ---------------

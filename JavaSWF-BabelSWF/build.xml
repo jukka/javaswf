@@ -1,4 +1,4 @@
-<project name="BabelSWF-Stuff" basedir=".">
+<project name="BabelSWF-Stuff" basedir="." default="all">
 
 	<property name="dxd.sdk" value="/Users/dmain/workspace-cvs/DXD_SDK"/>
 	
@@ -52,17 +52,19 @@
         <attribute name="as-file"   /> 
 
         <sequential>
-        	<exec executable="${flex.swf.compiler}" taskname="compile-swf">
+        	<exec executable="${flex.swf.compiler}" taskname="compile-swf" failonerror="true">
         		<arg line="-sp @{src-path} -output @{swf-file} @{src-path}/@{as-file}" />
         	</exec>
         </sequential>
     </macrodef>
 
+	<target name="all" depends="compile-runtime,translator-test-fla"/>
 	
     <!-- Compile the AS-2 testcases -->
     <target name="compile-as2-testcases">
     	<mkdir dir="as2-testcases/swf"/>
         <mtasc mainfile="Test.as" sourcepath="as2-testcases/src" output="../swf/Test.swf" />
+        <swf-dump out="as2-testcases/swf/Test.swf.txt" swf="as2-testcases/swf/Test.swf" />
     </target>
 
     <!-- Dump the AS-2 testcase fla swfs -->
@@ -122,12 +124,6 @@
         />
     	<swf-dump swf="generated-as3/testfla.swf"
     	          out="generated-as3/testfla.swf.txt" />
-    </target>
-
-    <!-- Dump the FLA-AS2 used for testing -->
-    <target name="dump-as2-test">
-        <swf-dump swf="fla/hello-world-trace.swf"
-                  out="generated/hello-world-trace.txt" />
     </target>
 
 	

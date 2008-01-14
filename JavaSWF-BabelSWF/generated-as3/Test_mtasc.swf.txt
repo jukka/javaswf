@@ -1,12 +1,1723 @@
 signature: CWS
-header: version=9 length=3728 width=2000 height=2000 rate=12 frame-count=1
+header: version=9 length=7378 width=2000 height=2000 rate=12 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,255)
 ABC File 'javaswf' lazy-initialization
 abc-file {
-  [2] dynamic class Test_swf.MainTimeline {
-    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
+  [1] sealed class babelswf.prototypes.PrototypeObject {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf.prototypes:PrototypeObject)
+
+    constructor: method[77]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[6]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [8] sealed class babelswf.AVM1Frame {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf:AVM1Frame)
+
+    constructor: method[0]  {
+      flags:
+      return-type: *
+      parameters (
+        Qname:PackageNamespace(babelswf)::AVM1MovieClip
+        int
+        Function
+      )
+      body {
+        max-stack    : 2
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findproperty Qname:PrivateNamespace()::initActions
+              newarray 0
+              initproperty Qname:PrivateNamespace()::initActions
+              getlocal0
+              constructsuper 0
+              getlocal0
+              getlocal3
+              initproperty Qname:PrivateNamespace()::actions
+              getlocal0
+              getlocal2
+              initproperty Qname:PrivateNamespace()::frameNumber
+              getlocal0
+              getlocal1
+              initproperty Qname:PrivateNamespace()::movieclip
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[72]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:PrivateNamespace()::movieclip [?] var : Qname:PackageNamespace(babelswf)::AVM1MovieClip
+    Qname:PrivateNamespace()::actions [?] var : Function
+    Qname:PrivateNamespace()::frameNumber [?] var : int
+    number [?] getter final method[73]  {
+      flags:
+      return-type: int
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::frameNumber
+              returnvalue
+
+      }
+    }
+    addInitActions [?] final method[75]  {
+      flags:
+      return-type: void
+      parameters (
+        Qname:PackageNamespace(babelswf)::AVM1InitActions
+      )
+      body {
+        max-stack    : 2
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::initActions
+              getlocal1
+              callpropvoid Qname:Namespace(http://adobe.com/AS3/2006/builtin)::push 1
+              returnvoid
+
+      }
+    }
+    Qname:PrivateNamespace()::initActions [?] var : Array
+    callFrame [?] final method[76]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              pushnull
+              coerce Qname:PackageNamespace(babelswf)::AVM1InitActions
+              setlocal1
+              jump 31
+        10  : label
+              getlex Qname:PrivateNamespace()::initActions
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::shift 0
+              getlex Qname:PackageNamespace(babelswf)::AVM1InitActions
+              astypelate
+              coerce Qname:PackageNamespace(babelswf)::AVM1InitActions
+              setlocal1
+              getlocal1
+              getlex Qname:PrivateNamespace()::movieclip
+              callproperty getExecutionContext 0
+              callpropvoid call 1
+        31  : getlex Qname:PrivateNamespace()::initActions
+              getproperty length
+              pushbyte 0
+              ifgt 10
+              findpropstrict trace
+              pushstring "AVM1Frame >> "
+              getlex Qname:PrivateNamespace()::movieclip
+              getproperty avm1_id
+              add
+              pushstring "["
+              add
+              getlex Qname:PrivateNamespace()::frameNumber
+              add
+              pushstring "]"
+              add
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::actions
+              pushnull
+              ifne 70
+              returnvoid
+        70  : getlex Qname:PrivateNamespace()::actions
+              getlex Qname:PrivateNamespace()::movieclip
+              callproperty getExecutionContext 0
+              callpropvoid Qname:Namespace(http://adobe.com/AS3/2006/builtin)::call 1
+              returnvoid
+
+      }
+    }
+  }
+
+  [0] sealed class babelswf.AVM1Runtime {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf:AVM1Runtime)
+
+    constructor: method[11]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findproperty Qname:PrivateNamespace()::mainTimelineClass
+              getlex Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              initproperty Qname:PrivateNamespace()::mainTimelineClass
+              findproperty Qname:PrivateNamespace()::spriteClass
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              initproperty Qname:PrivateNamespace()::spriteClass
+              getlocal0
+              constructsuper 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[12]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              findproperty avm1Object
+              newfunction 1
+              setproperty avm1Object
+              findproperty avm1MovieClip
+              newfunction 2
+              setproperty avm1MovieClip
+              getlex avm1Object
+              getlex Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject
+              setproperty prototype
+              getlex avm1MovieClip
+              getlex Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip
+              setproperty prototype
+              returnvoid
+
+      }
+    }
+
+    Qname:PrivateNamespace()::spriteClass [?] var : Class
+    Qname:PrivateNamespace()::mainTimelineClass [?] var : Class
+    static avm1Object [0] var : Function
+    static avm1MovieClip [1] var : Function
+  }
+
+  [3] sealed class babelswf.AVM1Sprite {
+    extends Qname:PackageNamespace(babelswf)::AVM1MovieClip
+    protected-namespace ProtectedNamespace(babelswf:AVM1Sprite)
+
+    constructor: method[49]  {
+      flags:
+      return-type: *
+      parameters (
+        int
+      )
+      body {
+        max-stack    : 2
+        max-registers: 2
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal0
+              pushscope
+              getlocal0
+              getlocal1
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[50]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [9] dynamic class babelswf.AVM1Function {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf:AVM1Function)
+
+    constructor: method[51]  {
+      flags:
+      return-type: *
+      parameters (
+        Function
+        Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+      )
+      body {
+        max-stack    : 2
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              getlocal0
+              getlocal1
+              initproperty Qname:PrivateNamespace()::avm2Function
+              getlocal0
+              getlocal2
+              initproperty Qname:PrivateNamespace()::capturedScope
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[52]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:PrivateNamespace()::avm2Function [?] var : Function
+    avm1_call [?] method[53]  {
+      flags:
+      return-type: *
+      parameters (
+        Array
+      )
+      body {
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::avm2Function
+              pushnull
+              ifne 12
+              getlex undefined
+              returnvalue
+        12  : findpropstrict trace
+              pushstring "NEED TO IMPLEMENT avm1_call"
+              callpropvoid trace 1
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              newobject 0
+              getlex Qname:PrivateNamespace()::capturedScope
+              constructprop Qname:PackageNamespace(babelswf)::AVM1ExecutionContext 2
+              coerce Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              setlocal2
+              getlex Qname:PrivateNamespace()::avm2Function
+              getlocal2
+              getlocal1
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::apply 2
+              returnvalue
+
+      }
+    }
+    Qname:PrivateNamespace()::capturedScope [?] var : Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+    avm1_calMethod [?] method[54]  {
+      flags:
+      return-type: *
+      parameters (
+        *
+        Array
+      )
+      body {
+        max-stack    : 3
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::avm2Function
+              pushnull
+              ifne 12
+              getlex undefined
+              returnvalue
+        12  : findpropstrict trace
+              pushstring "NEED TO IMPLEMENT avm1_callMethod"
+              callpropvoid trace 1
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              pushstring "this"
+              getlocal1
+              newobject 1
+              getlex Qname:PrivateNamespace()::capturedScope
+              constructprop Qname:PackageNamespace(babelswf)::AVM1ExecutionContext 2
+              coerce Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              setlocal3
+              getlex Qname:PrivateNamespace()::avm2Function
+              getlocal3
+              getlocal2
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::apply 2
+              returnvalue
+
+      }
+    }
+    avm1_new [?] method[55]  {
+      flags:
+      return-type: Object
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlocal0
+              getproperty Multiname:{ PrivateNamespace() Public PackageNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) PrivateNamespace() PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(Object) }::prototype
+              getlex undefined
+              ifstricteq 20
+              getlocal0
+              getproperty Multiname:{ PrivateNamespace() Public PackageNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) PrivateNamespace() PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(Object) }::prototype
+              pushstring "constructor"
+              getlocal0
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(Object) }
+        20  : pushstring "__proto__"
+              getlocal0
+              getproperty Multiname:{ PrivateNamespace() Public PackageNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) PrivateNamespace() PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(babelswf:AVM1Function) StaticProtectedNamespace(Object) }::prototype
+              newobject 1
+              coerce Object
+              setlocal1
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT avm1_new"
+              callpropvoid trace 1
+              getlex undefined
+              returnvalue
+
+      }
+    }
+  }
+
+  [2] sealed class babelswf.AVM1MovieClip {
+    extends Qname:PackageNamespace(flash.display)::MovieClip
+    protected-namespace ProtectedNamespace(babelswf:AVM1MovieClip)
+
+    constructor: method[40]  {
+      flags:
+      return-type: *
+      parameters (
+        int
+      )
+      body {
+        max-stack    : 5
+        max-registers: 2
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              findproperty Qname:PrivateNamespace()::frames
+              newarray 0
+              initproperty Qname:PrivateNamespace()::frames
+              findproperty Qname:PrivateNamespace()::pendingInitActs
+              newarray 0
+              initproperty Qname:PrivateNamespace()::pendingInitActs
+              findproperty Qname:PrivateNamespace()::avm1mc
+              newobject 0
+              initproperty Qname:PrivateNamespace()::avm1mc
+              getlocal0
+              constructsuper 0
+              getlocal0
+              getlocal1
+              initproperty Qname:PrivateNamespace()::symbolId
+              getlex Qname:PrivateNamespace()::avm1mc
+              pushstring "this"
+              getlex Qname:PrivateNamespace()::avm1mc
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              findproperty Qname:PrivateNamespace()::execContext
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              getlex Qname:PrivateNamespace()::avm1mc
+              pushnull
+              getlocal0
+              constructprop Qname:PackageNamespace(babelswf)::AVM1ExecutionContext 3
+              initproperty Qname:PrivateNamespace()::execContext
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[41]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 9
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    avm1_id [?] getter final method[42]  {
+      flags:
+      return-type: int
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::symbolId
+              returnvalue
+
+      }
+    }
+    Qname:PrivateNamespace()::execContext [?] var : Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+    Qname:PrivateNamespace()::frames [?] var : Array
+    Qname:PrivateNamespace()::pendingInitActs [?] var : Array
+    Qname:PrivateNamespace()::avm1mc [?] var : Object
+    avm1_addFrame [?] final method[43]  {
+      flags:
+      return-type: void
+      parameters (
+        int
+        Function
+      )
+      body {
+        max-stack    : 4
+        max-registers: 8
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              pushnull
+              coerce Qname:PackageNamespace(babelswf)::AVM1InitActions
+              setlocal 5
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1Frame
+              getlocal0
+              getlocal1
+              getlocal2
+              constructprop Qname:PackageNamespace(babelswf)::AVM1Frame 3
+              coerce Qname:PackageNamespace(babelswf)::AVM1Frame
+              setlocal3
+              findpropstrict trace
+              pushstring "AVM1MovieClip["
+              getlex Qname:PrivateNamespace()::symbolId
+              add
+              pushstring "].addFrame >> "
+              add
+              getlocal1
+              add
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::frames
+              getlocal3
+              getproperty number
+              getlocal3
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              getlex Qname:PrivateNamespace()::pendingInitActs
+              getlocal1
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              coerce Array
+              dup
+              setlocal 4
+              pushnull
+              ifeq 104
+              getlex Qname:PrivateNamespace()::pendingInitActs
+              getlocal1
+              deleteproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              pop
+              pushbyte 0
+              setlocal 6
+              getlocal 4
+              coerce_a
+              setlocal 7
+              jump 93
+        77  : label
+              getlocal 7
+              getlocal 6
+              nextvalue
+              coerce Qname:PackageNamespace(babelswf)::AVM1InitActions
+              setlocal 5
+              getlocal3
+              getlocal 5
+              callpropvoid addInitActions 1
+        93  : hasnext2 7 6
+              iftrue 77
+              kill 7
+              kill 6
+        104 : findpropstrict addFrameScript
+              getlocal1
+              getlocal3
+              callproperty callFrame 0
+              callpropvoid addFrameScript 2
+              returnvoid
+
+      }
+    }
+    Qname:PrivateNamespace()::symbolId [?] var : int
+    getExecutionContext [?] method[44]  {
+      flags:
+      return-type: Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::execContext
+              returnvalue
+
+      }
+    }
+    avm1_addInitActs [?] final method[45]  {
+      flags:
+      return-type: void
+      parameters (
+        int
+        int
+        Function
+      )
+      body {
+        max-stack    : 3
+        max-registers: 7
+        max-scope    : 11
+        scope-depth  : 10
+
+              getlocal0
+              pushscope
+              pushnull
+              coerce Array
+              setlocal 6
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1InitActions
+              getlocal2
+              getlocal3
+              constructprop Qname:PackageNamespace(babelswf)::AVM1InitActions 2
+              coerce Qname:PackageNamespace(babelswf)::AVM1InitActions
+              setlocal 4
+              findpropstrict trace
+              pushstring "avm1_addInitActs >> frame="
+              getlocal1
+              add
+              pushstring " id="
+              add
+              getlocal2
+              add
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::frames
+              getlocal1
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              coerce Qname:PackageNamespace(babelswf)::AVM1Frame
+              dup
+              setlocal 5
+              pushnull
+              ifne 88
+              getlex Qname:PrivateNamespace()::pendingInitActs
+              getlocal1
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+              coerce Array
+              dup
+              setlocal 6
+              pushnull
+              ifne 77
+              newarray 0
+              coerce Array
+              setlocal 6
+              getlex Qname:PrivateNamespace()::pendingInitActs
+              getlocal1
+              getlocal 6
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(babelswf:AVM1MovieClip) StaticProtectedNamespace(flash.display:MovieClip) StaticProtectedNamespace(flash.display:Sprite) StaticProtectedNamespace(flash.display:DisplayObjectContainer) StaticProtectedNamespace(flash.display:InteractiveObject) StaticProtectedNamespace(flash.display:DisplayObject) StaticProtectedNamespace(flash.events:EventDispatcher) StaticProtectedNamespace(Object) Namespace(flash.display:IBitmapDrawable) Namespace(flash.events:IEventDispatcher) }
+        77  : getlocal 6
+              getlocal 4
+              callpropvoid Qname:Namespace(http://adobe.com/AS3/2006/builtin)::push 1
+              jump 95
+        88  : getlocal 5
+              getlocal 4
+              callpropvoid addInitActions 1
+        95  : returnvoid
+
+      }
+    }
+  }
+
+  [6] sealed class babelswf.AVM1ExecutionContext {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf:AVM1ExecutionContext)
+
+    constructor: method[13]  {
+      flags: HasOptional
+      return-type: *
+      parameters (
+        Object
+        Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+        Qname:PackageNamespace(flash.display)::MovieClip = CONSTANT_Null 
+      )
+      body {
+        max-stack    : 3
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              getlocal0
+              getlocal1
+              initproperty Qname:PrivateNamespace()::activation
+              getlocal0
+              getlocal3
+              initproperty Qname:PrivateNamespace()::movieclip
+              getlocal0
+              getlocal2
+              initproperty Qname:PrivateNamespace()::parent
+              getlocal1
+              pushstring "_global"
+              getlex Qname:PrivateNamespace()::global
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[14]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              findproperty Qname:PrivateNamespace()::global
+              newobject 0
+              setproperty Qname:PrivateNamespace()::global
+              getlex Qname:PrivateNamespace()::global
+              getlex Qname:PrivateNamespace()::global
+              setproperty Multiname:{ PrivateNamespace() PrivateNamespace() Public PackageNamespace(babelswf) PackageInternalNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }::_global
+              returnvoid
+
+      }
+    }
+
+    Qname:PrivateNamespace()::movieclip [?] var : Qname:PackageNamespace(flash.display)::MovieClip
+    avm1_getParent [?] method[15]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT getParent"
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::activation
+              pushstring "_parent"
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvalue
+
+      }
+    }
+    avm1_callMethod [?] method[16]  {
+      flags:
+      return-type: *
+      parameters (
+        Array
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 7
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              pushnull
+              coerce Qname:PackageNamespace(babelswf)::AVM1Function
+              setlocal 6
+              findpropstrict trace
+              pushstring "avm1_callMethod >> "
+              getlocal2
+              add
+              pushstring "."
+              add
+              getlocal3
+              add
+              pushstring " ("
+              add
+              getlocal1
+              getproperty length
+              add
+              pushstring " args)"
+              add
+              callpropvoid trace 1
+              getlocal2
+              pushnull
+              ifne 40
+              getlex undefined
+              returnvalue
+        40  : getlocal3
+              pushnull
+              ifne 63
+              getlocal2
+              getlex Qname:PackageNamespace(babelswf)::AVM1Function
+              astypelate
+              coerce Qname:PackageNamespace(babelswf)::AVM1Function
+              dup
+              setlocal 6
+              getlocal1
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::reverse 0
+              callproperty avm1_call 1
+              returnvalue
+        63  : findpropstrict avm1_getMember
+              getlocal2
+              getlocal3
+              callproperty avm1_getMember 2
+              coerce_a
+              dup
+              setlocal 4
+              pushnull
+              ifne 82
+              getlex undefined
+              returnvalue
+        82  : getlocal 4
+              getlex Qname:PackageNamespace(babelswf)::AVM1Function
+              astypelate
+              coerce Qname:PackageNamespace(babelswf)::AVM1Function
+              dup
+              setlocal 5
+              getlocal2
+              getlocal1
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::reverse 0
+              callproperty avm1_calMethod 2
+              returnvalue
+
+      }
+    }
+    avm1_getArguments [?] method[17]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT getArguments"
+              callpropvoid trace 1
+              getlex undefined
+              returnvalue
+
+      }
+    }
+    avm1_endDrag [?] method[18]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::movieclip
+              pushnull
+              ifeq 28
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 22
+              findpropstrict trace
+              pushstring "avm1_endDrag"
+              callpropvoid trace 1
+        22  : getlex Qname:PrivateNamespace()::movieclip
+              callpropvoid stopDrag 0
+              returnvoid
+        28  : getlex Qname:PrivateNamespace()::parent
+              pushnull
+              ifeq 40
+              getlex Qname:PrivateNamespace()::parent
+              callpropvoid avm1_endDrag 0
+        40  : returnvoid
+
+      }
+    }
+    avm1_setVar [?] method[19]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "avm1_setVar >> "
+              getlocal1
+              add
+              pushstring " = "
+              add
+              getlocal2
+              add
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::activation
+              getlocal1
+              getlocal2
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+    avm1_defineVar [?] method[20]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 17
+              findpropstrict trace
+              pushstring "avm1_defineVar >> "
+              getlocal1
+              add
+              callpropvoid trace 1
+        17  : getlex Qname:PrivateNamespace()::activation
+              getlocal1
+              pushnull
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+    avm1_deleteMember [?] method[21]  {
+      flags:
+      return-type: Boolean
+      parameters (
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 17
+              findpropstrict trace
+              pushstring "avm1_deleteMember >> "
+              getlocal2
+              add
+              callpropvoid trace 1
+        17  : pushfalse
+              returnvalue
+
+      }
+    }
+    Qname:PrivateNamespace()::debug [?] var : Boolean
+    Qname:PrivateNamespace()::activation [?] var : Object
+    avm1_getVar [?] method[22]  {
+      flags:
+      return-type: *
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              pushundefined
+              coerce_a
+              setlocal2
+              getlex Qname:PrivateNamespace()::activation
+              getlocal1
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::hasOwnProperty 1
+              iffalse 26
+              getlex Qname:PrivateNamespace()::activation
+              getlocal1
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              coerce_a
+              setlocal2
+              jump 52
+        26  : getlex Qname:PrivateNamespace()::parent
+              pushnull
+              ifeq 45
+              getlex Qname:PrivateNamespace()::parent
+              getlocal1
+              callproperty avm1_getVar 1
+              coerce_a
+              setlocal2
+              jump 52
+        45  : getlex Qname:PrivateNamespace()::global
+              getlocal1
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              coerce_a
+              setlocal2
+        52  : findpropstrict trace
+              pushstring "avm1_getVar >> "
+              getlocal1
+              add
+              pushstring " --> "
+              add
+              getlocal2
+              add
+              callpropvoid trace 1
+              getlocal2
+              returnvalue
+
+      }
+    }
+    avm1_defineFunction [?] method[23]  {
+      flags:
+      return-type: void
+      parameters (
+        String
+        Function
+      )
+      body {
+        max-stack    : 4
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "avm1_defineFunction >> "
+              getlocal1
+              add
+              callpropvoid trace 1
+              findpropstrict Qname:PackageNamespace(babelswf)::AVM1Function
+              getlocal2
+              getlocal0
+              constructprop Qname:PackageNamespace(babelswf)::AVM1Function 2
+              coerce Qname:PackageNamespace(babelswf)::AVM1Function
+              setlocal3
+              findpropstrict trace
+              pushstring "activation[this]-->"
+              getlex Qname:PrivateNamespace()::activation
+              pushstring "this"
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              add
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::activation
+              pushstring "this"
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              getlocal1
+              getlocal3
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+    avm1_defineVarValue [?] method[24]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 22
+              findpropstrict trace
+              pushstring "avm1_defineVarValue >> "
+              getlocal1
+              add
+              pushstring " = "
+              add
+              getlocal2
+              add
+              callpropvoid trace 1
+        22  : getlex Qname:PrivateNamespace()::activation
+              getlocal1
+              getlocal2
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+    avm1_endWith [?] method[25]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 15
+              findpropstrict trace
+              pushstring "avm1_endWith << "
+              callpropvoid trace 1
+        15  : returnvoid
+
+      }
+    }
+    avm1_deleteVar [?] method[26]  {
+      flags:
+      return-type: Boolean
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 17
+              findpropstrict trace
+              pushstring "avm1_deleteVar >> "
+              getlocal1
+              add
+              callpropvoid trace 1
+        17  : pushfalse
+              returnvalue
+
+      }
+    }
+    avm1_trace [?] method[27]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "avm1 >> "
+              getlocal1
+              add
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+    avm1_play [?] method[28]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::movieclip
+              pushnull
+              ifeq 28
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 22
+              findpropstrict trace
+              pushstring "avm1_play"
+              callpropvoid trace 1
+        22  : getlex Qname:PrivateNamespace()::movieclip
+              callpropvoid play 0
+              returnvoid
+        28  : getlex Qname:PrivateNamespace()::parent
+              pushnull
+              ifeq 40
+              getlex Qname:PrivateNamespace()::parent
+              callpropvoid avm1_play 0
+        40  : returnvoid
+
+      }
+    }
+    avm1_startWith [?] method[29]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 17
+              findpropstrict trace
+              pushstring "avm1_startWith >> "
+              getlocal1
+              add
+              callpropvoid trace 1
+        17  : returnvoid
+
+      }
+    }
+    avm1_stop [?] method[30]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::movieclip
+              pushnull
+              ifeq 28
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 22
+              findpropstrict trace
+              pushstring "avm1_stop"
+              callpropvoid trace 1
+        22  : getlex Qname:PrivateNamespace()::movieclip
+              callpropvoid stop 0
+              returnvoid
+        28  : getlex Qname:PrivateNamespace()::parent
+              pushnull
+              ifeq 40
+              getlex Qname:PrivateNamespace()::parent
+              callpropvoid avm1_stop 0
+        40  : returnvoid
+
+      }
+    }
+    avm1_dump [?] method[31]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 4
+        max-registers: 5
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              pushundefined
+              coerce_a
+              setlocal2
+              findpropstrict trace
+              pushstring "avm1_dump ------------->> "
+              getlocal1
+              add
+              callpropvoid trace 1
+              getlocal1
+              getlex undefined
+              ifstrictne 22
+              returnvoid
+        22  : pushbyte 0
+              setlocal3
+              getlocal1
+              coerce_a
+              setlocal 4
+              jump 54
+        33  : label
+              getlocal 4
+              getlocal3
+              nextname
+              coerce_a
+              setlocal2
+              findpropstrict trace
+              getlocal2
+              pushstring " = "
+              add
+              getlocal1
+              getlocal2
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              add
+              callpropvoid trace 1
+        54  : hasnext2 4 3
+              iftrue 33
+              kill 4
+              kill 3
+              findpropstrict trace
+              pushstring "-------------<< avm1_dump"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+    Qname:PrivateNamespace()::parent [?] var : Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+    avm1_getSuper [?] method[32]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT getSuper"
+              callpropvoid trace 1
+              getlex undefined
+              returnvalue
+
+      }
+    }
+    avm1_getThis [?] method[33]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT getThis"
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::activation
+              pushstring "this"
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvalue
+
+      }
+    }
+    avm1_getMember [?] method[34]  {
+      flags:
+      return-type: *
+      parameters (
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlocal1
+              pushnull
+              ifne 15
+              getlex undefined
+              coerce_a
+              jump 20
+        15  : getlocal1
+              getlocal2
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              coerce_a
+        20  : coerce_a
+              setlocal3
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 47
+              findpropstrict trace
+              pushstring "avm1_getMember >> "
+              getlocal1
+              add
+              pushstring "."
+              add
+              getlocal2
+              add
+              pushstring " --> "
+              add
+              getlocal3
+              add
+              callpropvoid trace 1
+        47  : getlocal3
+              returnvalue
+
+      }
+    }
+    avm1_getRoot [?] method[35]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "NEED TO IMPLEMENT getRoot"
+              callpropvoid trace 1
+              getlex Qname:PrivateNamespace()::activation
+              pushstring "_root"
+              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvalue
+
+      }
+    }
+    avm1_setMember [?] method[36]  {
+      flags:
+      return-type: void
+      parameters (
+        *
+        *
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 4
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 27
+              findpropstrict trace
+              pushstring "avm1_setMember >> "
+              getlocal1
+              add
+              pushstring "."
+              add
+              getlocal2
+              add
+              pushstring " = "
+              add
+              getlocal3
+              add
+              callpropvoid trace 1
+        27  : getlocal1
+              pushnull
+              ifne 34
+              returnvoid
+        34  : getlocal1
+              getlocal2
+              getlocal3
+              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(babelswf:AVM1ExecutionContext) StaticProtectedNamespace(Object) }
+              returnvoid
+
+      }
+    }
+    avm1_newFunction [?] method[37]  {
+      flags:
+      return-type: Qname:PackageNamespace(babelswf)::AVM1Function
+      parameters (
+        Function
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::debug
+              iffalse 15
+              findpropstrict trace
+              pushstring "avm1_newFunction"
+              callpropvoid trace 1
+        15  : findpropstrict Qname:PackageNamespace(babelswf)::AVM1Function
+              getlocal1
+              getlocal0
+              constructprop Qname:PackageNamespace(babelswf)::AVM1Function 2
+              returnvalue
+
+      }
+    }
+    avm1_getGlobal [?] method[38]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              getlex Qname:PrivateNamespace()::global
+              returnvalue
+
+      }
+    }
+    avm1_callFunction [?] method[39]  {
+      flags:
+      return-type: *
+      parameters (
+        Array
+        *
+      )
+      body {
+        max-stack    : 3
+        max-registers: 5
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "avm1_callFunction >> "
+              getlocal2
+              add
+              pushstring " ("
+              add
+              getlocal1
+              getproperty length
+              add
+              pushstring " args)"
+              add
+              callpropvoid trace 1
+              findpropstrict avm1_getVar
+              getlocal2
+              callproperty avm1_getVar 1
+              coerce_a
+              setlocal3
+              getlocal3
+              pushnull
+              ifne 39
+              getlex undefined
+              returnvalue
+        39  : getlocal3
+              getlex Qname:PackageNamespace(babelswf)::AVM1Function
+              astypelate
+              coerce Qname:PackageNamespace(babelswf)::AVM1Function
+              dup
+              setlocal 4
+              getlocal1
+              callproperty Qname:Namespace(http://adobe.com/AS3/2006/builtin)::reverse 0
+              callproperty avm1_call 1
+              returnvalue
+
+      }
+    }
+    static Qname:PrivateNamespace()::global [0] var : Object
+  }
+
+  [11] dynamic class Test_swf.MovieClip_20480 {
+    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
+    protected-namespace ProtectedNamespace(Test_swf:MovieClip_20480)
+
+    constructor: method[7]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              getlocal 0
+              kill 0
+              pushshort 20480
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[8]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [10] dynamic class Test_swf.MainTimeline {
+    extends Qname:PackageNamespace(babelswf)::AVM1MainTimeline
     protected-namespace ProtectedNamespace(Test_swf:MainTimeline)
 
     constructor: method[9]  {
@@ -15,10 +1726,10 @@ abc-file {
       parameters (
       )
       body {
-        max-stack    : 3
+        max-stack    : 4
         max-registers: 1
-        max-scope    : 12
-        scope-depth  : 11
+        max-scope    : 13
+        scope-depth  : 12
 
               getlocal 0
               dup
@@ -31,14 +1742,16 @@ abc-file {
               getlocal 0
               pushstring "Test.swf"
               constructsuper 1
-              findpropstrict addFrameScript
+              getlocal 0
               pushbyte 0
-              getlex Qname:PackageInternalNamespace(Test_swf)::frame1
-              callpropvoid addFrameScript 2
+              pushshort 20480
+              newfunction 2
+              callpropvoid avm1_addInitActs 3
               getlocal 0
               kill 0
-              pushbyte 1
-              callpropvoid babelswf_framesAdded 1
+              pushbyte 0
+              newfunction 5
+              callpropvoid avm1_addFrame 2
               returnvoid
 
       }
@@ -52,8 +1765,8 @@ abc-file {
       body {
         max-stack    : 2
         max-registers: 1
-        max-scope    : 11
-        scope-depth  : 10
+        max-scope    : 12
+        scope-depth  : 11
 
               getlocal 0
               dup
@@ -68,804 +1781,175 @@ abc-file {
       }
     }
 
-    Qname:PackageInternalNamespace(Test_swf)::frame1 [?] method[11]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 5
-        max-registers: 2
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              pushstring "MTASC_MAIN"
-              dup
-              coerce_a
-              setlocal 1
-              pop
-              findpropstrict trace
-              pushstring "visitCallMethod main"
-              callpropvoid trace 1
-              pushstring "Test"
-              dup
-              findproperty MultinameL:{ Public }
-              swap
-              getproperty MultinameL:{ Public }
-              dup
-              pushstring "GetVariable \"Test\" = "
-              swap
-              add
-              findpropstrict trace
-              swap
-              callpropvoid trace 1
-              findpropstrict trace
-              pushstring "after object"
-              callpropvoid trace 1
-              dup
-              findpropstrict trace
-              pushstring "after dup"
-              callpropvoid trace 1
-              getproperty main
-              findpropstrict trace
-              pushstring "after getProperty"
-              callpropvoid trace 1
-              swap
-              findpropstrict trace
-              pushstring "pushing args"
-              callpropvoid trace 1
-              pushstring "this"
-              dup
-              findproperty MultinameL:{ Public }
-              swap
-              getproperty MultinameL:{ Public }
-              dup
-              pushstring "GetVariable \"this\" = "
-              swap
-              add
-              findpropstrict trace
-              swap
-              callpropvoid trace 1
-              call 1
-              pop
-              returnvoid
-
-      }
-    }
   }
 
-  [1] dynamic class babelswf.GlobalObject {
-    extends Qname:PackageNamespace(flash.utils)::Proxy
-    protected-namespace ProtectedNamespace(babelswf:GlobalObject)
+  [5] sealed class babelswf.AVM1MainTimeline {
+    extends Qname:PackageNamespace(babelswf)::AVM1MovieClip
+    protected-namespace ProtectedNamespace(babelswf:AVM1MainTimeline)
 
-    constructor: method[14]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 3
-        max-registers: 1
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              findproperty Qname:PrivateNamespace()::values
-              pushstring "_global"
-              getlex _global
-              newobject 1
-              initproperty Qname:PrivateNamespace()::values
-              getlocal0
-              constructsuper 0
-              returnvoid
-
-      }
-    }
-
-    static initializer: method[15]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 5
-        scope-depth  : 4
-
-              getlocal0
-              pushscope
-              findproperty _global
-              getlocal0
-              construct 0
-              setproperty _global
-              returnvoid
-
-      }
-    }
-
-    Qname:PrivateNamespace()::values [?] var : Object
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextValue [?] override method[16]  {
-      flags:
-      return-type: *
-      parameters (
-        int
-      )
-      body {
-        max-stack    : 4
-        max-registers: 3
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              getlex Qname:PrivateNamespace()::values
-              getlex Qname:PrivateNamespace()::enumItems
-              getlocal1
-              decrement
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              coerce_a
-              setlocal2
-              findpropstrict trace
-              pushstring "babelswf >> _global nextValue("
-              getlocal1
-              add
-              pushstring ") = "
-              add
-              getlocal2
-              add
-              callpropvoid trace 1
-              getlocal2
-              returnvalue
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::hasProperty [?] override method[17]  {
-      flags:
-      return-type: Boolean
-      parameters (
-        *
-      )
-      body {
-        max-stack    : 3
-        max-registers: 3
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              getlex Qname:PrivateNamespace()::values
-              getlocal1
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              getlex undefined
-              strictequals
-              not
-              setlocal2
-              findpropstrict trace
-              pushstring "babelswf >> _global hasProperty "
-              getlocal1
-              add
-              pushstring " = "
-              add
-              getlocal2
-              add
-              callpropvoid trace 1
-              getlocal2
-              returnvalue
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::setProperty [?] override method[18]  {
-      flags:
-      return-type: void
-      parameters (
-        *
-        *
-      )
-      body {
-        max-stack    : 3
-        max-registers: 3
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              findpropstrict trace
-              pushstring "babelswf >> set _global."
-              getlocal1
-              add
-              pushstring " = "
-              add
-              getlocal2
-              add
-              callpropvoid trace 1
-              getlex Qname:PrivateNamespace()::values
-              getlocal1
-              getlocal2
-              setproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              returnvoid
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::callProperty [?] override method[19]  {
-      flags: NeedRest
-      return-type: *
-      parameters (
-        *
-      )
-      body {
-        max-stack    : 3
-        max-registers: 4
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              jump 19
-        6   : label
-              pushstring "[BabelSWF _global]"
-              returnvalue
-        10  : label
-              jump 62
-              jump 62
-        19  : getlocal1
-              callproperty Multiname:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) PrivateNamespace() PackageNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) }::toString 0
-              setlocal3
-              pushstring "toString"
-              getlocal3
-              ifstrictne 37
-              pushbyte 0
-              jump 49
-        37  : jump 47
-              pushbyte 1
-              jump 49
-        47  : pushbyte 1
-        49  : kill 3
-              lookupswitch 10 
-          0   --> 6
-          1   --> 10
-        }
-        62  : findpropstrict trace
-              pushstring "babelswf >> calling _global."
-              getlocal1
-              add
-              pushstring "( "
-              add
-              getlocal2
-              getproperty length
-              add
-              pushstring " args )"
-              add
-              callpropvoid trace 1
-              getlex Qname:PrivateNamespace()::values
-              getlocal1
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              getlex Qname:PrivateNamespace()::values
-              getlocal2
-              callproperty Multiname:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) PrivateNamespace() PackageNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) }::apply 2
-              returnvalue
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::getProperty [?] override method[20]  {
-      flags:
-      return-type: *
-      parameters (
-        *
-      )
-      body {
-        max-stack    : 3
-        max-registers: 2
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              findpropstrict trace
-              pushstring "babelswf >> get _global."
-              getlocal1
-              add
-              callpropvoid trace 1
-              getlex Qname:PrivateNamespace()::values
-              getlocal1
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              returnvalue
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextNameIndex [?] override method[21]  {
-      flags:
-      return-type: int
-      parameters (
-        int
-      )
-      body {
-        max-stack    : 3
-        max-registers: 6
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              pushundefined
-              coerce_a
-              setlocal3
-              getlocal1
-              pushbyte 1
-              add
-              convert_i
-              setlocal2
-              getlocal1
-              pushbyte 0
-              ifne 65
-              findproperty Qname:PrivateNamespace()::enumItems
-              findpropstrict Array
-              constructprop Array 0
-              initproperty Qname:PrivateNamespace()::enumItems
-              pushbyte 0
-              setlocal 4
-              getlex Qname:PrivateNamespace()::values
-              coerce_a
-              setlocal 5
-              jump 54
-        40  : label
-              getlocal 5
-              getlocal 4
-              nextname
-              coerce_a
-              setlocal3
-              getlex Qname:PrivateNamespace()::enumItems
-              getlocal3
-              callpropvoid Qname:Namespace(http://adobe.com/AS3/2006/builtin)::push 1
-        54  : hasnext2 5 4
-              iftrue 40
-              kill 5
-              kill 4
-        65  : getlocal2
-              getlex Qname:PrivateNamespace()::enumItems
-              getproperty length
-              ifne 77
-              pushbyte 0
-              setlocal2
-        77  : findpropstrict trace
-              pushstring "babelswf >> _global nextNameIndex("
-              getlocal1
-              add
-              pushstring ") = "
-              add
-              getlocal2
-              add
-              callpropvoid trace 1
-              getlocal2
-              returnvalue
-
-      }
-    }
-    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::nextName [?] override method[22]  {
-      flags:
-      return-type: String
-      parameters (
-        int
-      )
-      body {
-        max-stack    : 3
-        max-registers: 3
-        max-scope    : 6
-        scope-depth  : 5
-
-              getlocal0
-              pushscope
-              getlex Qname:PrivateNamespace()::enumItems
-              getlocal1
-              decrement
-              getproperty MultinameL:{ PrivateNamespace() Public PackageInternalNamespace(babelswf) ProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(babelswf:GlobalObject) StaticProtectedNamespace(flash.utils:Proxy) StaticProtectedNamespace(Object) }
-              coerce_a
-              setlocal2
-              findpropstrict trace
-              pushstring "babelswf >> _global nextName("
-              getlocal1
-              add
-              pushstring ") = "
-              add
-              getlocal2
-              add
-              callpropvoid trace 1
-              getlocal2
-              returnvalue
-
-      }
-    }
-    Qname:PrivateNamespace()::enumItems [?] var : Array
-    static _global [0] var : Qname:PackageNamespace(babelswf)::GlobalObject
-  }
-
-  [0] sealed class babelswf.BaseMovieClip {
-    extends Qname:PackageNamespace(flash.display)::MovieClip
-    protected-namespace ProtectedNamespace(babelswf:BaseMovieClip)
-
-    constructor: method[27]  {
+    constructor: method[56]  {
       flags:
       return-type: *
       parameters (
         String
       )
       body {
-        max-stack    : 3
+        max-stack    : 2
         max-registers: 2
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal0
+              pushscope
+              getlocal0
+              pushbyte 0
+              constructsuper 1
+              getlocal0
+              getlocal1
+              initproperty swfName
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[57]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
         max-scope    : 11
         scope-depth  : 10
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    swfName [?] var : String
+  }
+
+  [7] sealed class babelswf.AVM1InitActions {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf:AVM1InitActions)
+
+    constructor: method[46]  {
+      flags:
+      return-type: *
+      parameters (
+        int
+        Function
+      )
+      body {
+        max-stack    : 2
+        max-registers: 3
+        max-scope    : 5
+        scope-depth  : 4
 
               getlocal0
               pushscope
               getlocal0
               constructsuper 0
               getlocal0
-              getlocal1
-              initproperty Qname:PrivateNamespace()::swfName
-              findpropstrict trace
-              pushstring "babelswf.BaseMovieClip >> "
-              getlocal1
-              add
-              callpropvoid trace 1
-              returnvoid
-
-      }
-    }
-
-    static initializer: method[28]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 1
-        max-registers: 1
-        max-scope    : 10
-        scope-depth  : 9
-
-              getlocal0
-              pushscope
-              returnvoid
-
-      }
-    }
-
-    _root [?] getter method[2]  {
-      flags:
-      return-type: Qname:PackageNamespace(flash.display)::DisplayObject
-      parameters (
-      )
-      body {
-        max-stack    : 1
-        max-registers: 1
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal0
-              pushscope
-              getlex root
-              returnvalue
-
-      }
-    }
-    babelswf_framesAdded [?] method[3]  {
-      flags:
-      return-type: void
-      parameters (
-        int
-      )
-      body {
-        max-stack    : 3
-        max-registers: 2
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal0
-              pushscope
-              findpropstrict trace
-              getlocal1
-              pushstring " frames added"
-              add
-              callpropvoid trace 1
-              returnvoid
-
-      }
-    }
-    _parent [?] getter method[4]  {
-      flags:
-      return-type: Qname:PackageNamespace(flash.display)::DisplayObjectContainer
-      parameters (
-      )
-      body {
-        max-stack    : 1
-        max-registers: 1
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal0
-              pushscope
-              getlex parent
-              returnvalue
-
-      }
-    }
-    Qname:PrivateNamespace()::swfName [?] var : String
-    babelswf_trace [?] method[5]  {
-      flags:
-      return-type: void
-      parameters (
-        *
-      )
-      body {
-        max-stack    : 3
-        max-registers: 2
-        max-scope    : 11
-        scope-depth  : 10
-
-              getlocal0
-              pushscope
-              findpropstrict trace
-              pushstring "babelswf_trace >> "
-              getlocal1
-              add
-              callpropvoid trace 1
-              returnvoid
-
-      }
-    }
-    static _global [4] getter final method[6]  {
-      flags:
-      return-type: Object
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 10
-        scope-depth  : 9
-
-              getlocal0
-              pushscope
-              findpropstrict trace
-              pushstring "babelswf >> accessing _global"
-              callpropvoid trace 1
-              getlex Qname:PackageNamespace(babelswf)::GlobalObject
-              getproperty _global
-              returnvalue
-
-      }
-    }
-    static babelswf_dump [3] final method[7]  {
-      flags:
-      return-type: void
-      parameters (
-        Object
-      )
-      body {
-        max-stack    : 3
-        max-registers: 5
-        max-scope    : 10
-        scope-depth  : 9
-
-              getlocal0
-              pushscope
-              pushnull
-              coerce_s
-              setlocal2
-              pushbyte 0
-              setlocal3
-              getlocal1
-              coerce_a
-              setlocal 4
-              jump 32
-        16  : label
-              getlocal 4
-              getlocal3
-              nextname
-              coerce_s
-              setlocal2
-              findpropstrict trace
-              pushstring "dump >> "
               getlocal2
-              add
-              callpropvoid trace 1
-        32  : hasnext2 4 3
-              iftrue 16
-              kill 4
-              kill 3
+              initproperty Qname:PrivateNamespace()::initFunction
+              getlocal0
+              getlocal1
+              initproperty Qname:PrivateNamespace()::spriteId
               returnvoid
 
       }
     }
-    static ASSetPropFlags [2] final method[8]  {
+
+    static initializer: method[47]  {
       flags:
       return-type: *
       parameters (
-        Object
-        Object
-        int
       )
       body {
-        max-stack    : 2
-        max-registers: 4
-        max-scope    : 10
-        scope-depth  : 9
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:PrivateNamespace()::initFunction [?] var : Function
+    Qname:PrivateNamespace()::spriteId [?] var : int
+    call [?] final method[48]  {
+      flags:
+      return-type: void
+      parameters (
+        Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+      )
+      body {
+        max-stack    : 3
+        max-registers: 2
+        max-scope    : 5
+        scope-depth  : 4
 
               getlocal0
               pushscope
               findpropstrict trace
-              pushstring "ASSetPropFlags called"
+              pushstring "AVM1InitActions >> sprite "
+              getlex Qname:PrivateNamespace()::spriteId
+              add
               callpropvoid trace 1
-              getlex undefined
-              returnvalue
+              getlex Qname:PrivateNamespace()::initFunction
+              getlocal1
+              callpropvoid Qname:Namespace(http://adobe.com/AS3/2006/builtin)::call 1
+              returnvoid
 
       }
     }
   }
 
-  [3] dynamic class Test_swf.MovieClip_20480 {
-    extends Qname:PackageNamespace(babelswf)::BaseMovieClip
-    protected-namespace ProtectedNamespace(Test_swf:MovieClip_20480)
+  [4] sealed class babelswf.prototypes.PrototypeMovieClip {
+    extends Object
+    protected-namespace ProtectedNamespace(babelswf.prototypes:PrototypeMovieClip)
 
-    constructor: method[12]  {
+    constructor: method[58]  {
       flags:
       return-type: *
       parameters (
       )
       body {
-        max-stack    : 2
+        max-stack    : 1
         max-registers: 1
-        max-scope    : 12
-        scope-depth  : 11
+        max-scope    : 5
+        scope-depth  : 4
 
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering constructor for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
-              callpropvoid trace 1
-              getlocal 0
-              pushstring "MovieClip_20480"
-              constructsuper 1
-              getlocal 0
-              kill 0
-              pushbyte 0
-              callpropvoid babelswf_framesAdded 1
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
               returnvoid
 
       }
     }
 
-    static initializer: method[13]  {
+    static initializer: method[59]  {
       flags:
       return-type: *
       parameters (
       )
       body {
-        max-stack    : 5
-        max-registers: 4
-        max-scope    : 11
-        scope-depth  : 10
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 3
 
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering static initializer for Qname:PackageNamespace(Test_swf)::MovieClip_20480"
-              callpropvoid trace 1
-              pushstring "Test"
-              dup
-              findproperty MultinameL:{ Public }
-              swap
-              getproperty MultinameL:{ Public }
-              dup
-              pushstring "GetVariable \"Test\" = "
-              swap
-              add
-              findpropstrict trace
-              swap
-              callpropvoid trace 1
-              not
-              not
-              iftrue 182
-              findpropstrict trace
-              pushstring "@--did not jump to 0176"
-              callpropvoid trace 1
-              pushstring "_global"
-              dup
-              findproperty MultinameL:{ Public }
-              swap
-              getproperty MultinameL:{ Public }
-              dup
-              pushstring "GetVariable \"_global\" = "
-              swap
-              add
-              findpropstrict trace
-              swap
-              callpropvoid trace 1
-              pushstring "Test"
-              newfunction 0
-              dup
-              coerce_a
-              setlocal 1
-              coerce_a
-              setlocal 3
-              coerce_a
-              setlocal 2
-              dup
-              pushundefined
-              ifstricteq 99
-              getlocal 2
-              kill 2
-              getlocal 3
-              kill 3
-              setproperty MultinameL:{ Public }
-              jump 101
-        99  : label
-              pop
-        101 : label
-              getlocal 1
-              pushstring "prototype"
-              swap
-              dup
-              pushundefined
-              ifstricteq 120
-              swap
-              getproperty MultinameL:{ Public }
-              jump 123
-        120 : label
-              swap
-              pop
-        123 : label
-              dup
-              coerce_a
-              setlocal 3
-              pop
-              getlocal 1
-              kill 1
-              pushstring "main"
-              newfunction 1
-              coerce_a
-              setlocal 1
-              coerce_a
-              setlocal 2
-              dup
-              pushundefined
-              ifstricteq 163
-              getlocal 2
-              kill 2
-              getlocal 1
-              kill 1
-              setproperty MultinameL:{ Public }
-              jump 165
-        163 : label
-              pop
-        165 : label
-              findpropstrict ASSetPropFlags
-              dup
-              getproperty ASSetPropFlags
-              swap
-              getlocal 3
-              kill 3
-              pushnull
-              pushbyte 1
-              call 3
-              pop
-        182 : label
-              findpropstrict trace
-              pushstring "@label 0176"
-              callpropvoid trace 1
+              getlocal0
+              pushscope
               returnvoid
 
       }
@@ -876,7 +1960,7 @@ abc-file {
   script {
     Qname:PackageNamespace(Test_swf)::MovieClip_20480 [0] class = Qname:PackageNamespace(Test_swf)::MovieClip_20480
 
-    script method[23]  {
+    script method[60]  {
       flags:
       return-type: *
       parameters (
@@ -884,7 +1968,7 @@ abc-file {
       body {
         max-stack    : 3
         max-registers: 1
-        max-scope    : 10
+        max-scope    : 11
         scope-depth  : 1
 
               getlocal 0
@@ -907,10 +1991,13 @@ abc-file {
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
-              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
               pushscope
-              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
               newclass Qname:PackageNamespace(Test_swf)::MovieClip_20480
+              popscope
               popscope
               popscope
               popscope
@@ -927,9 +2014,67 @@ abc-file {
   }
 
   script {
-    Qname:PackageNamespace(babelswf)::BaseMovieClip [0] class = Qname:PackageNamespace(babelswf)::BaseMovieClip
+    Qname:PackageNamespace(babelswf)::AVM1Runtime [0] class = Qname:PackageNamespace(babelswf)::AVM1Runtime
 
-    script method[24]  {
+    script method[61]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf)::AVM1Runtime
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1Runtime
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject [0] class = Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject
+
+    script method[62]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject
+              popscope
+              initproperty Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1MovieClip [?] class = Qname:PackageNamespace(babelswf)::AVM1MovieClip
+
+    script method[63]  {
       flags:
       return-type: *
       parameters (
@@ -942,7 +2087,7 @@ abc-file {
 
               getlocal0
               pushscope
-              getscopeobject 0
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1MovieClip
               getlex Object
               pushscope
               getlex Qname:PackageNamespace(flash.events)::EventDispatcher
@@ -958,7 +2103,7 @@ abc-file {
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
-              newclass Qname:PackageNamespace(babelswf)::BaseMovieClip
+              newclass Qname:PackageNamespace(babelswf)::AVM1MovieClip
               popscope
               popscope
               popscope
@@ -966,7 +2111,7 @@ abc-file {
               popscope
               popscope
               popscope
-              initproperty Qname:PackageNamespace(babelswf)::BaseMovieClip
+              initproperty Qname:PackageNamespace(babelswf)::AVM1MovieClip
               returnvoid
 
       }
@@ -974,9 +2119,9 @@ abc-file {
   }
 
   script {
-    Qname:PackageNamespace(babelswf)::GlobalObject [?] class = Qname:PackageNamespace(babelswf)::GlobalObject
+    Qname:PackageNamespace(babelswf)::AVM1Sprite [?] class = Qname:PackageNamespace(babelswf)::AVM1Sprite
 
-    script method[25]  {
+    script method[64]  {
       flags:
       return-type: *
       parameters (
@@ -984,21 +2129,234 @@ abc-file {
       body {
         max-stack    : 2
         max-registers: 1
-        max-scope    : 4
+        max-scope    : 10
         scope-depth  : 1
 
               getlocal0
               pushscope
-              findpropstrict Multiname:{ PackageNamespace(babelswf) }::GlobalObject
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1Sprite
               getlex Object
               pushscope
-              getlex Qname:PackageNamespace(flash.utils)::Proxy
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
               pushscope
-              getlex Qname:PackageNamespace(flash.utils)::Proxy
-              newclass Qname:PackageNamespace(babelswf)::GlobalObject
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              newclass Qname:PackageNamespace(babelswf)::AVM1Sprite
               popscope
               popscope
-              initproperty Qname:PackageNamespace(babelswf)::GlobalObject
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1Sprite
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip [0] class = Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip
+
+    script method[65]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip
+              popscope
+              initproperty Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1MainTimeline [?] class = Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+
+    script method[66]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1MainTimeline
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              newclass Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1ExecutionContext [?] class = Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+
+    script method[67]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1ExecutionContext
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1ExecutionContext
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1InitActions [?] class = Qname:PackageNamespace(babelswf)::AVM1InitActions
+
+    script method[68]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1InitActions
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf)::AVM1InitActions
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1InitActions
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1Frame [?] class = Qname:PackageNamespace(babelswf)::AVM1Frame
+
+    script method[69]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1Frame
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf)::AVM1Frame
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1Frame
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(babelswf)::AVM1Function [?] class = Qname:PackageNamespace(babelswf)::AVM1Function
+
+    script method[70]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              findpropstrict Multiname:{ PackageNamespace(babelswf) }::AVM1Function
+              getlex Object
+              pushscope
+              getlex Object
+              newclass Qname:PackageNamespace(babelswf)::AVM1Function
+              popscope
+              initproperty Qname:PackageNamespace(babelswf)::AVM1Function
               returnvoid
 
       }
@@ -1008,7 +2366,7 @@ abc-file {
   script {
     Qname:PackageNamespace(Test_swf)::MainTimeline [0] class = Qname:PackageNamespace(Test_swf)::MainTimeline
 
-    script method[26]  {
+    script method[71]  {
       flags:
       return-type: *
       parameters (
@@ -1016,7 +2374,7 @@ abc-file {
       body {
         max-stack    : 3
         max-registers: 1
-        max-scope    : 10
+        max-scope    : 11
         scope-depth  : 1
 
               getlocal 0
@@ -1039,10 +2397,13 @@ abc-file {
               pushscope
               getlex Qname:PackageNamespace(flash.display)::MovieClip
               pushscope
-              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
               pushscope
-              getlex Qname:PackageNamespace(babelswf)::BaseMovieClip
+              getlex Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MainTimeline
               newclass Qname:PackageNamespace(Test_swf)::MainTimeline
+              popscope
               popscope
               popscope
               popscope
@@ -1058,64 +2419,223 @@ abc-file {
     }
   }
 
-  method[0]  {
+  method[1]  {
     flags:
     return-type: *
     parameters (
     )
     body {
       max-stack    : 2
-      max-registers: 2
-      max-scope    : 12
-      scope-depth  : 11
+      max-registers: 1
+      max-scope    : 3
+      scope-depth  : 3
 
-            newobject 0
+            getlocal0
+            getlex Qname:PackageNamespace(babelswf.prototypes)::PrototypeObject
+            setproperty Multiname:{ PrivateNamespace() Public PrivateNamespace() PackageNamespace(babelswf) PackageInternalNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) ProtectedNamespace(babelswf:AVM1Runtime) StaticProtectedNamespace(babelswf:AVM1Runtime) StaticProtectedNamespace(Object) }::__proto__
+            returnvoid
+
+    }
+  }
+
+  method[2]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 5
+      max-registers: 4
+      max-scope    : 13
+      scope-depth  : 13
+
+            pushstring "Test"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            not
+            not
+            iftrue 144
+            pushstring "_global"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushstring "Test"
+            getlocal 0
+            newfunction 3
+            callproperty avm1_newFunction 1
             dup
-            pushwith
+            coerce_a
+            setlocal 3
             coerce_a
             setlocal 1
+            coerce_a
+            setlocal 2
+            getlocal 0
+            swap
+            getlocal 2
+            kill 2
             getlocal 1
             kill 1
+            callpropvoid avm1_setMember 3
+            getlocal 3
+            pushstring "prototype"
+            coerce_a
+            setlocal 1
+            getlocal 0
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            dup
+            coerce_a
+            setlocal 1
+            pop
+            getlocal 3
+            kill 3
+            pushstring "main"
+            getlocal 0
+            newfunction 4
+            callproperty avm1_newFunction 1
+            coerce_a
+            setlocal 3
+            coerce_a
+            setlocal 2
+            getlocal 0
+            swap
+            getlocal 2
+            kill 2
+            getlocal 3
+            kill 3
+            callpropvoid avm1_setMember 3
+            pushbyte 1
+            pushnull
+            getlocal 1
+            kill 1
+            pushbyte 3
+            pushstring "ASSetPropFlags"
+            coerce_a
+            setlocal 1
+            pop
+            newarray 3
             getlocal 0
             kill 0
-            setproperty this
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_callFunction 2
+            pop
+      144 : label
+            returnvoid
+
+    }
+  }
+
+  method[3]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 1
+      max-registers: 1
+      max-scope    : 14
+      scope-depth  : 14
+
             pushundefined
             returnvalue
 
     }
   }
 
-  method[1]  {
+  method[4]  {
     flags:
     return-type: *
     parameters (
       *
     )
     body {
-      max-stack    : 2
-      max-registers: 3
-      max-scope    : 12
-      scope-depth  : 11
+      max-stack    : 3
+      max-registers: 2
+      max-scope    : 14
+      scope-depth  : 14
 
-            newobject 0
-            dup
-            pushwith
-            coerce_a
-            setlocal 2
-            getlocal 2
             getlocal 0
-            setproperty this
-            getlocal 2
-            kill 2
+            pushstring "mainTimeline"
             getlocal 1
             kill 1
-            setproperty mainTimeline
+            callpropvoid avm1_defineVarValue 2
             getlocal 0
             kill 0
             pushstring "as2 test file 1"
-            callpropvoid babelswf_trace 1
+            callpropvoid avm1_trace 1
             pushundefined
             returnvalue
+
+    }
+  }
+
+  method[5]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 4
+      max-registers: 3
+      max-scope    : 13
+      scope-depth  : 13
+
+            pushstring "MTASC_MAIN"
+            dup
+            coerce_a
+            setlocal 1
+            pop
+            pushstring "this"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushbyte 1
+            pushstring "Test"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushstring "main"
+            coerce_a
+            setlocal 2
+            coerce_a
+            setlocal 1
+            pop
+            newarray 1
+            getlocal 0
+            kill 0
+            swap
+            getlocal 1
+            kill 1
+            getlocal 2
+            kill 2
+            callproperty avm1_callMethod 3
+            pop
+            returnvoid
+
+    }
+  }
+
+  method[74]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 2
+      max-registers: 1
+      max-scope    : 3
+      scope-depth  : 3
+
+            getlocal0
+            getlex Qname:PackageNamespace(babelswf.prototypes)::PrototypeMovieClip
+            setproperty Multiname:{ PrivateNamespace() Public PrivateNamespace() PackageNamespace(babelswf) PackageInternalNamespace(babelswf) Namespace(http://adobe.com/AS3/2006/builtin) ProtectedNamespace(babelswf:AVM1Runtime) StaticProtectedNamespace(babelswf:AVM1Runtime) StaticProtectedNamespace(Object) }::__proto__
+            returnvoid
 
     }
   }
