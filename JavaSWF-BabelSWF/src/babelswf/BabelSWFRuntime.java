@@ -57,7 +57,9 @@ public class BabelSWFRuntime {
     public static final AVM2QName DUMP_METHOD        = new AVM2QName( "avm1_dump" );    
     public static final AVM2QName NEWFUNCTION_METHOD = new AVM2QName( "avm1_newFunction" );
     public static final AVM2QName DEFFUNCTION_METHOD = new AVM2QName( "avm1_defineFunction" );
+    public static final AVM2QName NEWOBJECT_METHOD   = new AVM2QName( "avm1_newObject" );
 
+    
     public static final AVM2QName PLAY_METHOD      = new AVM2QName( "avm1_play" );
     public static final AVM2QName STOP_METHOD      = new AVM2QName( "avm1_stop" );
     public static final AVM2QName ENDDRAG_METHOD   = new AVM2QName( "avm1_endDrag" );

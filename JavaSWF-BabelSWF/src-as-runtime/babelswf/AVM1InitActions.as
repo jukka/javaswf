@@ -13,19 +13,21 @@ package babelswf
 		/**
 		 * The sprite that the actions apply to
 		 */
-		private var sprite:AVM1Sprite;
+		private var spriteId:int;
 		
-		public function AVM1InitActions( sprite:AVM1Sprite, 
+		public function AVM1InitActions( spriteId:int, 
 		                                 initFunction:Function )
 		{
 			this.initFunction = initFunction;
-			this.sprite       = sprite;
+			this.spriteId     = spriteId;
 		}
 
-        public final function call():void
+        public final function call( context:AVM1ExecutionContext ):void
         {
         	//TODO
-        	trace( "AVM1InitActions >> sprite " + sprite.avm1_id );
+        	trace( "AVM1InitActions >> sprite " + spriteId );
+        	
+        	initFunction.call( context );
         }
 	}
 }

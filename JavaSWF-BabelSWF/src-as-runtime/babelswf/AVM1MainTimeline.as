@@ -5,9 +5,13 @@ package babelswf
 {
 	public class AVM1MainTimeline extends AVM1MovieClip
 	{
-		public function AVM1MainTimeline()
+		public var swfName:String;
+		
+		public function AVM1MainTimeline( swfName:String )
 		{
 			super( 0 );
+			
+			this.swfName = swfName;
 		}
 		
 	}

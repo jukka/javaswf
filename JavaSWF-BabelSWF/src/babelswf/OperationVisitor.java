@@ -470,8 +470,25 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitNewObject(com.anotherbigidea.flash.avm1.ops.NewObject) */
     public void visitNewObject(NewObject op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+
+        // ***** BIG ASSUMPTION - that the arg count is a constant
+        int argCount = op.numArgs.intValue();
+
+        op.visitAggregated( this );
+
+        LocalValue<Instruction> name = code.newLocal();
+        code.setLocal( name );
         
+        code.pop(); //arg count
+        
+        //--pack the args into an array
+        code.newArray( argCount );
+
+        //--execute the call
+        code.getLocal( code.thisValue ); //execution context
+        code.swap();
+        code.getLocal( name );
+        code.callProperty( BabelSWFRuntime.NEWOBJECT_METHOD, 2 );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitNextFrame(com.anotherbigidea.flash.avm1.ops.NextFrame) */
