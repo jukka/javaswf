@@ -44,7 +44,7 @@ public class TestWhetherGlobalScopeIsDynamic {
         code.target( 1001 );
         code.label();
         code.returnVoid();
-        code.calcMaxes();
+        code.analyze();
         
         SWFWriter   swf  = new SWFWriter( "TestWhetherGlobalScopeIsDynamic.swf" );
         SWFTagTypes tags = new TagWriter( swf );
