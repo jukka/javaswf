@@ -1,108 +1,133 @@
 signature: CWS
-header: version=8 length=429 width=2000 height=2000 rate=12 frame-count=1
+header: version=8 length=519 width=2000 height=2000 rate=12 frame-count=1
 background-color  RGB(255,255,255)
 sprite id=20480
     end
     ---------------
 export
-  id=20480 name=__Packages.Test
+  id=20480 name=__Packages.test.Test
 init actions for sprite 20480:
             conditions     0
   0000:     lookupTable    
-            0:   "Test"
-            1:   "_global"
-            2:   "*** Test Constructor ***"
-            3:   "doit"
-            4:   "prototype"
-            5:   "main"
-            6:   "as2 test file 1"
-            7:   "*** doit ***"
-            8:   "ASSetPropFlags"
-  0107:     push           lookup( 0 )
-  0112:     getVariable    
-  0113:     not            
-  0114:     not            
-  0115:     ifJump         "0280"
-  0120:     push           lookup( 1 )
-  0125:     getVariable    
-  0126:     push           lookup( 0 )
+            0:   "test"
+            1:   "Test"
+            2:   "_global"
+            3:   "Object"
+            4:   "*** test.Test Constructor ***"
+            5:   "doit"
+            6:   "prototype"
+            7:   "main"
+            8:   "as2 test file 1"
+            9:   "*** doit ***"
+            10:  "ASSetPropFlags"
+  0124:     push           lookup( 0 )
+  0129:     getVariable    
+  0130:     push           lookup( 1 )
+  0135:     getMember      
+  0136:     not            
+  0137:     not            
+  0138:     ifJump         "0354"
+  0143:     push           lookup( 0 )
+  0148:     getVariable    
+  0149:     not            
+  0150:     not            
+  0151:     ifJump         "0176"
+  0156:     push           lookup( 2 )
+  0161:     getVariable    
+  0162:     push           lookup( 0 )
+            push           0
+            push           lookup( 3 )
+  0174:     newObject      
+  0175:     setMember      
+  0176:     push           lookup( 2 )
+  0181:     getVariable    
+  0182:     push           lookup( 0 )
+  0187:     getMember      
+  0188:     push           lookup( 1 )
 
-  0131:     defineFunction () num registers = 2
+  0193:     defineFunction () num registers = 2
                 Preload this      [reg 1] 
                 Supress super 
                 Supress arguments 
             {
-  0142:         push           lookup( 2 )
-  0147:         trace          
-  0148:         push           0
+  0204:         push           lookup( 4 )
+  0209:         trace          
+  0210:         push           0
                 push           register( 1 )
-                push           lookup( 3 )
-  0160:         callMethod     
-  0161:         pop            
+                push           lookup( 5 )
+  0222:         callMethod     
+  0223:         pop            
             }
-  0162:     register       0
-  0166:     setMember      
-  0167:     push           register( 0 )
-            push           lookup( 4 )
-  0174:     getMember      
-  0175:     register       1
-  0179:     pop            
-  0180:     push           register( 0 )
+  0224:     register       0
+  0228:     setMember      
+  0229:     push           register( 0 )
+            push           lookup( 6 )
+  0236:     getMember      
+  0237:     register       1
+  0241:     pop            
+  0242:     push           register( 0 )
+            push           lookup( 7 )
+
+  0249:     defineFunction ( mainTimeline [reg 2] ) num registers = 4
+                Preload this      [reg 1] 
+                Supress super 
+                Supress arguments 
+            {
+  0274:         push           lookup( 8 )
+  0279:         trace          
+  0280:         push           0
+                push           lookup( 2 )
+  0290:         getVariable    
+  0291:         push           lookup( 0 )
+  0296:         getMember      
+  0297:         push           lookup( 1 )
+  0302:         newMethod      
+  0303:         register       3
+  0307:         pop            
+            }
+  0308:     setMember      
+  0309:     push           register( 1 )
             push           lookup( 5 )
 
-  0187:     defineFunction ( mainTimeline [reg 2] ) num registers = 4
+  0316:     defineFunction () num registers = 2
                 Preload this      [reg 1] 
                 Supress super 
                 Supress arguments 
             {
-  0212:         push           lookup( 6 )
-  0217:         trace          
-  0218:         push           0
-                push           lookup( 0 )
-  0228:         newObject      
-  0229:         register       3
-  0233:         pop            
+  0327:         push           lookup( 9 )
+  0332:         trace          
             }
-  0234:     setMember      
-  0235:     push           register( 1 )
-            push           lookup( 3 )
-
-  0242:     defineFunction () num registers = 2
-                Preload this      [reg 1] 
-                Supress super 
-                Supress arguments 
-            {
-  0253:         push           lookup( 7 )
-  0258:         trace          
-            }
-  0259:     setMember      
-  0260:     push           1
+  0333:     setMember      
+  0334:     push           1
             push           null
             push           register( 1 )
             push           3
-            push           lookup( 8 )
-  0278:     callFunction   
-  0279:     pop            
-  0280:     end            
+            push           lookup( 10 )
+  0352:     callFunction   
+  0353:     pop            
+  0354:     end            
 AVM1 actions:
             conditions     0
   0000:     lookupTable    
             0:   "MTASC_MAIN"
             1:   "this"
-            2:   "Test"
-            3:   "main"
-  0031:     push           lookup( 0 )
-  0036:     register       0
-  0040:     pop            
-  0041:     push           lookup( 1 )
-  0046:     getVariable    
-  0047:     push           1
+            2:   "test"
+            3:   "Test"
+            4:   "main"
+  0036:     push           lookup( 0 )
+  0041:     register       0
+  0045:     pop            
+  0046:     push           lookup( 1 )
+  0051:     getVariable    
+  0052:     push           1
             push           lookup( 2 )
-  0057:     getVariable    
-  0058:     push           lookup( 3 )
-  0063:     callMethod     
-  0064:     pop            
-  0065:     end            
+  0062:     getVariable    
+  0063:     push           lookup( 3 )
+  0068:     getMember      
+  0069:     push           lookup( 4 )
+  0074:     callMethod     
+  0075:     pop            
+  0076:     end            
 ---------- frame ----------
 end
 ---------------

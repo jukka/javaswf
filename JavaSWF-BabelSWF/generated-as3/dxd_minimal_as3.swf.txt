@@ -1,0 +1,480 @@
+signature: CWS
+header: version=9 length=1863 width=11000 height=8000 rate=12 frame-count=1
+file-attributes has-metadata allow-as3 use-network
+script-limits  max-recursion-depth=1000 script-timeout=60 secs
+background-color  RGB(255,255,255)
+ABC File 'javaswf' lazy-initialization
+abc-file {
+  [0] dynamic class dxd_minimal_swf.MainTimeline {
+    extends Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+    protected-namespace ProtectedNamespace(dxd_minimal_swf:MainTimeline)
+
+    constructor: method[3]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline"
+              callpropvoid trace 1
+              getlocal 0
+              pushstring "dxd_minimal.swf"
+              constructsuper 1
+              getlocal 0
+              kill 0
+              pushbyte 0
+              newfunction 0
+              callpropvoid avm1_addFrame 2
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[4]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  script {
+    Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
+
+    script method[5]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              getscopeobject 0
+              findpropstrict trace
+              pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline"
+              callpropvoid trace 1
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MainTimeline
+              newclass Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
+              returnvoid
+
+      }
+    }
+  }
+
+  method[0]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 4
+      max-registers: 2
+      max-scope    : 13
+      scope-depth  : 13
+
+            getlocal 0
+            pushstring "init"
+            newfunction 1
+            callpropvoid avm1_defineFunction 2
+            getlocal 0
+            pushstring "square"
+            newfunction 2
+            callpropvoid avm1_defineFunction 2
+            pushstring "app"
+            getlocal 0
+            swap
+            callpropvoid avm1_defineVar 1
+            pushbyte 10
+            pushbyte 10
+            pushbyte 2
+            pushstring "square"
+            coerce_a
+            setlocal 1
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_callFunction 2
+            pop
+            pushbyte 10
+            pushbyte 100
+            pushbyte 2
+            pushstring "square"
+            coerce_a
+            setlocal 1
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_callFunction 2
+            pop
+            pushbyte 100
+            pushbyte 100
+            pushbyte 2
+            pushstring "square"
+            coerce_a
+            setlocal 1
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 0
+            kill 0
+            callpropvoid avm1_stop 0
+            returnvoid
+
+    }
+  }
+
+  method[1]  {
+    flags:
+    return-type: *
+    parameters (
+      *
+      *
+    )
+    body {
+      max-stack    : 8
+      max-registers: 5
+      max-scope    : 14
+      scope-depth  : 14
+
+            getlocal 0
+            callproperty avm1_getThis 0
+            coerce_a
+            setlocal 3
+            getlocal 0
+            pushstring "pOwner"
+            getlocal 1
+            callpropvoid avm1_defineVarValue 2
+            getlocal 0
+            pushstring "pConfig"
+            getlocal 2
+            callpropvoid avm1_defineVarValue 2
+            getlocal 0
+            pushstring "dxd_minimal fla"
+            callpropvoid avm1_trace 1
+            pushstring "app"
+            getlocal 2
+            kill 2
+            getlocal 1
+            kill 1
+            getlocal 3
+            kill 3
+            pushbyte 3
+            pushstring "com"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushstring "disney"
+            coerce_a
+            setlocal 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_getMember 2
+            pushstring "gem"
+            coerce_a
+            setlocal 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_getMember 2
+            pushstring "sites"
+            coerce_a
+            setlocal 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_getMember 2
+            pushstring "generic"
+            coerce_a
+            setlocal 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_getMember 2
+            pushstring "dxd_minimal"
+            coerce_a
+            setlocal 4
+            coerce_a
+            setlocal 3
+            pop
+            newarray 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            getlocal 4
+            kill 4
+            callproperty avm1_newMethod 3
+            coerce_a
+            setlocal 3
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callpropvoid avm1_setVar 2
+            pushstring "app"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushundefined
+            equals
+            dup
+            iftrue 181
+            pop
+            pushstring "app"
+            getlocal 0
+            swap
+            callproperty avm1_getVar 1
+            pushnull
+            equals
+      181 : label
+            not
+            iftrue 196
+            getlocal 0
+            kill 0
+            pushstring "dxd_blank: App could not be created!"
+            callpropvoid avm1_trace 1
+      196 : label
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+  method[2]  {
+    flags:
+    return-type: *
+    parameters (
+      *
+      *
+    )
+    body {
+      max-stack    : 4
+      max-registers: 4
+      max-scope    : 14
+      scope-depth  : 14
+
+            getlocal 0
+            pushstring "x"
+            getlocal 1
+            callpropvoid avm1_defineVarValue 2
+            getlocal 0
+            pushstring "y"
+            getlocal 2
+            callpropvoid avm1_defineVarValue 2
+            pushshort 255
+            pushbyte 5
+            pushbyte 2
+            pushstring "lineStyle"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            pushint 16711935
+            pushbyte 1
+            pushstring "beginFill"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 1
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 2
+            getlocal 1
+            pushbyte 2
+            pushstring "moveTo"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 2
+            getlocal 1
+            pushbyte 80
+            add
+            pushbyte 2
+            pushstring "lineTo"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 2
+            pushbyte 80
+            add
+            getlocal 1
+            pushbyte 80
+            add
+            pushbyte 2
+            pushstring "lineTo"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 2
+            pushbyte 80
+            add
+            getlocal 1
+            pushbyte 2
+            pushstring "lineTo"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            getlocal 2
+            kill 2
+            getlocal 1
+            kill 1
+            pushbyte 2
+            pushstring "lineTo"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 2
+            getlocal 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            pushdouble 0.0
+            pushstring "endFill"
+            coerce_a
+            setlocal 3
+            pop
+            newarray 0
+            getlocal 0
+            kill 0
+            swap
+            getlocal 3
+            kill 3
+            callproperty avm1_callFunction 2
+            pop
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+}
+symbol classes:
+  0 --> dxd_minimal_swf.MainTimeline
+Tag 83 length=56
+    00000000 01 00 68 48 90 a4 54 65 4b 00 68 4b 10 90 55 05 ..hH..TeK.hK..U.
+    00000010 46 00 01 02 00 ff 00 00 ff 00 ff ff 00 ff 01 14 F...............
+    00000020 00 00 00 00 00 00 ff 21 35 a8 48 2a 85 e9 53 ce .......!5.H*..S.
+    00000030 88 e4 e9 ac 4e 87 1c 00 -- -- -- -- -- -- -- -- ....N...        
+---------------
+place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+---------- frame ----------
+end
+---------------

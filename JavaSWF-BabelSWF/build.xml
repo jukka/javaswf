@@ -7,6 +7,8 @@
     </condition>
 	
     <property file="build.properties" />
+
+	<property name="embedded-runtime" value="runtime/runtime_seamless.swf"/>
 	
     <path id="javaswf">
         <pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
@@ -63,7 +65,7 @@
     <!-- Compile the AS-2 testcases -->
     <target name="compile-as2-testcases">
     	<mkdir dir="as2-testcases/swf"/>
-        <mtasc mainfile="Test.as" sourcepath="as2-testcases/src" output="../swf/Test.swf" />
+        <mtasc mainfile="test/Test.as" sourcepath="as2-testcases/src" output="../swf/Test.swf" />
         <swf-dump out="as2-testcases/swf/Test.swf.txt" swf="as2-testcases/swf/Test.swf" />
     </target>
 
@@ -85,14 +87,48 @@
 	
 	<!-- Compile the runtime SWF -->
 	<target name="compile-runtime">
-		<delete dir="runtime"/>
 		<mkdir dir="runtime"/>
 		<compile-swf
 			src-path="src-as-runtime"
-			as-file ="babelswf/AVM1Runtime.as"
+			as-file ="babelswf/RuntimeMovieClip.as"
 			swf-file="runtime/runtime.swf"
 		/>		   
 		<swf-dump swf="runtime/runtime.swf" out="runtime/runtime.swf.txt" />
+	</target>
+
+    <!-- Compile the seamless runtime SWF -->
+    <target name="compile-seamless-runtime">
+        <mkdir dir="runtime"/>
+        <compile-swf
+            src-path="src-as-runtime_seamless"
+            as-file ="babelswf/RuntimeMovieClip.as"
+            swf-file="runtime/runtime_seamless.swf"
+        />         
+        <swf-dump swf="runtime/runtime_seamless.swf" out="runtime/runtime_seamless.swf.txt" />
+    </target>
+
+	
+	<target name="translate-minimal-panel">
+		<copy file  ="/Users/dmain/workspace-cvs/DXD_SDK/dxd/components/dxd_minimal.swf"
+		      tofile="as2-testcases/dxd_minimal.swf"/>
+        <copy file  ="/Users/dmain/workspace-cvs/DXD_SDK/dxd/code/dxd_minimal_code.swf"
+              tofile="as2-testcases/dxd_minimal_code.swf"/>
+        <swf-dump swf="as2-testcases/dxd_minimal.swf"
+                  out="as2-testcases/dxd_minimal.swf.txt" />
+        <swf-dump swf="as2-testcases/dxd_minimal_code.swf"
+                  out="as2-testcases/dxd_minimal_code.swf.txt" />
+        <avm-translate 
+            avm1swf="as2-testcases/dxd_minimal.swf"
+            avm2swf="generated-as3/dxd_minimal_as3.swf"
+        />
+        <avm-translate 
+            avm1swf="as2-testcases/dxd_minimal_code.swf"
+            avm2swf="generated-as3/dxd_minimal_code_as3.swf"
+        />
+        <swf-dump swf="generated-as3/dxd_minimal_as3.swf"
+                  out="generated-as3/dxd_minimal_as3.swf.txt" />
+        <swf-dump swf="generated-as3/dxd_minimal_code_as3.swf"
+                  out="generated-as3/dxd_minimal_code_as3.swf.txt" />
 	</target>
 	
 	
@@ -109,6 +145,7 @@
         <avm-translate 
             avm1swf="as2-testcases/swf/Test.swf"
             avm2swf="generated-as3/Test_mtasc.swf"
+        	runtime="${embedded-runtime}"
         />
         <swf-dump swf="generated-as3/Test_mtasc.swf"
                   out="generated-as3/Test_mtasc.swf.txt" />
@@ -121,6 +158,7 @@
         <avm-translate 
             avm1swf="as2-testcases/fla/testfla.swf"
         	avm2swf="generated-as3/testfla.swf"
+            runtime="${embedded-runtime}"
         />
     	<swf-dump swf="generated-as3/testfla.swf"
     	          out="generated-as3/testfla.swf.txt" />

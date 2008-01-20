@@ -22,6 +22,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     private final AVM2Class  avmClass;
     private final AVM2Code   code;
+    private final LocalValue<Instruction> execEnv;
     
     /**
      * Mappings between AVM1 local values and AVM2
@@ -32,11 +33,22 @@ public class OperationVisitor implements AVM1OpVisitor {
     public OperationVisitor( AVM2Class avmClass, AVM2Code code ) {
         this.code      = code;
         this.avmClass  = avmClass;
+        this.execEnv   = code.newLocal();
+        
+        code.getLex  ( BabelSWFRuntime.EXEC_CONTEXT_CLASS );
+        code.setLocal( execEnv );
+    }
+
+    /**
+     * Push the execution context onto the stack
+     */
+    private void pushExecContext() {
+        code.getLocal( execEnv );        
     }
     
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitAnonymousFunction(com.anotherbigidea.flash.avm1.ops.AnonymousFunction) */
     public void visitAnonymousFunction(AnonymousFunction op) {        
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.newFunction( makeFunction( op ) );
         code.callProperty( BabelSWFRuntime.NEWFUNCTION_METHOD, 1 );
     }
@@ -170,7 +182,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         code.newArray( argCount );
 
         //--execute the call
-        code.getLocal( code.thisValue ); //execution context
+        pushExecContext();
         code.swap();
         code.getLocal( name );
         code.callProperty( BabelSWFRuntime.CALLFUNC_METHOD, 2 );
@@ -219,7 +231,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitDefineLocal(com.anotherbigidea.flash.avm1.ops.DefineLocal) */
     public void visitDefineLocal(DefineLocal op) {
         op.visitAggregated( this );
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.callPropVoid( BabelSWFRuntime.DEFVAR_METHOD, 1 );
     }
@@ -230,7 +242,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         
         op.visitAggregated( this );
         code.setLocal( temp ); //save the value        
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.getLocal( temp );
         code.callPropVoid( BabelSWFRuntime.DEFVARVAL_METHOD, 2 );
@@ -255,13 +267,12 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitDuplicate(com.anotherbigidea.flash.avm1.ops.Duplicate) */
     public void visitDuplicate(Duplicate op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
+        code.dup();        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitEndDrag(com.anotherbigidea.flash.avm1.ops.EndDrag) */
     public void visitEndDrag(EndDrag op) {
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.callPropVoid( BabelSWFRuntime.ENDDRAG_METHOD, 0 );
     }
 
@@ -273,8 +284,15 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitExtends(com.anotherbigidea.flash.avm1.ops.Extends) */
     public void visitExtends(Extends op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
         
+        LocalValue<Instruction> temp = code.newLocal(); 
+        
+        op.visitAggregated( this );
+        code.setLocal( temp ); //save the superclass    
+        pushExecContext();
+        code.swap();
+        code.getLocal( temp );
+        code.callPropVoid( BabelSWFRuntime.EXTENDS_METHOD, 2 );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitFloatValue(com.anotherbigidea.flash.avm1.ops.ConstantOp.FloatValue) */
@@ -284,7 +302,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitFunction(com.anotherbigidea.flash.avm1.ops.Function) */
     public void visitFunction(Function op) {        
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.pushString( op.name );
         code.newFunction( makeFunction( op ) );
         code.callPropVoid( BabelSWFRuntime.DEFFUNCTION_METHOD, 2 );
@@ -292,10 +310,6 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     private AVM2Method makeFunction( Function op ) {
 
-        /* The "this" value upon entering the function will be an AS3 runtime
-         * AVM1ExecutionContext object.
-         */
-        
         AVM2Method function =  avmClass.abcFile.addFunctionClosure( null, null );
         for( String paramName : op.paramNames ) {
             function.addParameter( null, null, null );
@@ -365,7 +379,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         
         op.visitAggregated( this );
         code.setLocal( temp ); //save the name
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.getLocal( temp );
         code.callProperty( BabelSWFRuntime.GETMEMBER_METHOD, 2 );
@@ -398,7 +412,7 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitGetVariable(com.anotherbigidea.flash.avm1.ops.GetVariable) */
     public void visitGetVariable(GetVariable op) {
         op.visitAggregated( this );
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.callProperty( BabelSWFRuntime.GETVAR_METHOD, 1 );
         
@@ -464,8 +478,28 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitNewMethod(com.anotherbigidea.flash.avm1.ops.NewMethod) */
     public void visitNewMethod(NewMethod op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
+        // ***** BIG ASSUMPTION - that the arg count is a constant
+        int argCount = op.numArgs.intValue();
+
+        op.visitAggregated( this );
+
+        LocalValue<Instruction> name = code.newLocal();
+        code.setLocal( name );
+
+        LocalValue<Instruction> object = code.newLocal();
+        code.setLocal( object );
+
+        code.pop(); //arg count
         
+        //--pack the args into an array
+        code.newArray( argCount );
+
+        //--execute the call
+        pushExecContext();
+        code.swap();
+        code.getLocal( object );
+        code.getLocal( name );
+        code.callProperty( BabelSWFRuntime.NEWMETHOD_METHOD, 3 );        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitNewObject(com.anotherbigidea.flash.avm1.ops.NewObject) */
@@ -485,7 +519,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         code.newArray( argCount );
 
         //--execute the call
-        code.getLocal( code.thisValue ); //execution context
+        pushExecContext();
         code.swap();
         code.getLocal( name );
         code.callProperty( BabelSWFRuntime.NEWOBJECT_METHOD, 2 );
@@ -504,7 +538,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitPlay(com.anotherbigidea.flash.avm1.ops.Play) */
     public void visitPlay(Play op) {
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.callPropVoid( BabelSWFRuntime.PLAY_METHOD, 0 );
     }
 
@@ -566,7 +600,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         op.visitAggregated( this );
         code.setLocal( tempVal  ); //save the value        
         code.setLocal( tempName ); //save the name        
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.getLocal( tempName );
         code.getLocal( tempVal  );
@@ -591,7 +625,7 @@ public class OperationVisitor implements AVM1OpVisitor {
         
         op.visitAggregated( this );
         code.setLocal( temp ); //save the value        
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.swap();
         code.getLocal( temp );
         code.callPropVoid( BabelSWFRuntime.SETVAR_METHOD, 2 );
@@ -599,8 +633,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStackValue(com.anotherbigidea.flash.avm1.ops.StackValue) */
     public void visitStackValue(StackValue op) {
-        throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
+        //nada - the value is already on the stack
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStartDrag(com.anotherbigidea.flash.avm1.ops.StartDrag) */
@@ -611,7 +644,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitStop(com.anotherbigidea.flash.avm1.ops.Stop) */
     public void visitStop(Stop op) {
-        code.getLocal( code.thisValue );
+        pushExecContext();
         code.callPropVoid( BabelSWFRuntime.STOP_METHOD, 0 );
     }
 
@@ -674,7 +707,7 @@ public class OperationVisitor implements AVM1OpVisitor {
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTrace(com.anotherbigidea.flash.avm1.ops.Trace) */
     public void visitTrace(Trace op) {
-        code.getLocal( code.thisValue );
+        pushExecContext();
         op.visitAggregated( this );
         code.callPropVoid( BabelSWFRuntime.TRACE_METHOD, 1 );
     }
@@ -722,39 +755,30 @@ public class OperationVisitor implements AVM1OpVisitor {
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWaitForFrame(com.anotherbigidea.flash.avm1.ops.WaitForFrame) */
     public void visitWaitForFrame(WaitForFrame op) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWith(com.anotherbigidea.flash.avm1.ops.With) */
     public void visitWith(With op) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryCatch(com.anotherbigidea.flash.avm1.ops.TryCatch) */
     public void visitTryCatch( TryCatch op ) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryEnd(com.anotherbigidea.flash.avm1.ops.TryEnd) */
     public void visitTryEnd( TryEnd op ) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitTryFinally(com.anotherbigidea.flash.avm1.ops.TryFinally) */
     public void visitTryFinally( TryFinally op ) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1OpVisitor#visitWithEnd(com.anotherbigidea.flash.avm1.ops.WithEnd) */
     public void visitWithEnd( WithEnd op ) {
         throw new RuntimeException("UNIMPLEMENTED AVM1 OPERATION");  // TODO
-        
     }
-
-    
-    
 }

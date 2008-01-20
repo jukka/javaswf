@@ -9,8 +9,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.LogLevel;
 
-import babelswf.AVMTranslator;
-
 /**
  * ANT task to drive the bytecode translator
  *
@@ -21,6 +19,7 @@ public class TranslatorTask extends Task {
     private File avm1swf;
     private File avm2swf;
     private File report;
+    private File runtimeSWF; //to be embedded unless null
     
     /**
      * The AVM1 swf to process
@@ -43,6 +42,13 @@ public class TranslatorTask extends Task {
         this.report = report;
     }
 
+    /**
+     * Optional - the runtime SWF to embed in the translated movie
+     */
+    public void setRuntime( File runtime ) {
+        this.runtimeSWF = runtime;
+    }
+    
     /** @see org.apache.tools.ant.Task#execute() */
     @Override
     public void execute() throws BuildException {
@@ -52,7 +58,7 @@ public class TranslatorTask extends Task {
         
         //FIXME: wire up the report file
         try {
-            new AVMTranslator( avm1swf, avm2swf ).translate();
+            new AVMTranslator( avm1swf, avm2swf, runtimeSWF ).translate();
             
         } catch( Exception ioe ) {
             ioe.printStackTrace();

@@ -1,6 +1,7 @@
 package babelswf.prototypes
 {
-	public class PrototypeObject
+	public dynamic class PrototypeObject extends Prototype
 	{
+				
 	}
 }

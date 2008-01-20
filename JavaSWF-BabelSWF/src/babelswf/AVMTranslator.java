@@ -21,14 +21,16 @@ public class AVMTranslator {
 	
 	private final File avm1swf;
 	private final File avm2swf;
+    private final File runtimeSwf;
 	
 	/**
 	 * @param avm1swf the avm1 input swf
 	 * @param avm2swf the avm2 output swf
 	 */
-	public AVMTranslator( File avm1swf, File avm2swf ) {
-		this.avm1swf = avm1swf;
-		this.avm2swf = avm2swf;
+	public AVMTranslator( File avm1swf, File avm2swf, File runtimeSwf ) {
+		this.avm1swf    = avm1swf;
+		this.avm2swf    = avm2swf;
+		this.runtimeSwf = runtimeSwf;		
 	}
 	
 	/**
@@ -39,7 +41,7 @@ public class AVMTranslator {
 		SWFWriter writer = new SWFWriter( out );
 		TagWriter tagWrt = new TagWriter( writer );
 		
-		AVM1ActionInterceptor interceptor = new AVM1ActionInterceptor( avm1swf.getName(), tagWrt );
+		AVM1ActionInterceptor interceptor = new AVM1ActionInterceptor( avm1swf.getName(), tagWrt, runtimeSwf );
 		FileInputStream in = new FileInputStream( avm1swf );
 		SWFReader reader = new SWFReader( interceptor, in );
 		reader.readFile();

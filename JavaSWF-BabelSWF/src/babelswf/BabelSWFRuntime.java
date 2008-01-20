@@ -1,5 +1,6 @@
 package babelswf;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -21,12 +22,12 @@ import com.anotherbigidea.flash.writers.SWFTagTypesImpl;
  */
 public class BabelSWFRuntime {
     
-    /** The SWF containing the runtime classes */
-    public static final String RUNTIME_SWF = "runtime/runtime.swf";
-
     /** The name of the runtime */
     public static final AVM2QName AVM1_RUNTIME_CLASS = new AVM2QName( "babelswf.AVM1Runtime" );
 
+    /** The name of the execution context class */
+    public static final AVM2QName EXEC_CONTEXT_CLASS = new AVM2QName( "babelswf.AVM1ExecutionContext" );
+    
     /** The name of the movieclip base class */
     public static final AVM2QName AVM1_BASE_CLIP_CLASS = new AVM2QName( "babelswf.AVM1MovieClip" );
     
@@ -58,7 +59,8 @@ public class BabelSWFRuntime {
     public static final AVM2QName NEWFUNCTION_METHOD = new AVM2QName( "avm1_newFunction" );
     public static final AVM2QName DEFFUNCTION_METHOD = new AVM2QName( "avm1_defineFunction" );
     public static final AVM2QName NEWOBJECT_METHOD   = new AVM2QName( "avm1_newObject" );
-
+    public static final AVM2QName NEWMETHOD_METHOD   = new AVM2QName( "avm1_newMethod" );
+    public static final AVM2QName EXTENDS_METHOD     = new AVM2QName( "avm1_extends" );
     
     public static final AVM2QName PLAY_METHOD      = new AVM2QName( "avm1_play" );
     public static final AVM2QName STOP_METHOD      = new AVM2QName( "avm1_stop" );
@@ -78,7 +80,7 @@ public class BabelSWFRuntime {
     /**
      * Load the runtime classes. 
      */
-    public static AVM2ABCFile loadRuntimeClasses() throws IOException {
+    public static AVM2ABCFile loadRuntimeClasses( File runtime ) throws IOException {
         final AVM2ABCBuilder builder = new AVM2ABCBuilder();
         
         SWFTagTypes tags = new SWFTagTypesImpl( null ) {
@@ -89,7 +91,7 @@ public class BabelSWFRuntime {
             }
         };
         
-        FileInputStream in  = new FileInputStream( RUNTIME_SWF );        
+        FileInputStream in  = new FileInputStream( runtime  );        
         SWFTags tagparser = new TagParser( tags );        
         SWFReader reader = new SWFReader( tagparser, in );        
         reader.readFile();

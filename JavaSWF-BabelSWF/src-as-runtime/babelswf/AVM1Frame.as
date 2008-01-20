@@ -3,6 +3,8 @@
  */
 package babelswf
 {
+	import mx.charts.chartClasses.DualStyleObject;
+	
 	public class AVM1Frame
 	{
 		/**
@@ -61,8 +63,12 @@ package babelswf
         	//TODO - call frame function
         	trace( "AVM1Frame >> " + movieclip.avm1_id + "[" + frameNumber + "]" );
         	        	
-        	if( actions == null ) return;         	
-			actions.call( movieclip.getExecutionContext() );
+        	if( actions == null ) return;
+        	
+        	var context:AVM1ExecutionContext = movieclip.getExecutionContext();
+        	//context.dumpContext();
+        	         	
+			actions.call( context );
         }
 	}
 }

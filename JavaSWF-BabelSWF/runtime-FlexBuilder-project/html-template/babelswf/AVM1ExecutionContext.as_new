@@ -212,8 +212,8 @@ package babelswf
             var fobj:* = avm1_getVar( name );
             if( fobj == null ) return undefined;
              
-            var func:AVM1Function = fobj as AVM1Function;
-            return func.avm1_call( this, args.reverse() );
+            var func:Function = fobj;
+            return func.apply( this, args.reverse() );
         }      
         
         /**
@@ -228,15 +228,15 @@ package babelswf
             if( object == null ) return undefined; 
             
             if( name == null ) {
-                var anonfunc:AVM1Function = object as AVM1Function;
-                return anonfunc.avm1_call( this, args.reverse() );	   
+                var anonfunc:Function = object;
+                return anonfunc.apply( this, args.reverse() );	   
             } 
             
             var fobj:* = avm1_getMember( object, name );
             if( fobj == null ) return undefined;
              
-            var func:AVM1Function = fobj as AVM1Function;
-            return func.avm1_callMethod( object, args.reverse() );
+            var func:Function = fobj;
+            return func.apply( object, args.reverse() );
         }              
         
         /**
@@ -317,11 +317,11 @@ package babelswf
         /**
          * Create a new AVM1 function that captures this scope
          */ 
-        public function avm1_newFunction( body:Function ):AVM1Function
+        public function avm1_newFunction( body:Function ):Function
         {
             //if( debug ) 
             trace( "avm1_newFunction" );        
-        	return new AVM1Function( body, this );
+        	return new AVM1Function( body, this ).delegate();
         }
 
         /**
@@ -335,7 +335,7 @@ package babelswf
             
             trace( "activation[this]-->" + activation["this"] );
             
-            activation["this"][name] = func;
+            activation["this"][name] = func.delegate();
         }
         
         /**
@@ -350,8 +350,8 @@ package babelswf
             var fobj:* = avm1_getVar( name );
             if( fobj == null ) return undefined;
              
-            var func:AVM1Function = fobj as AVM1Function;
-            return func.avm1_new( args.reverse() );
+            var func:Function = fobj;
+            return func.apply( { "__proto__":func.prototype }, args.reverse() );
         } 
 
        /**
@@ -366,29 +366,29 @@ package babelswf
             if( object == null ) return undefined; 
             
             if( name == null ) {
-                var anonfunc:AVM1Function = object as AVM1Function;
-                return anonfunc.avm1_new( args.reverse() );       
+                var anonfunc:Function = object;
+                return anonfunc.apply( { "__proto__":anonfunc.prototype }, args.reverse() );       
             } 
             
             var fobj:* = avm1_getMember( object, name );
             if( fobj == null ) return undefined;
              
-            var func:AVM1Function = fobj as AVM1Function;
-            return func.avm1_new( args.reverse() );
+            var func:Function = fobj;
+            return func.apply( { "__proto__":func.prototype }, args.reverse() );
         }  
         
         /**
          * Create an inheritance relationship between two classes
          */ 
-        public function avm1_extends( subclass:AVM1Function, superclass:AVM1Function ):void
+        public function avm1_extends( subclass:Function, superclass:Function ):void
         {
             //if( debug ) 
             trace( "avm1_extends >> " + subclass + " extends " + superclass );
             	
             var newProto:Object = AVM1Runtime.global.Object.avm1_new([]);
-            newProto["__proto__"  ] = superclass["prototype"];
+            newProto["__proto__"  ] = superclass.prototype;            
             newProto["constructor"] = subclass; 	
-            subclass.setupPrototype( newProto );
+            subclass["prototype"] = newProto;
         }
         
         /**

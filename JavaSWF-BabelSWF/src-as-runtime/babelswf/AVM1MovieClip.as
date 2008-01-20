@@ -5,25 +5,40 @@ package babelswf
 {
 	import flash.display.MovieClip;
 	
-	public class AVM1MovieClip extends MovieClip
+	public dynamic class AVM1MovieClip extends MovieClip
 	{
 		private var symbolId:int;
 		private var frames  :Array = [];
 		private var pendingInitActs:Array = [];
 		
 	    private var execContext:AVM1ExecutionContext; 
-		private var avm1mc:Object = {}; //FIXME 
+		//private var avm1mc:Object = AVM1Runtime.global.MovieClip.avm1_new([]);
 		
 		public function AVM1MovieClip( symbolId:int )
 	    {
 			this.symbolId = symbolId;
 			
-			avm1mc["this"] = avm1mc;
-			execContext = new AVM1ExecutionContext( avm1mc, null, this ); 
+			this["__proto__"] = AVM1Runtime.global.MovieClip.prototype;
+			this["this"]      = this;
+			
+			//avm1mc["this"] = avm1mc;
+            //avm1mc["AVM1MovieClip"] = this;
+            //avm1mc.setPropertyIsEnumerable( "AVM1MovieClip", false );
+			//execContext = new AVM1ExecutionContext( avm1mc, null, this ); 
+            
+            execContext = new AVM1ExecutionContext( this, null, this ); 
 		}
 
         /** Get the symbol id */
         public final function get avm1_id():int { return symbolId; }
+        
+        /**
+         * Access the movieclip from the AVM1 object
+         */ 
+        public static function mc( obj:Object ):AVM1MovieClip
+        {
+        	return obj as AVM1MovieClip; //obj["AVM1MovieClip"];
+        }
         
         /**
          * Add a frame to the timeline
@@ -86,5 +101,8 @@ package babelswf
         {
         	return execContext;
         }
+        
+        /** Access the AVM1 movieclip object */
+       // public function get avm1Object():Object { return avm1mc; }
 	}
 }

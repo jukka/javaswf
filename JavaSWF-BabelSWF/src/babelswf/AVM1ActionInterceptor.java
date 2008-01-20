@@ -2,6 +2,7 @@ package babelswf;
 
 import static com.anotherbigidea.flash.SWFConstants.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -9,7 +10,6 @@ import java.util.logging.Logger;
 import com.anotherbigidea.flash.avm1.AVM1BlockBuilder;
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
-import com.anotherbigidea.flash.avm2.model.AVM2Code;
 import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.interfaces.SWFActions;
@@ -69,12 +69,18 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	/**
 	 * @param context a description of the context
 	 * @param tags the target to pass tags to
+	 * @param runtime the runtime SWF to embed - null for none
 	 */
-    public AVM1ActionInterceptor( String context, SWFTagTypes tags ) throws IOException {
+    public AVM1ActionInterceptor( String context, SWFTagTypes tags, File runtime ) throws IOException {
         super( tags );
         
         //start off with the runtime classes and add custom code to that
-        abc = BabelSWFRuntime.loadRuntimeClasses();
+        if( runtime != null ) {
+            abc = BabelSWFRuntime.loadRuntimeClasses( runtime );           
+        }
+        else {
+            abc = new AVM2ABCFile(); //runtime is assumed to be loaded separately
+        }
         
         this.context = context;        
         this.mainClip = new AVM2MovieClip( 
@@ -110,7 +116,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 			case TAG_SHOWFRAME:
 			case TAG_DEFINESPRITE:
 			case TAG_FILE_ATTRIBUTES:
-			case TAG_PLACEOBJECT2:
+			//case TAG_PLACEOBJECT2:
 			case TAG_SCRIPTLIMITS:
 			case TAG_SYMBOLCLASS:
 			case TAG_DEFINEBUTTON:

@@ -17,6 +17,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<location>/Users/dmain/workspace-p4/p4-dol/CoreTechnology/DXD/Trinity/Platform/src</location>
+		</link>
+		<link>
 			<name>[source path] src-as-runtime</name>
 			<type>2</type>
 			<location>/Users/dmain/workspace-os/JavaSWF-BabelSWF/src-as-runtime</location>
