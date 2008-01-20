@@ -165,8 +165,9 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
             case TAG_DEFINEBUTTON2 : parseDefineButton2( in ); break;
             case TAG_DEFINEBUTTONCXFORM : parseButtonCXForm( in ); break;
 
-            case TAG_EXPORT : parseExport( in ); break;
-            case TAG_IMPORT : parseImport( in ); break;
+            case TAG_EXPORT          : parseExport( in ); break;
+            case TAG_IMPORT_ASSETS   : parseImport( in ); break;
+            case TAG_IMPORT_ASSETS_2 : parseImport2( in ); break;
 
             case TAG_DEFINEQUICKTIMEMOVIE : mTagtypes.tagDefineQuickTimeMovie( in.readUI16(), in.readString( mStringEncoding ) ); break;
                                             
@@ -562,8 +563,29 @@ public class TagParser implements SWFTags, SWFConstants, SWFFileSignature
     
     protected void parseImport( InStream in ) throws IOException
     {
-        String movieName     = in.readString( mStringEncoding );
-        int count     = in.readUI16();
+        String movieName = in.readString( mStringEncoding );        
+        int count = in.readUI16();
+
+        String[] importNames = new String[ count ];
+        int[]    importIds   = new int[ count ];
+        
+        for( int i = 0; i < count; i++ )
+        {
+            importIds[i]   = in.readUI16();
+            importNames[i] = in.readString( mStringEncoding );
+        }
+        
+        mTagtypes.tagImportAssets2( movieName, importNames, importIds );
+    }
+    
+    protected void parseImport2( InStream in ) throws IOException
+    {
+        String movieName = in.readString( mStringEncoding );
+
+        in.readUI8(); //reserved
+        in.readUI8(); //reserved
+
+        int count = in.readUI16();
         
         String[] importNames = new String[ count ];
         int[]    importIds   = new int[ count ];

@@ -4,7 +4,9 @@ package test {
     
     public class Test extends MovieClip {
         
-        public function Test() {            
+        public function Test() {  
+            foo();
+/*                  
             for( var i:int = 1; i <= 10; i++ ) {
                 try {
                     trace(i);
@@ -12,6 +14,12 @@ package test {
                     trace( "caught" );
                 }            
             }
+*/            
+        }
+        
+        public static function foo():void
+        {
+            trace( "hello from foo" );
         }
     }
 }

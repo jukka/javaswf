@@ -531,9 +531,9 @@ public class AVM1BlockBuilder implements SWFActionBlock {
         throws IOException {
         
         Function func = ( name.length() == 0 ) ? 
-            new AnonymousFunction( numRegistersToAllocate, paramNames, registersForArguments ) :
-            new Function( name, numRegistersToAllocate, paramNames, registersForArguments );
-        Function.PreloadingFlag.decode( preloadingFlags, func.flags );
+            new AnonymousFunction( numRegistersToAllocate, paramNames, registersForArguments, preloadingFlags ) :
+            new Function( name, numRegistersToAllocate, paramNames, registersForArguments, preloadingFlags );
+        
         block.append( func );
         
         return new AVM1BlockBuilder( func.body, lookupTable );

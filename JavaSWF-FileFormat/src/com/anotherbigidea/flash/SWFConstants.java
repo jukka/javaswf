@@ -87,7 +87,7 @@ public interface SWFConstants
     //???
     //???
     public static final int TAG_EXPORT               = 56;  
-    public static final int TAG_IMPORT               = 57;      
+    public static final int TAG_IMPORT_ASSETS        = 57;      
     public static final int TAG_ENABLEDEBUG          = 58;      
 	public static final int TAG_DOINITACTION         = 59;
 	public static final int TAG_DEFINEVIDEOSTREAM    = 60;
@@ -101,7 +101,7 @@ public interface SWFConstants
     //??? 68
     public static final int TAG_FILE_ATTRIBUTES      = 69;
     public static final int TAG_PLACEOBJECT3         = 70;  
-    //??? 71
+    public static final int TAG_IMPORT_ASSETS_2      = 71;  
     //??? 72
     //??? 73
     //??? 74

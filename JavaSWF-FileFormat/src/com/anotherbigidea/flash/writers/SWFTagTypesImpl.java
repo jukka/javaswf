@@ -418,6 +418,15 @@ public class SWFTagTypesImpl implements SWFTagTypes, SWFFileSignature
     {
         if( mTagtypes != null ) mTagtypes.tagImport( movieName, names, ids );
     }
+
+    /**
+     * SWFTagTypes interface
+     */ 
+    public void tagImportAssets2( String movieName, String[] names, int[] ids ) 
+        throws IOException
+    {
+        if( mTagtypes != null ) mTagtypes.tagImportAssets2( movieName, names, ids );
+    }
     
     /**
      * SWFTagTypes interface

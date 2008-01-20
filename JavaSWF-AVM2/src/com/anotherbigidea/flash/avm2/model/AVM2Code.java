@@ -752,6 +752,14 @@ public final class AVM2Code {
         instructions.append( OP_callproperty, new AVM2QName( qualifiedName ), argCount );
     }
 
+    /**
+     * Call a method with the given ABC file method index
+     * @param methodIndex the method index
+     * @param argCount the number of arguments
+     */
+    public void callStatic( int methodIndex, int argCount ) {
+        instructions.append( OP_callstatic, methodIndex, argCount );
+    }
     
 	/**
 	 * Push a string
@@ -923,6 +931,17 @@ public final class AVM2Code {
 	public void constructSuper( int argCount ) {
 		instructions.append( OP_constructsuper, argCount );
 	}
+
+    /**
+     * Construct an object from a property function
+     * 
+     * @param name the property name
+     * @param argCount the argument count
+     */
+    public void constructProp( String name, int argCount ) {
+        instructions.append( OP_constructprop, new AVM2QName( name ), argCount );
+    }
+
 	
 	/**
 	 * Throw the exception from the stack

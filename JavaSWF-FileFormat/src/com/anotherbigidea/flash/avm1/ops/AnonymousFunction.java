@@ -12,8 +12,9 @@ public final class AnonymousFunction extends Function implements AVM1ValueProduc
 
     public AnonymousFunction( int numRegistersToAllocate,
                               String[] paramNames,
-                              int[] registersForArguments ) {
-        super( "", numRegistersToAllocate, paramNames, registersForArguments );
+                              int[] registersForArguments,
+                              int preloadingFlags ) {
+        super( "", numRegistersToAllocate, paramNames, registersForArguments, preloadingFlags );
     }
 
     /** @see com.anotherbigidea.flash.avm1.AVM1Operation#accept(com.anotherbigidea.flash.avm1.AVM1OpVisitor) */

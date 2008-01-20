@@ -1,0 +1,173 @@
+signature: FWS
+header: version=9 length=442 width=2000 height=2000 rate=12 frame-count=1
+file-attributes allow-as3
+background-color  RGB(255,255,255)
+ABC File 'test' 
+abc-file {
+  [0] dynamic class .MyProxy {
+    extends Qname:PackageNamespace(flash.utils)::Proxy
+    protected-namespace ProtectedNamespace(MyProxy)
+
+    constructor: method[0]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 6
+        scope-depth  : 5
+
+              getlocal0
+              pushscope
+              getlocal0
+              constructsuper 0
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[1]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 5
+        scope-depth  : 4
+
+              getlocal0
+              pushscope
+              returnvoid
+
+      }
+    }
+
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::getProperty [?] override method[2]  {
+      flags:
+      return-type: *
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 2
+        max-registers: 2
+        max-scope    : 6
+        scope-depth  : 5
+
+              getlocal0
+              pushscope
+              getlocal1
+              pushstring "value"
+              ifne 12
+              pushbyte 23
+              returnvalue
+        12  : pushstring "a string value"
+              returnvalue
+
+      }
+    }
+    Qname:Namespace(http://www.adobe.com/2006/actionscript/flash/proxy)::hasProperty [?] override method[3]  {
+      flags:
+      return-type: Boolean
+      parameters (
+        *
+      )
+      body {
+        max-stack    : 2
+        max-registers: 2
+        max-scope    : 6
+        scope-depth  : 5
+
+              getlocal0
+              pushscope
+              getlocal1
+              pushstring "value"
+              ifne 11
+              pushtrue
+              returnvalue
+        11  : getlocal1
+              pushstring "foo"
+              ifne 20
+              pushtrue
+              returnvalue
+        20  : pushfalse
+              returnvalue
+
+      }
+    }
+  }
+
+  script {
+    MyProxy [0] class = MyProxy
+
+    script method[4]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 4
+        scope-depth  : 1
+
+              getlocal0
+              pushscope
+              getscopeobject 0
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.utils)::Proxy
+              pushscope
+              getlex Qname:PackageNamespace(flash.utils)::Proxy
+              newclass MyProxy
+              popscope
+              popscope
+              initproperty MyProxy
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+
+    script method[5]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              findpropstrict MyProxy
+              constructprop MyProxy 0
+              pushwith
+              findpropstrict foo
+              getproperty foo
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              findpropstrict value
+              getproperty value
+              findpropstrict trace
+              swap
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+  }
+
+}
+---------- frame ----------
+end
+---------------

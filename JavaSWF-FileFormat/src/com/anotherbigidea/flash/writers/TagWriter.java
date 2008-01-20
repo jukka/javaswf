@@ -45,26 +45,8 @@ import org.epistem.io.OutStream;
 
 import com.anotherbigidea.flash.SWFConstants;
 import com.anotherbigidea.flash.avm2.ABC;
-import com.anotherbigidea.flash.interfaces.SWFActionBlock;
-import com.anotherbigidea.flash.interfaces.SWFActions;
-import com.anotherbigidea.flash.interfaces.SWFFileSignature;
-import com.anotherbigidea.flash.interfaces.SWFShape;
-import com.anotherbigidea.flash.interfaces.SWFTagTypes;
-import com.anotherbigidea.flash.interfaces.SWFTags;
-import com.anotherbigidea.flash.interfaces.SWFText;
-import com.anotherbigidea.flash.interfaces.SWFVectors;
-import com.anotherbigidea.flash.structs.AlphaColor;
-import com.anotherbigidea.flash.structs.AlphaTransform;
-import com.anotherbigidea.flash.structs.ButtonRecord;
-import com.anotherbigidea.flash.structs.ButtonRecord2;
-import com.anotherbigidea.flash.structs.Color;
-import com.anotherbigidea.flash.structs.ColorTransform;
-import com.anotherbigidea.flash.structs.FillStyle;
-import com.anotherbigidea.flash.structs.LineStyle;
-import com.anotherbigidea.flash.structs.Matrix;
-import com.anotherbigidea.flash.structs.Rect;
-import com.anotherbigidea.flash.structs.SoundInfo;
-import com.anotherbigidea.flash.structs.Style;
+import com.anotherbigidea.flash.interfaces.*;
+import com.anotherbigidea.flash.structs.*;
 
 /**
  * A writer that implements the SWFTagTypes interface and writes
@@ -703,7 +685,7 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
      */     public void tagImport( String movieName, String[] names, int[] ids ) 
         throws IOException
     {
-        startTag( TAG_IMPORT, true );
+        startTag( TAG_IMPORT_ASSETS, true );
         
         int count = ids.length;
         
@@ -719,6 +701,32 @@ public class TagWriter implements SWFTagTypes, SWFConstants, SWFFileSignature
         
         completeTag();
     }
+
+    /**
+     * SWFTagTypes interface
+     */ 
+    public void tagImportAssets2( String movieName, String[] names, int[] ids ) 
+        throws IOException
+    {
+        startTag( TAG_IMPORT_ASSETS_2, true );
+        
+        int count = ids.length;
+        
+        out.writeString( movieName, mStringEncoding );
+        out.writeUI8   ( 1 );
+        out.writeUI8   ( 0 );
+        out.writeUI16  ( count );
+
+        for( int i = 0; i < count; i++ )
+        {
+            //System.out.println( "Importing " + names[i] + " as " + ids[i] + " from " + movieName );
+            out.writeUI16  ( ids  [i] );
+            out.writeString( names[i], mStringEncoding );
+        }
+        
+        completeTag();
+    }
+
     
     /**
      * SWFTagTypes interface

@@ -646,6 +646,17 @@ public class SWFTagDumper
         }
     }
     
+    /** @see com.anotherbigidea.flash.interfaces.SWFTagTypes#tagImportAssets2(java.lang.String, java.lang.String[], int[]) */
+    public void tagImportAssets2( String movieName, String[] names, int[] ids )
+            throws IOException {
+        println( "import-assets-2 url=" + movieName );
+        
+        for( int i = 0; i < names.length && i < ids.length; i++ )
+        {
+            println( "  id=" + ids[i] + " name=" + names[i] );
+        }
+    }
+
     /**
      * SWFTagTypes interface
      */     public void tagDefineQuickTimeMovie( int id, String filename ) throws IOException

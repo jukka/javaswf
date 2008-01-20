@@ -186,6 +186,8 @@ public interface SWFTagTypes extends SWFSpriteTagTypes
     public void tagExport( String[] names, int[] ids ) throws IOException;
     
     public void tagImport( String movieName, String[] names, int[] ids ) throws IOException;
+
+    public void tagImportAssets2( String movieName, String[] names, int[] ids ) throws IOException;
     
     public void tagEnableDebug( byte[] password ) throws IOException;
 

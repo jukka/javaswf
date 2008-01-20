@@ -70,7 +70,8 @@ public class Function extends AVM1Operation {
     
     public Function( String name, int numRegistersToAllocate,
                      String[] paramNames,
-                     int[] registersForArguments ) {
+                     int[] registersForArguments,
+                     int preloadingFlags ) {
         
         if( registersForArguments == null ) registersForArguments = new int[ paramNames.length ];
         
@@ -79,6 +80,7 @@ public class Function extends AVM1Operation {
         this.paramNames = paramNames;
         this.registersForArguments = registersForArguments;
         
+        Function.PreloadingFlag.decode( preloadingFlags, flags );
         int regNum = 1;
         
         thisRegister      = flags.contains( PRELOAD_THIS      ) ? new StoreInRegister( regNum++ ) : null; 

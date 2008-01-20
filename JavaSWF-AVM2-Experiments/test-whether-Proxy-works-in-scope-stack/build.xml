@@ -1,0 +1,50 @@
+<project name="Test Whether Proxy Works on the Scope Stack" basedir="." default="all">
+	
+	<property name="mxmlc" value="/Applications/Adobe Flex Builder 3/sdks/3.0.0/bin/mxmlc"/>
+	
+	<path id="javaswf">
+		<pathelement location="../../JavaSWF-FileFormat/eclipse-build"/>
+        <pathelement location="../../EpistemCommon/eclipse-build"/>
+        <pathelement location="../../JavaSWF-AVM2/eclipse-build"/>
+	</path>
+
+	<path id="test-cp">
+		<path refid="javaswf" />
+        <pathelement location="../eclipse-build"/>
+	</path>
+	
+	<macrodef name="mxmlc">
+        <attribute name="dir" default="."/>
+        <attribute name="as"  default=""/>
+        <attribute name="out" default=""/>
+	    <sequential>
+            <exec dir="@{dir}" executable="${mxmlc}" failonerror="true">
+                <arg line="-as3=true -o @{out} -sp=. @{as}"/>
+            </exec>
+	    </sequential>
+	</macrodef>
+	
+	
+	<target name="all" depends="compile-as, test, dump" />
+		
+    <target name="test">
+        <java classname="TestWhetherProxyWorksInScopeStack" 
+              classpathref="test-cp" 
+        />
+    </target>
+
+	<target name="dump">
+		<java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
+			  classpathref="javaswf" >
+            <arg value="test.swf"/>
+            <arg value="out=test.swf.txt"/>
+            <arg value="hex"/>
+            <arg value="acts"/>
+		</java>
+	</target>
+
+    <target name="compile-as">
+    	<mxmlc dir="." as="MyProxy.as" out="MyProxy.swf" />
+    </target>
+	
+</project>

@@ -1,7 +1,7 @@
 signature: CWS
-header: version=9 length=988 width=10000 height=7500 rate=24 frame-count=1
+header: version=9 length=942 width=10000 height=7500 rate=24 frame-count=1
 file-attributes has-metadata allow-as3 use-network
-Tag 77 length=458
+Tag 77 length=459
     00000000 3c 72 64 66 3a 52 44 46 20 78 6d 6c 6e 73 3a 72 <rdf:RDF xmlns:r
     00000010 64 66 3d 27 68 74 74 70 3a 2f 2f 77 77 77 2e 77 df='http://www.w
     00000020 33 2e 6f 72 67 2f 31 39 39 39 2f 30 32 2f 32 32 3.org/1999/02/22
@@ -27,16 +27,16 @@ Tag 77 length=458
     00000160 6b 6e 6f 77 6e 3c 2f 64 63 3a 63 72 65 61 74 6f known</dc:creato
     00000170 72 3e 3c 64 63 3a 6c 61 6e 67 75 61 67 65 3e 45 r><dc:language>E
     00000180 4e 3c 2f 64 63 3a 6c 61 6e 67 75 61 67 65 3e 3c N</dc:language><
-    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 37 2c 20 32 dc:date>Jan 7, 2
-    000001a0 30 30 38 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 72 008</dc:date></r
-    000001b0 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e 3c df:Description><
-    000001c0 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- -- /rdf:RDF>.      
+    00000190 64 63 3a 64 61 74 65 3e 4a 61 6e 20 31 37 2c 20 dc:date>Jan 17, 
+    000001a0 32 30 30 38 3c 2f 64 63 3a 64 61 74 65 3e 3c 2f 2008</dc:date></
+    000001b0 72 64 66 3a 44 65 73 63 72 69 70 74 69 6f 6e 3e rdf:Description>
+    000001c0 3c 2f 72 64 66 3a 52 44 46 3e 00 -- -- -- -- -- </rdf:RDF>.     
 ---------------
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(134,156,167)
 serial number:
   00000000 03 00 00 00 06 00 00 00 03 00 81 e5 02 00 00 00 ................
-  00000010 00 00 bf 83 32 56 17 01 00 00 -- -- -- -- -- -- ....2V....      
+  00000010 00 00 af 27 9a 89 17 01 00 00 -- -- -- -- -- -- ...'......      
 
 frame-label test_Test
 ABC File 'frame1' lazy-initialization
@@ -45,68 +45,29 @@ abc-file {
     extends Qname:PackageNamespace(flash.display)::MovieClip
     protected-namespace ProtectedNamespace(test:Test)
 
-    constructor: method  {
-      flags: NeedActivation
+    constructor: method[2]  {
+      flags:
       return-type: *
       parameters (
       )
       body {
-        max-stack    : 3
-        max-registers: 3
-        max-scope    : 16
-        scope-depth  : 11
+        max-stack    : 1
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 10
 
               getlocal0
-              pushscope
-              newactivation
-              dup
-              setlocal1
               pushscope
               getlocal0
               constructsuper 0
-              getscopeobject 1
-              pushbyte 1
-              setslot 0
-              jump 66
-        19  : label
-        20  : findpropstrict trace
-              getscopeobject 1
-              getslot 0
-              callpropvoid trace 1
-        29  : jump 56
-        33  : getlocal0
-              pushscope
-              getlocal1
-              pushscope
-              newcatch 0
-              dup
-              setlocal2
-              dup
-              pushscope
-              swap
-              setslot 0
-              findpropstrict trace
-              pushstring "caught"
-              callpropvoid trace 1
-              popscope
-              kill 2
-        56  : getscopeobject 1
-              getslot 0
-              increment_i
-              getscopeobject 1
-              swap
-              setslot 0
-        66  : getscopeobject 1
-              getslot 0
-              pushbyte 10
-              ifle 19
+              findpropstrict foo
+              callpropvoid foo 0
               returnvoid
 
-        try { 20 .. 29 } catch( ex : Object ) --> 33
       }
     }
 
-    static initializer: method  {
+    static initializer: method[0]  {
       flags:
       return-type: *
       parameters (
@@ -124,12 +85,32 @@ abc-file {
       }
     }
 
+    static foo [2] final method[1]  {
+      flags:
+      return-type: void
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 10
+        scope-depth  : 9
+
+              getlocal0
+              pushscope
+              findpropstrict trace
+              pushstring "hello from foo"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
   }
 
   script {
     Qname:PackageNamespace(test)::Test [0] class = Qname:PackageNamespace(test)::Test
 
-    script method  {
+    script method[3]  {
       flags:
       return-type: *
       parameters (

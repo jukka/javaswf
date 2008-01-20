@@ -1,0 +1,64 @@
+signature: FWS
+header: version=9 length=219 width=2000 height=2000 rate=12 frame-count=1
+file-attributes allow-as3
+background-color  RGB(255,255,204)
+ABC File 'test' 
+abc-file {
+  script {
+
+    script method[1]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 3
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              getlocal 0
+              kill 0
+              pushscope
+              findpropstrict trace
+              pushstring "Entering main script..."
+              callpropvoid trace 1
+              getglobalscope
+              callstatic 0 0
+              findpropstrict trace
+              pushstring "...exiting main script"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+  }
+
+  method[0]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 2
+      max-registers: 1
+      max-scope    : 2
+      scope-depth  : 1
+
+            getlocal 0
+            pushscope
+            findpropstrict trace
+            pushstring ">>>>> Hello from method <<<<<"
+            callpropvoid trace 1
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+}
+---------- frame ----------
+end
+---------------
