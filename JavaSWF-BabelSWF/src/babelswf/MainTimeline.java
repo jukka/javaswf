@@ -9,7 +9,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
 
 /**
  * Wrapper around the main timeline of the SWF being translated
- *
+ * 
  * @author nickmain
  */
 public final class MainTimeline extends Timeline {
