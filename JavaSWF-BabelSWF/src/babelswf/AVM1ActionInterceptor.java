@@ -32,7 +32,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	private static final Logger log = AVMTranslator.log;
 	
 	private final String context;
-	private final MainTimeline mainClip;
+	private final SWFTimeline mainClip;
     private final Timeline     thisClip;
 		
 	private final AVM2ABCFile abc;
@@ -76,7 +76,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
         }
         
         this.context  = context;        
-        this.mainClip = new MainTimeline( context, abc );
+        this.mainClip = new SWFTimeline( context, abc );
         
         thisClip = mainClip;
         

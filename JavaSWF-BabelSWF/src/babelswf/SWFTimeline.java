@@ -12,14 +12,14 @@ import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
  * 
  * @author nickmain
  */
-public final class MainTimeline extends Timeline {
+public final class SWFTimeline extends Timeline {
 
     //map of symbol id to movieclip
     private final Map<Integer, SpriteTimeline> sprites = new HashMap<Integer, SpriteTimeline>();
     
     private final AVM2ABCFile abc;
     
-    public MainTimeline( String context, AVM2ABCFile abc ) {
+    public SWFTimeline( String context, AVM2ABCFile abc ) {
         super( new AVM2MovieClip( 
                        abc, 
                        context.replace( '.', '_' ) + ".MainTimeline",
