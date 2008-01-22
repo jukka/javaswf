@@ -1,58 +1,159 @@
 signature: CWS
-header: version=8 length=213 width=11000 height=8000 rate=12 frame-count=1
+header: version=8 length=583 width=11000 height=8000 rate=12 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 AVM1 actions:
             conditions     0
+  0000:     lookupTable    
+            0:   "a"
+            1:   "b"
+            2:   "foo "
+            3:   "lineStyle"
+            4:   "beginFill"
+            5:   "moveTo"
+            6:   "lineTo"
+            7:   "endFill"
+            8:   "Hello from testfla.swf"
+            9:   "before foo call"
+            10:  "foo"
+            11:  "after foo call"
+            12:  "square"
 
-  0000:     defineFunction foo( a, b ) num registers = 2
+  0121:     defineFunction foo( a, b ) num registers = 3
+                Preload this      [reg 1] 
+                Supress super 
+                Supress arguments 
+            {
+  0141:         push           register( 1 )
+  0146:         trace          
+
+  0147:         defineFunction () num registers = 3
+                    Preload this      [reg 1] 
+                    Supress super 
+                    Supress arguments 
+                {
+  0158:             push           register( 1 )
+  0163:             trace          
+  0164:             push           lookup( 0 )
+  0169:             getVariable    
+  0170:             register       2
+  0174:             pop            
+  0175:             push           register( 2 )
+                    push           lookup( 1 )
+  0182:             getVariable    
+  0183:             greaterThan    
+  0184:             not            
+  0185:             not            
+  0186:             ifJump         "0216"
+  0191:             push           lookup( 2 )
+                    push           register( 2 )
+  0198:             typedAdd       
+  0199:             trace          
+  0200:             push           register( 2 )
+  0205:             increment      
+  0206:             register       2
+  0210:             pop            
+  0211:             jump           "0175"
+                }
+  0216:         return         
+            }
+
+  0217:     defineFunction square( x [reg 2], y [reg 1], size [reg 3] ) num registers = 4
                 Supress super 
                 Supress arguments 
                 Supress this 
             {
-
-  0020:         defineFunction () num registers = 2
-                    Supress super 
-                    Supress arguments 
-                    Supress this 
-                {
-  0031:             push           "a"
-  0037:             getVariable    
-  0038:             register       1
-  0042:             pop            
-  0043:             push           register( 1 )
-                    push           "b"
-  0051:             getVariable    
-  0052:             greaterThan    
-  0053:             not            
-  0054:             not            
-  0055:             ifJump         "0089"
-  0060:             push           "foo "
-                    push           register( 1 )
-  0071:             typedAdd       
-  0072:             trace          
-  0073:             push           register( 1 )
-  0078:             increment      
-  0079:             register       1
-  0083:             pop            
-  0084:             jump           "0043"
-                }
-  0089:         return         
+  0246:         push           255
+                push           3
+                push           2
+                push           lookup( 3 )
+  0266:         callFunction   
+  0267:         pop            
+  0268:         push           16776960
+                push           1
+                push           lookup( 4 )
+  0283:         callFunction   
+  0284:         pop            
+  0285:         push           register( 1 )
+                push           register( 2 )
+                push           2
+                push           lookup( 5 )
+  0299:         callFunction   
+  0300:         pop            
+  0301:         push           register( 1 )
+                push           register( 2 )
+                push           register( 3 )
+  0310:         typedAdd       
+  0311:         push           2
+                push           lookup( 6 )
+  0321:         callFunction   
+  0322:         pop            
+  0323:         push           register( 1 )
+                push           register( 3 )
+  0330:         typedAdd       
+  0331:         push           register( 2 )
+                push           register( 3 )
+  0338:         typedAdd       
+  0339:         push           2
+                push           lookup( 6 )
+  0349:         callFunction   
+  0350:         pop            
+  0351:         push           register( 1 )
+                push           register( 3 )
+  0358:         typedAdd       
+  0359:         push           register( 2 )
+                push           2
+                push           lookup( 6 )
+  0371:         callFunction   
+  0372:         pop            
+  0373:         push           register( 1 )
+                push           register( 2 )
+                push           2
+                push           lookup( 6 )
+  0387:         callFunction   
+  0388:         pop            
+  0389:         push           double 0.0
+                push           lookup( 7 )
+  0403:         callFunction   
+  0404:         pop            
             }
-  0090:     push           "before foo call"
-  0110:     trace          
-  0111:     push           double 0.0
+  0405:     push           lookup( 8 )
+  0410:     trace          
+  0411:     push           lookup( 9 )
+  0416:     trace          
+  0417:     push           double 0.0
             push           15
             push           10
             push           2
-            push           "foo"
-  0143:     callFunction   
-  0144:     push           undefined
-  0148:     callMethod     
-  0149:     pop            
-  0150:     push           "after foo call"
-  0169:     trace          
-  0170:     end            
+            push           lookup( 10 )
+  0446:     callFunction   
+  0447:     push           undefined
+  0451:     callMethod     
+  0452:     pop            
+  0453:     push           lookup( 11 )
+  0458:     trace          
+  0459:     push           90
+            push           10
+            push           10
+            push           3
+            push           lookup( 12 )
+  0484:     callFunction   
+  0485:     pop            
+  0486:     push           50
+            push           10
+            push           110
+            push           3
+            push           lookup( 12 )
+  0511:     callFunction   
+  0512:     pop            
+  0513:     push           50
+            push           110
+            push           10
+            push           3
+            push           lookup( 12 )
+  0538:     callFunction   
+  0539:     pop            
+  0540:     end            
 ---------- frame ----------
 end
 ---------------

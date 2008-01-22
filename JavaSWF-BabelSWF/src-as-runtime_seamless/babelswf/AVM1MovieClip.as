@@ -10,43 +10,28 @@ package babelswf
 		private var symbolId:int;
 		private var frames  :Array = [];
 		private var pendingInitActs:Array = [];
-		
-	    private var execContext:AVM1ExecutionContext; 
-		//private var avm1mc:Object = AVM1Runtime.global.MovieClip.avm1_new([]);
+
+        private var proxyWrapper:AVM1Object = new AVM1Object( this );
 		
 		public function AVM1MovieClip( symbolId:int )
 	    {
 			this.symbolId = symbolId;
-			
-			this["__proto__"] = AVM1Runtime.global.MovieClip.prototype;
-			this["this"]      = this;
-			
-			//avm1mc["this"] = avm1mc;
-            //avm1mc["AVM1MovieClip"] = this;
-            //avm1mc.setPropertyIsEnumerable( "AVM1MovieClip", false );
-			//execContext = new AVM1ExecutionContext( avm1mc, null, this ); 
-            
-            execContext = new AVM1ExecutionContext( this, null, this ); 
+			this["__proto__"] = AVM1Runtime.avm1_global.MovieClip.prototype;
 		}
 
         /** Get the symbol id */
         public final function get avm1_id():int { return symbolId; }
         
-        /**
-         * Access the movieclip from the AVM1 object
-         */ 
-        public static function mc( obj:Object ):AVM1MovieClip
-        {
-        	return obj as AVM1MovieClip; //obj["AVM1MovieClip"];
-        }
+        /** Get the AVM1 object proxy for the movieclip */
+        public final function get avm1_proxy():AVM1Object { return proxyWrapper; }
         
         /**
-         * Get the parent mc
+         * Get the parent
          */ 
         public function avm1_getParent():AVM1MovieClip
         {
-        	if( parent is AVM1MovieClip ) return parent as AVM1MovieClip;
-        	return undefined; 
+            if( parent is AVM1MovieClip ) return (parent as AVM1MovieClip);
+            return undefined; 
         }
         
         /**
@@ -102,16 +87,5 @@ package babelswf
         	   frame.addInitActions( initActs );
         	} 
         }
-        
-        /**
-         * Get the execution context for frames of this clip 
-         */
-        public function getExecutionContext():AVM1ExecutionContext
-        {
-        	return execContext;
-        }
-        
-        /** Access the AVM1 movieclip object */
-       // public function get avm1Object():Object { return avm1mc; }
 	}
 }

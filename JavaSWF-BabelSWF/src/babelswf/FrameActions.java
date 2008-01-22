@@ -8,8 +8,6 @@ import org.epistem.io.IndentingPrintWriter;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm2.model.AVM2Code;
-import com.anotherbigidea.flash.avm2.model.AVM2Method;
-import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
 
 /**
  * Wrapper around a set of frame actions to be translated
@@ -18,14 +16,14 @@ import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
  */
 public class FrameActions  {
 
-    private final AVM2MovieClip clip;
+    private final Timeline timeline;
     private final int frameNumber;
     private final AVM1ActionBlock block = new AVM1ActionBlock();
     
     private final List<InitActions> initActList = new ArrayList<InitActions>();
     
-    public FrameActions( AVM2MovieClip clip, int frameNumber ) {
-        this.clip = clip;
+    public FrameActions( Timeline timeline, int frameNumber ) {
+        this.timeline    = timeline;
         this.frameNumber = frameNumber;
     }
     
@@ -43,15 +41,25 @@ public class FrameActions  {
      */
     public void translate() {
         for( InitActions acts : initActList ) {
-            AVM2Code initCode = clip.addInitActions( frameNumber, acts.symbolId, BabelSWFRuntime.ADD_INIT_METHOD );
-            OperationVisitor initVis = new OperationVisitor( clip.avm2Class, initCode );
+            AVM2Code initCode = acts.makeCode( timeline );
+            OperationVisitor initVis = new OperationVisitor( timeline, initCode );
             acts.block().accept( initVis );
             initCode.returnVoid();
             initCode.analyze();            
         }
         
-        AVM2Code code = clip.addFrame( frameNumber, BabelSWFRuntime.ADD_FRAME_METHOD );
+        AVM2Code code = timeline.movieClip().addFrame( frameNumber, BabelSWFRuntime.ADD_FRAME_METHOD );
         
+        //place the global object at the foot of the scope stack
+        //code.trace( "BEFORE SETTING UP GLOBAL" );
+        code.getLex( BabelSWFRuntime.AVM1_RUNTIME_CLASS );
+        code.getProperty( BabelSWFRuntime.RT_GLOBAL_PROP );
+        code.coerceToObject();
+        code.pushWith();        
+        //code.trace( "AFTER SETTING UP GLOBAL" );
+        
+        code.setupDynamicScope();
+
         try {
             block.print( IndentingPrintWriter.SYSOUT );
             IndentingPrintWriter.SYSOUT.flush();
@@ -59,10 +67,9 @@ public class FrameActions  {
             //nada
         }
         
-        OperationVisitor visitor = new OperationVisitor( clip.avm2Class, code );
+        OperationVisitor visitor = new OperationVisitor( timeline, code );
         block.accept( visitor );
         code.returnVoid();
         code.analyze();
-    }
-    
+    }    
 }

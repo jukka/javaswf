@@ -41,7 +41,7 @@
         <attribute name="output" />
 		<sequential>
 	        <exec dir="@{sourcepath}" executable="${mtasc}" failonerror="true">
-	            <arg line="@{mainFile} -version 8 -v -header 100:100:12 -strict -main -mx -cp @{sourcepath} -swf @{output}" />
+	            <arg line="@{mainFile} -version 8 -v -header 500:400:12 -strict -main -mx -cp @{sourcepath} -swf @{output}" />
 	        </exec>		
 			<swf-dump  out="@{sourcepath}/@{output}.txt" swf="@{sourcepath}/@{output}" />
 		</sequential>	
@@ -55,7 +55,7 @@
 
         <sequential>
         	<exec executable="${flex.swf.compiler}" taskname="compile-swf" failonerror="true">
-        		<arg line="-sp @{src-path} -output @{swf-file} @{src-path}/@{as-file}" />
+        		<arg line="-sp @{src-path} -strict=true -output @{swf-file} @{src-path}/@{as-file}" />
         	</exec>
         </sequential>
     </macrodef>
@@ -101,7 +101,7 @@
         <mkdir dir="runtime"/>
         <compile-swf
             src-path="src-as-runtime_seamless"
-            as-file ="babelswf/RuntimeMovieClip.as"
+            as-file ="babelswf/AVM1Runtime.as"
             swf-file="runtime/runtime_seamless.swf"
         />         
         <swf-dump swf="runtime/runtime_seamless.swf" out="runtime/runtime_seamless.swf.txt" />

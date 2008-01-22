@@ -24,10 +24,10 @@ package babelswf
 
         public final function call( clip:AVM1MovieClip ):void
         {
-        	//TODO
-        	trace( "AVM1InitActions >> sprite " + spriteId );
-        	
-        	initFunction.call( clip.avm1_proxy );
+            //TODO
+            trace( "AVM1InitActions >> sprite " + spriteId );
+            
+            initFunction.call( clip );
         }
 	}
 }

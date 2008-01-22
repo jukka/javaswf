@@ -32,21 +32,14 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	private static final Logger log = AVMTranslator.log;
 	
 	private final String context;
-	private final AVM2MovieClip mainClip;
-    private final AVM2MovieClip thisClip;
-	
-	//map of symbol id to movieclip
-	private final Map<Integer, AVM2MovieClip> clips = new HashMap<Integer, AVM2MovieClip>();
-	
+	private final MainTimeline mainClip;
+    private final Timeline     thisClip;
+		
 	private final AVM2ABCFile abc;
 
     private final List<Tag> tags = new ArrayList<Tag>();
     
     private final TagParser parser = new TagParser( this );
-    private int frameNumber = 0;
-    
-    private FrameActions frameActions;  //current frame actions
-    private List<InitActions> frameInitActions = new ArrayList<InitActions>(); //init actions in current frame
 
     private static class Tag {
         final int    tagType;
@@ -82,15 +75,8 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
             abc = new AVM2ABCFile(); //runtime is assumed to be loaded separately
         }
         
-        this.context = context;        
-        this.mainClip = new AVM2MovieClip( 
-                                abc, 
-                                context.replace( '.', '_' ) + ".MainTimeline",
-                                context,
-                                true,
-                                BabelSWFRuntime.AVM1_BASE_CLIP_CLASS,
-                                BabelSWFRuntime.AVM1_MAIN_TIMELINE_CLASS
-                            );
+        this.context  = context;        
+        this.mainClip = new MainTimeline( context, abc );
         
         thisClip = mainClip;
         
@@ -102,7 +88,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
     }
     
     private void log( String message ) {
-    	log.info( context + "[" + frameNumber + "]: " + message );
+    	log.info( context + "[" + thisClip.frameNumber() + "]: " + message );
     }
     
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tag(int, boolean, byte[]) */
@@ -118,7 +104,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 			case TAG_FILE_ATTRIBUTES:
 			//case TAG_PLACEOBJECT2:
 			case TAG_SCRIPTLIMITS:
-			case TAG_SYMBOLCLASS:
+			//case TAG_SYMBOLCLASS:
 			case TAG_DEFINEBUTTON:
 			case TAG_DEFINEBUTTON2:
 			case TAG_END:
@@ -142,31 +128,21 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	 * Finish the SWF
 	 */
 	private void finish() throws IOException {
-	    mainClip.finish();
+	    thisClip.finish();
 	    
-	    //finish all the other clips
-	    for( AVM2MovieClip clip : clips.values() ) {
-	        clip.finish();
+	    if( thisClip == mainClip ) {    	    
+    		//--emit the ABC tag
+    		ABC abcFile = super.tagDoABC( DO_ABC_LAZY_INITIALIZE_FLAG, "javaswf" );
+    		abc.write( abcFile );
+    		
+    		//--set the class for the main timeline and clips    		
+    		super.tagSymbolClass( mainClip.symbolMappings() );
+    		
+    		//--flush all the tags
+    		for( Tag tag : tags ) {
+    			tag.write( super.mTagtypes );
+    		}
 	    }
-	    
-		//--emit the ABC tag
-		ABC abcFile = super.tagDoABC( DO_ABC_LAZY_INITIALIZE_FLAG, "javaswf" );
-		abc.write( abcFile );
-		
-		//--set the class for the main timeline and clips
-		Map<Integer,String> classes = new TreeMap<Integer, String>();
-		classes.put( 0, mainClip.avm2Class.name.toQualString() );
-		for( Integer clipId : clips.keySet()) {
-		    AVM2MovieClip clip = clips.get( clipId );
-	        classes.put( clipId, clip.avm2Class.name.toQualString() );
-		}
-		
-		super.tagSymbolClass( classes );
-		
-		//--flush all the tags
-		for( Tag tag : tags ) {
-			tag.write( super.mTagtypes );
-		}		
 	}
 	
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#header(int, long, int, int, int, int) */
@@ -190,28 +166,9 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagShowFrame() */
 	@Override
-	public void tagShowFrame() throws IOException {
-	    
-	    //add the init actions for the frame
-	    if( ! frameInitActions.isEmpty() ) {
-	        if( frameActions == null ) {
-	            frameActions = new FrameActions(  thisClip, frameNumber );
-	            frameActions.block().complete();
-	        }
-	        
-	        for( InitActions acts : frameInitActions ) {
-	            frameActions.addInitActions( acts );
-	        }
-	        frameInitActions.clear();
-	    }
-	    
-	    if( frameActions != null ) {
-	        frameActions.translate();
-	    }
-	    
-		frameNumber++;
-		tags.add( new Tag( TAG_SHOWFRAME ) );
-		
+	public void tagShowFrame() throws IOException {	    
+	    thisClip.finishFrame();
+		tags.add( new Tag( TAG_SHOWFRAME ) );		
 	}
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDefineButton(int, java.util.Vector) */
@@ -238,29 +195,13 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 		//suppress - this is emitted with the header
 	}
 
-	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagSymbolClass(java.util.Map) */
-	@Override
-	public void tagSymbolClass( Map<Integer, String> classes ) throws IOException {
-		// TODO handle symbol class
-
-	}
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDefineSprite(int) */
 	@Override
 	public SWFTagTypes tagDefineSprite( int id ) throws IOException {
 		log( "tag DefineSprite - id=" + id );
 		
-		//create a clip class for the sprite
-        AVM2MovieClip clip = 
-            new AVM2MovieClip( abc, 
-                               context.replace( '.', '_' ) + ".MovieClip_" + id,
-                               id,
-                               false,
-                               BabelSWFRuntime.AVM1_BASE_CLIP_CLASS,
-                               BabelSWFRuntime.AVM1_SPRITE_CLASS                   
-                             );
-        
-        clips.put( id, clip );
+		mainClip.addSprite( context, id );
 		
 		// TODO intercept sprite actions
 		return null;
@@ -271,11 +212,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	public SWFActions tagDoInitAction( int spriteId ) throws IOException {
 		log( "tag DoInitAction - id=" + spriteId );
 		
-		AVM2MovieClip clip = clips.get( spriteId );
-        InitActions initActions = new InitActions( clip, spriteId );
-        frameInitActions.add( initActions );
-        
-        final AVM1BlockBuilder builder = new AVM1BlockBuilder( initActions.block() );
+        final SWFActionBlock block = thisClip.initActions( spriteId );
         
         return new SWFActions() {
             /** @see com.anotherbigidea.flash.interfaces.SWFActions#done() */
@@ -294,7 +231,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
                     throw new UnsupportedOperationException( "IMPLEMENT ACTION FLAGS" );
                 }
                 
-                return builder;
+                return block;
             }
         };
 	}
@@ -326,9 +263,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	public SWFActions tagDoAction() throws IOException {
 		log( "tag DoAction" );
 				
-		frameActions = new FrameActions( thisClip, frameNumber );
-		
-		final AVM1BlockBuilder builder = new AVM1BlockBuilder( frameActions.block() );
+		final SWFActionBlock block = thisClip.frameActions();
 		
 		return new SWFActions() {
 			/** @see com.anotherbigidea.flash.interfaces.SWFActions#done() */
@@ -347,7 +282,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 					throw new UnsupportedOperationException( "IMPLEMENT ACTION FLAGS" );
 				}
 				
-				return builder;
+				return block;
 			}
 		};
 	}

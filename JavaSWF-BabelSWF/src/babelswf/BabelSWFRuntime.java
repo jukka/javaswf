@@ -42,41 +42,28 @@ public class BabelSWFRuntime {
     public static final AVM2QName ADD_INIT_METHOD  = new AVM2QName( "avm1_addInitActs" );        
     
     //--Execution context method names
-    public static final AVM2QName TRACE_METHOD       = new AVM2QName( "avm1_trace" );        
-    public static final AVM2QName GETVAR_METHOD      = new AVM2QName( "avm1_getVar" );
-    public static final AVM2QName SETVAR_METHOD      = new AVM2QName( "avm1_setVar" );
-    public static final AVM2QName DEL_METHOD         = new AVM2QName( "avm1_deleteVar" );
-    public static final AVM2QName DEFVAR_METHOD      = new AVM2QName( "avm1_defineVar" );
-    public static final AVM2QName DEFVARVAL_METHOD   = new AVM2QName( "avm1_defineVarValue" );
-    public static final AVM2QName DELMEMBER_METHOD   = new AVM2QName( "avm1_deleteMember" );
-    public static final AVM2QName GETMEMBER_METHOD   = new AVM2QName( "avm1_getMember" );
-    public static final AVM2QName SETMEMBER_METHOD   = new AVM2QName( "avm1_setMember" );
-    public static final AVM2QName CALLFUNC_METHOD    = new AVM2QName( "avm1_callFunction" );
-    public static final AVM2QName CALLMETH_METHOD    = new AVM2QName( "avm1_callMethod" );
     public static final AVM2QName STARTWITH_METHOD   = new AVM2QName( "avm1_startWith" );
     public static final AVM2QName ENDWITH_METHOD     = new AVM2QName( "avm1_endWith" );    
     public static final AVM2QName DUMP_METHOD        = new AVM2QName( "avm1_dump" );    
-    public static final AVM2QName NEWFUNCTION_METHOD = new AVM2QName( "avm1_newFunction" );
-    public static final AVM2QName DEFFUNCTION_METHOD = new AVM2QName( "avm1_defineFunction" );
-    public static final AVM2QName NEWOBJECT_METHOD   = new AVM2QName( "avm1_newObject" );
-    public static final AVM2QName NEWMETHOD_METHOD   = new AVM2QName( "avm1_newMethod" );
-    public static final AVM2QName EXTENDS_METHOD     = new AVM2QName( "avm1_extends" );
     
-    public static final AVM2QName PLAY_METHOD      = new AVM2QName( "avm1_play" );
-    public static final AVM2QName STOP_METHOD      = new AVM2QName( "avm1_stop" );
-    public static final AVM2QName ENDDRAG_METHOD   = new AVM2QName( "avm1_endDrag" );
-    //public static final AVM2QName STARTDRAG_METHOD = new AVM2QName( "avm1_startDrag" );
+    //--Runtime names
+    public static final AVM2QName RT_TRACE_METHOD     = new AVM2QName( "avm1_trace" );        
+    public static final AVM2QName RT_GLOBAL_PROP      = new AVM2QName( "avm1_global" );        
+    public static final AVM2QName RT_DELMEMBER_METHOD = new AVM2QName( "avm1_deleteMember" );
+    public static final AVM2QName RT_GETMEMBER_METHOD = new AVM2QName( "avm1_getMember" );
+    public static final AVM2QName RT_SETMEMBER_METHOD = new AVM2QName( "avm1_setMember" );
+    public static final AVM2QName RT_CALLFUNC_METHOD  = new AVM2QName( "avm1_callFunction" );
+    public static final AVM2QName RT_CALLMETH_METHOD  = new AVM2QName( "avm1_callMethod" );
+    public static final AVM2QName RT_NEWACTIVN_METHOD = new AVM2QName( "avm1_newActivation" );
+    public static final AVM2QName RT_ENDDRAG_METHOD   = new AVM2QName( "avm1_endDrag" );
+    public static final AVM2QName RT_STARTDRAG_METHOD = new AVM2QName( "avm1_startDrag" );
+    public static final AVM2QName RT_PLAY_METHOD      = new AVM2QName( "avm1_play" );
+    public static final AVM2QName RT_STOP_METHOD      = new AVM2QName( "avm1_stop" );
+    public static final AVM2QName RT_NEWFUNC_METHOD   = new AVM2QName( "avm1_newFunction" );
+    public static final AVM2QName RT_NEWOBJECT_METHOD = new AVM2QName( "avm1_newObject" );
+    public static final AVM2QName RT_NEWMETHOD_METHOD = new AVM2QName( "avm1_newMethod" );
+    public static final AVM2QName RT_EXTENDS_METHOD   = new AVM2QName( "avm1_extends" );
 
-    public static final AVM2QName GETTHIS_METHOD      = new AVM2QName( "avm1_getThis" );
-    public static final AVM2QName GETPARENT_METHOD    = new AVM2QName( "avm1_getParent" );
-    public static final AVM2QName GETROOT_METHOD      = new AVM2QName( "avm1_getRoot" );
-    public static final AVM2QName GETSUPER_METHOD     = new AVM2QName( "avm1_getSuper" );
-    public static final AVM2QName GETARGUMENTS_METHOD = new AVM2QName( "avm1_getArguments" );
-    public static final AVM2QName GETGLOBAL_METHOD    = new AVM2QName( "avm1_getGlobal" );   
-    
-    //--Runtime method names
-    //public static final AVM2QName TRACE_METHOD = new AVM2QName( "avm1_trace" );        
-    
     /**
      * Load the runtime classes. 
      */
