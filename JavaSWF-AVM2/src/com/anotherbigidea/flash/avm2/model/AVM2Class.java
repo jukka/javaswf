@@ -176,7 +176,7 @@ public class AVM2Class implements Comparable<AVM2Class> {
         for( AVM2Name n : interfaces_internal ) {
             n.initPool( context );
         }
-        
+
         constructor      .initPool( context );
         staticInitializer.initPool( context );
         traits           .initPool( context );

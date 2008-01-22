@@ -12,6 +12,9 @@ import com.anotherbigidea.flash.avm2.MultiNameKind;
  */
 public class AVM2LateMultiname extends AVM2Name {
 
+    /**
+     * A late-multiname specifying only the empty/public package.
+     */
     public static final AVM2LateMultiname EMPTY_PACKAGE = 
         new AVM2LateMultiname( 
                 Collections.singletonList( AVM2StandardNamespace.EmptyPackage.namespace ) );

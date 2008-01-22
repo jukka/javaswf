@@ -25,12 +25,16 @@ public class AVM2MovieClip {
 	 */
 	public final AVM2Namespace packageInternal;
 	
-	private final AVM2Code constructorCode; 
-	private final AVM2Code staticInitializerCode;
-	public  final int instanceScopeDepth;
+	private AVM2Code constructorCode; 
+	private AVM2Code staticInitializerCode;
+    private final AVM2Code.ClassInitializationScript classScript;
+    private boolean classScriptFinished = false;
+	private final Object superArg;
+    private final AVM2QName[] superClassNames;
 	
 	private int classScopeDepth;
-	
+    private int instanceScopeDepth;
+
 	/**
 	 * @param abc the ABC file to add to
 	 * @param className the name of the new class
@@ -42,6 +46,8 @@ public class AVM2MovieClip {
 	                      boolean isMainClip,
 	                      AVM2QName... superClassNames ) {
 
+	    this.superClassNames = superClassNames;
+	    this.superArg = superArg;
 		AVM2QName name       = new AVM2QName( className );
         AVM2QName superclass = (superClassNames.length == 0) ? 
                                     FLASH_DISPLAY_MOVIECLIP :
@@ -56,25 +62,57 @@ public class AVM2MovieClip {
 	                        new AVM2Namespace( 
 	                                NamespaceKind.ProtectedNamespace, protName ));
 		
-		AVM2Code.ClassInitializationScript clinit = AVM2Code.classInitializationScript( avm2Class, isMainClip );
-		clinit.addSuperclass( "Object" );
-		clinit.addSuperclass( "flash.events.EventDispatcher" );
-		clinit.addSuperclass( "flash.display.DisplayObject" );
-		clinit.addSuperclass( "flash.display.InteractiveObject" );
-		clinit.addSuperclass( "flash.display.DisplayObjectContainer" );
-		clinit.addSuperclass( "flash.display.Sprite" );
-		clinit.addSuperclass( "flash.display.MovieClip" );
-
-		for( AVM2QName supername : superClassNames ) {
-		    clinit.addSuperclass( supername );
-		}
-		
-		classScopeDepth = clinit.finish();
-		
-		staticInitializerCode = AVM2Code.startStaticInitializer( avm2Class, classScopeDepth );
-		constructorCode       = AVM2Code.startNoArgConstructor( avm2Class, superArg );		
-		instanceScopeDepth = classScopeDepth + 1;
+		classScript = AVM2Code.classInitializationScript( avm2Class, isMainClip );
 	}
+	
+	/**
+	 * Get the script for the class initialization.  This script cannot
+	 * be accessed or altered if any other methods have been called.
+	 */
+	public final AVM2Code.ClassInitializationScript classScript() {
+	    if( classScriptFinished ) throw new IllegalStateException( "Class script has been finished" );
+	    return classScript;
+	}
+	
+	private void finishClassScript() {
+	    if( classScriptFinished ) return;
+
+        classScript.addSuperclass( "Object" );
+        classScript.addSuperclass( "flash.events.EventDispatcher" );
+        classScript.addSuperclass( "flash.display.DisplayObject" );
+        classScript.addSuperclass( "flash.display.InteractiveObject" );
+        classScript.addSuperclass( "flash.display.DisplayObjectContainer" );
+        classScript.addSuperclass( "flash.display.Sprite" );
+        classScript.addSuperclass( "flash.display.MovieClip" );
+
+        for( AVM2QName supername : superClassNames ) {
+            classScript.addSuperclass( supername );
+        }
+
+        classScopeDepth = classScript.finish();
+        
+        staticInitializerCode = AVM2Code.startStaticInitializer( avm2Class, classScopeDepth );
+        constructorCode       = AVM2Code.startNoArgConstructor( avm2Class, superArg );      
+        instanceScopeDepth = classScopeDepth + 1;
+
+        classScriptFinished = true;
+	}
+	
+	/**
+	 * Get the scope depth for the class
+	 */
+	public final int getClassScopeDepth() {
+	    finishClassScript();
+	    return classScopeDepth;
+	}
+
+    /**
+     * Get the scope depth for the instance
+     */
+    public final int getInstanceScopeDepth() {
+        finishClassScript();
+        return instanceScopeDepth;
+    }
 	
 	/**
 	 * Add a frame script.
@@ -84,6 +122,8 @@ public class AVM2MovieClip {
 	 * @return the wrapper for adding code to the frame script
 	 */
 	public final AVM2Code addFrame( int frameNumber, AVM2QName frameAddMethod ) {
+	    finishClassScript();
+	    
 	    AVM2Method frameFunction = avm2Class.abcFile.addFunctionClosure( null, null );
 	    
         constructorCode.getLocal( constructorCode.thisValue );
@@ -106,7 +146,9 @@ public class AVM2MovieClip {
 	 * @return the code for the actions
 	 */
 	public final AVM2Code addInitActions( int frameNumber, int symbolId, AVM2QName initAddMethod  ) {
-        AVM2Method initFunction = avm2Class.abcFile.addFunctionClosure( null, null );
+	    finishClassScript();
+	    
+	    AVM2Method initFunction = avm2Class.abcFile.addFunctionClosure( null, null );
         
         constructorCode.getLocal( constructorCode.thisValue );
         constructorCode.pushInt( frameNumber );
@@ -125,6 +167,7 @@ public class AVM2MovieClip {
 	 * Get the code for adding to the static initializer
 	 */
 	public final AVM2Code initializer() {
+	    finishClassScript();
 	    return staticInitializerCode;
 	}
 	
@@ -132,6 +175,7 @@ public class AVM2MovieClip {
 	 * Get the code for adding to the constructor
 	 */
 	public final AVM2Code constructor() {
+	    finishClassScript();
 	    return constructorCode;
 	}
 	
@@ -139,6 +183,8 @@ public class AVM2MovieClip {
 	 * Finish the movieclip.
 	 */
 	public final void finish() {
+	    finishClassScript();
+	    
 	    staticInitializerCode.returnVoid();
 	    staticInitializerCode.analyze();
         

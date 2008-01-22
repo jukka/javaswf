@@ -651,6 +651,13 @@ public final class AVM2Code {
 		}
 	}
 
+	/**
+	 * Coerce stack top to an object
+	 */
+	public void coerceToObject() {
+	    instructions.append( OP_coerce_o );
+	}
+	
     /**
      * Push NaN
      */
@@ -782,6 +789,20 @@ public final class AVM2Code {
         instructions.append( OP_findpropstrict, name );
     }
 	
+    /**
+     * Find and push the object with the given named property (or global).
+     */
+    public void findProperty( String qualifiedName ) {
+        instructions.append( OP_findproperty, new AVM2QName( qualifiedName ) );
+    }
+
+    /**
+     * Find and push the object with the given named property (or global).
+     */
+    public void findProperty( AVM2Name name ) {
+        instructions.append( OP_findproperty, name );
+    }
+    
 	/**
 	 * Set up the initial scope for a script or method
 	 */
@@ -1068,7 +1089,7 @@ public final class AVM2Code {
 
             code = new AVM2Code( body );
             code.setupInitialScope();
-            code.getScopeObject( 0 );
+            code.findPropStrict( avm2Class.name );
             code.trace( "entering class initialization script for " + avm2Class.name );
             
             AVM2QName classQName = avm2Class.name;
@@ -1076,6 +1097,13 @@ public final class AVM2Code {
             //--add the class as a trait of this script
             AVM2ClassSlot slot = script.traits.addClass( classQName, classQName );
             slot.indexId = script.traits.traits.size() - 1;
+        }
+        
+        /**
+         * Access the code for the script
+         */
+        public AVM2Code code() {
+            return code;
         }
         
         /**
