@@ -22,6 +22,24 @@ import com.anotherbigidea.flash.avm2.instruction.InstructionList;
  */
 public final class AVM2Code {
 
+    /**
+     * Represents the construction of a try-catch-finally handler
+     */
+    public class ExceptionHandler {
+        private final String tryStart;
+        private String tryEnd;
+        private String handlerStart;
+
+        /**
+         * @param startLabel the start of the try-block
+         */
+        ExceptionHandler( String startLabel ) {
+            this.tryStart = startLabel;
+        }
+        
+        
+    }
+    
 	private final AVM2MethodBody body;
 	private final InstructionList instructions;
 	private Map<String, Integer> labelInts;
@@ -108,6 +126,43 @@ public final class AVM2Code {
 	 */
 	public void analyze() {
 	    new AVM2CodeAnalyzer( body ).analyze( reservedRegisters );
+	}
+	
+	/**
+	 * Start a try-catch-finally construct.  The construct must be terminated
+	 * by a call to tryEnd().  There must be at least one call to
+	 * catchException() or finallyStart() in the body of the construct.
+	 * 
+	 * These constructs must be properly nested - a nested construct must
+	 * be terminated before any call to catchException() or finallyStart()
+	 * that relates to this construct and a construct nested in a catch or
+	 * finally block must also be terminated before the end of that block.
+	 */
+	public ExceptionHandler tryStart() {
+	    //FIXME
+	    String label = newLabel();
+	    label();
+	    target( label );
+	    
+	    return new ExceptionHandler( label );
+	}
+	
+	/**
+	 * 
+	 */
+	public void catchException() {
+	    //FIXME
+	}
+	
+	/**
+	 * 
+	 */
+	public void finallyStart() {
+	    //FIXME
+	}
+	
+	public void tryEnd(  ) {
+	    
 	}
 	
 	/**
@@ -333,6 +388,19 @@ public final class AVM2Code {
         callPropVoid( "trace", 1 );	
 	}
 
+    /**
+     * Trace out stack top (dupped), preceded by a message
+     */
+    public void traceTop( String msg ) {
+        dup();
+        pushString( msg );
+        swap();
+        add();        
+        findPropStrict( "trace" );
+        swap();
+        callPropVoid( "trace", 1 ); 
+    }	
+	
 	/**
 	 * Increment a local register as an int
 	 */
@@ -657,6 +725,13 @@ public final class AVM2Code {
 	public void coerceToObject() {
 	    instructions.append( OP_coerce_o );
 	}
+
+    /**
+     * Coerce stack top to any-type
+     */
+    public void coerceToAny() {
+        instructions.append( OP_coerce_a );
+    }
 	
     /**
      * Push NaN
