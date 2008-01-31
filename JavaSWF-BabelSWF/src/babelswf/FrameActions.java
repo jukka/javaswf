@@ -52,10 +52,10 @@ public class FrameActions  {
         
         //place the global object at the foot of the scope stack
         //code.trace( "BEFORE SETTING UP GLOBAL" );
-        code.getLex( BabelSWFRuntime.AVM1_RUNTIME_CLASS );
-        code.getProperty( BabelSWFRuntime.RT_GLOBAL_PROP );
-        code.coerceToObject();
-        code.pushWith();        
+//        code.getLex( BabelSWFRuntime.AVM1_RUNTIME_CLASS );
+//        code.getProperty( BabelSWFRuntime.RT_GLOBAL_PROP );
+//        code.coerceToObject();
+//        code.pushWith();        
         //code.trace( "AFTER SETTING UP GLOBAL" );
         
         code.setupDynamicScope();

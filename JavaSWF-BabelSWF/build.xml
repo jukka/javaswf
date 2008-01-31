@@ -1,65 +1,7 @@
 <project name="BabelSWF-Stuff" basedir="." default="all">
 
-	<property name="dxd.sdk" value="/Users/dmain/workspace-cvs/DXD_SDK"/>
+    <import file="build.common.xml"/>
 	
-    <condition property="executable-suffix" value=".exe" else="">
-        <os family="windows"/>
-    </condition>
-	
-    <property file="build.properties" />
-
-	<property name="embedded-runtime" value="runtime/runtime_seamless.swf"/>
-	
-    <path id="javaswf">
-        <pathelement location="../JavaSWF-FileFormat/eclipse-build"/>
-        <pathelement location="../EpistemCommon/eclipse-build"/>
-        <pathelement location="../JavaSWF-AVM2/eclipse-build"/>
-        <pathelement location="../JavaSWF-BabelSWF/eclipse-build"/>
-    </path>
-	
-    <taskdef name="avm-translate" 
-             classname="babelswf.TranslatorTask"
-             classpathref="javaswf"/>
-
-	<macrodef name="swf-dump">
-		<attribute name="swf" />
-        <attribute name="out" />
-		<sequential>
-	        <java classname="com.anotherbigidea.flash.writers.SWFTagDumper" 
-	              classpathref="javaswf" >
-	            <arg value="@{swf}"/>
-	            <arg value="out=@{out}"/>
-	            <arg value="hex"/>
-	            <arg value="acts"/>
-	        </java>		
-		</sequential>
-	</macrodef>
-
-	<macrodef name="mtasc">
-        <attribute name="mainfile" />
-        <attribute name="sourcepath" />
-        <attribute name="output" />
-		<sequential>
-	        <exec dir="@{sourcepath}" executable="${mtasc}" failonerror="true">
-	            <arg line="@{mainFile} -version 8 -v -header 500:400:12 -strict -main -mx -cp @{sourcepath} -swf @{output}" />
-	        </exec>		
-			<swf-dump  out="@{sourcepath}/@{output}.txt" swf="@{sourcepath}/@{output}" />
-		</sequential>	
-	</macrodef>
-	
-    <!-- The AS3 SWF compiler task -->
-    <macrodef name="compile-swf">
-        <attribute name="src-path"  />
-        <attribute name="swf-file"  />
-        <attribute name="as-file"   /> 
-
-        <sequential>
-        	<exec executable="${flex.swf.compiler}" taskname="compile-swf" failonerror="true">
-        		<arg line="-sp @{src-path} -strict=true -output @{swf-file} @{src-path}/@{as-file}" />
-        	</exec>
-        </sequential>
-    </macrodef>
-
 	<target name="all" depends="compile-runtime,translator-test-fla"/>
 	
     <!-- Compile the AS-2 testcases -->
@@ -101,7 +43,7 @@
         <mkdir dir="runtime"/>
         <compile-swf
             src-path="src-as-runtime_seamless"
-            as-file ="babelswf/AVM1Runtime.as"
+            as-file ="babelswf/RuntimeMovieClip.as"
             swf-file="runtime/runtime_seamless.swf"
         />         
         <swf-dump swf="runtime/runtime_seamless.swf" out="runtime/runtime_seamless.swf.txt" />
@@ -109,28 +51,9 @@
 
 	
 	<target name="translate-minimal-panel">
-		<copy file  ="/Users/dmain/workspace-cvs/DXD_SDK/dxd/components/dxd_minimal.swf"
-		      tofile="as2-testcases/dxd_minimal.swf"/>
-        <copy file  ="/Users/dmain/workspace-cvs/DXD_SDK/dxd/code/dxd_minimal_code.swf"
-              tofile="as2-testcases/dxd_minimal_code.swf"/>
-        <swf-dump swf="as2-testcases/dxd_minimal.swf"
-                  out="as2-testcases/dxd_minimal.swf.txt" />
-        <swf-dump swf="as2-testcases/dxd_minimal_code.swf"
-                  out="as2-testcases/dxd_minimal_code.swf.txt" />
-        <avm-translate 
-            avm1swf="as2-testcases/dxd_minimal.swf"
-            avm2swf="generated-as3/dxd_minimal_as3.swf"
-        />
-        <avm-translate 
-            avm1swf="as2-testcases/dxd_minimal_code.swf"
-            avm2swf="generated-as3/dxd_minimal_code_as3.swf"
-        />
-        <swf-dump swf="generated-as3/dxd_minimal_as3.swf"
-                  out="generated-as3/dxd_minimal_as3.swf.txt" />
-        <swf-dump swf="generated-as3/dxd_minimal_code_as3.swf"
-                  out="generated-as3/dxd_minimal_code_as3.swf.txt" />
+		<translate-panel panel-name="dxd_minimal" />
 	</target>
-	
+
 	
     <!-- 
     ===========================================================================    
@@ -176,26 +99,9 @@
     </target>
 
     <!-- Dump the FLA-AS3 used for reference -->
-    <target name="dump-as3-test">
+    <target name="dump-as3-fla-test">
         <swf-dump swf="fla/test.swf"
                   out="generated/test-fla.txt" />
-    </target>
-
-    <!-- Dump the AS3 FLA used for reference -->
-    <target name="dump-as3-fla">
-        <swf-dump swf="/Users/dmain/Desktop/Untitled-1.swf"
-                  out="generated-as3/Untitled-1.swf.txt" />
-    </target>
-	
-    <!-- Dump the DXD bouncy-ball panel SWFs -->
-    <target name="dump-bouncy-ball">        	
-    	<echo>Code SWF..</echo>
-        <swf-dump swf="as2-testcases/gad_bouncyball_code.swf"
-                  out="as2-testcases/gad_bouncyball_code.swf.txt" />
-        <echo>Asset SWF..</echo>
-        <swf-dump swf="as2-testcases/gad_bouncyball.swf"
-                  out="as2-testcases/gad_bouncyball.swf.txt" />
-        <echo>Done</echo>
     </target>
 
 	

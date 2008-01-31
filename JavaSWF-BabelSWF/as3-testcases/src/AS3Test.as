@@ -19,7 +19,7 @@ package {
 
             var b:* = new foo( "test" );
             trace( "b.a = " + b.a );
-*/
+
 
 
            
@@ -34,7 +34,21 @@ package {
             };
             
             a( 3 );
-            
+   */    
+            foo( 4 );
+        
+        }
+   
+        private function foo( i:int ) {
+           var a:* = "this is a"           
+   
+           try {           
+               var b:* = "this is b"           
+               trace( "this is in the try block" );
+           }
+           catch( any:Error ) {
+               trace( "this is in the catch block " + a + b + i );
+           }   
         }
     }
 }

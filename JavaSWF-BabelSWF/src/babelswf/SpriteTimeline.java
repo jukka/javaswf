@@ -10,7 +10,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
  */
 public final class SpriteTimeline extends Timeline {
 
-    private final int id; 
+    public final int id; 
     
     public SpriteTimeline( String context, int id, AVM2ABCFile abc ) {
         super( new AVM2MovieClip( abc, 

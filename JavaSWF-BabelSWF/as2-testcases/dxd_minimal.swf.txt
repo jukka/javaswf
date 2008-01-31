@@ -1,5 +1,5 @@
 signature: CWS
-header: version=9 length=661 width=11000 height=8000 rate=12 frame-count=1
+header: version=9 length=442 width=11000 height=8000 rate=12 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 AVM1 actions:
@@ -14,143 +14,79 @@ AVM1 actions:
             6:   "generic"
             7:   "dxd_minimal"
             8:   "dxd_blank: App could not be created!"
-            9:   "lineStyle"
-            10:  "beginFill"
-            11:  "moveTo"
-            12:  "lineTo"
-            13:  "endFill"
-            14:  "square"
 
-  0152:     defineFunction init( pOwner [reg 3], pConfig [reg 2] ) num registers = 4
+  0103:     defineFunction init( pOwner [reg 3], pConfig [reg 2] ) num registers = 4
                 Preload this      [reg 1] 
                 Supress super 
                 Supress arguments 
             {
-  0184:         push           lookup( 0 )
-  0189:         trace          
-  0190:         push           lookup( 1 )
+  0135:         push           lookup( 0 )
+  0140:         trace          
+  0141:         push           lookup( 1 )
                 push           register( 2 )
                 push           register( 3 )
                 push           register( 1 )
                 push           3
                 push           lookup( 2 )
-  0208:         getVariable    
-  0209:         push           lookup( 3 )
-  0214:         getMember      
-  0215:         push           lookup( 4 )
-  0220:         getMember      
-  0221:         push           lookup( 5 )
-  0226:         getMember      
-  0227:         push           lookup( 6 )
-  0232:         getMember      
-  0233:         push           lookup( 7 )
-  0238:         newMethod      
-  0239:         setVariable    
-  0240:         push           lookup( 1 )
-  0245:         getVariable    
-  0246:         push           undefined
-  0250:         typedEquals    
-  0251:         duplicate      
-  0252:         ifJump         "0269"
-  0257:         pop            
-  0258:         push           lookup( 1 )
-  0263:         getVariable    
-  0264:         push           null
-  0268:         typedEquals    
-  0269:         not            
-  0270:         ifJump         "0281"
-  0275:         push           lookup( 8 )
-  0280:         trace          
+  0159:         getVariable    
+  0160:         push           lookup( 3 )
+  0165:         getMember      
+  0166:         push           lookup( 4 )
+  0171:         getMember      
+  0172:         push           lookup( 5 )
+  0177:         getMember      
+  0178:         push           lookup( 6 )
+  0183:         getMember      
+  0184:         push           lookup( 7 )
+  0189:         newMethod      
+  0190:         setVariable    
+  0191:         push           lookup( 1 )
+  0196:         getVariable    
+  0197:         push           undefined
+  0201:         typedEquals    
+  0202:         duplicate      
+  0203:         ifJump         "0220"
+  0208:         pop            
+  0209:         push           lookup( 1 )
+  0214:         getVariable    
+  0215:         push           null
+  0219:         typedEquals    
+  0220:         not            
+  0221:         ifJump         "0232"
+  0226:         push           lookup( 8 )
+  0231:         trace          
             }
-
-  0281:     defineFunction square( x [reg 2], y [reg 1] ) num registers = 3
-                Supress super 
-                Supress arguments 
-                Supress this 
-            {
-  0304:         push           255
-                push           5
-                push           2
-                push           lookup( 9 )
-  0324:         callFunction   
-  0325:         pop            
-  0326:         push           16711935
-                push           1
-                push           lookup( 10 )
-  0341:         callFunction   
-  0342:         pop            
-  0343:         push           register( 1 )
-                push           register( 2 )
-                push           2
-                push           lookup( 11 )
-  0357:         callFunction   
-  0358:         pop            
-  0359:         push           register( 1 )
-                push           register( 2 )
-                push           80
-  0371:         typedAdd       
-  0372:         push           2
-                push           lookup( 12 )
-  0382:         callFunction   
-  0383:         pop            
-  0384:         push           register( 1 )
-                push           80
-  0394:         typedAdd       
-  0395:         push           register( 2 )
-                push           80
-  0405:         typedAdd       
-  0406:         push           2
-                push           lookup( 12 )
-  0416:         callFunction   
-  0417:         pop            
-  0418:         push           register( 1 )
-                push           80
-  0428:         typedAdd       
-  0429:         push           register( 2 )
-                push           2
-                push           lookup( 12 )
-  0441:         callFunction   
-  0442:         pop            
-  0443:         push           register( 1 )
-                push           register( 2 )
-                push           2
-                push           lookup( 12 )
-  0457:         callFunction   
-  0458:         pop            
-  0459:         push           double 0.0
-                push           lookup( 13 )
-  0473:         callFunction   
-  0474:         pop            
-            }
-  0475:     push           lookup( 1 )
-  0480:     defineLocal    
-  0481:     push           10
-            push           10
-            push           2
-            push           lookup( 14 )
-  0501:     callFunction   
-  0502:     pop            
-  0503:     push           10
-            push           100
-            push           2
-            push           lookup( 14 )
-  0523:     callFunction   
-  0524:     pop            
-  0525:     push           100
-            push           100
-            push           2
-            push           lookup( 14 )
-  0545:     callFunction   
-  0546:     pop            
-  0547:     stop           
-  0548:     end            
-Tag 83 length=56
-    00000000 01 00 68 48 90 a4 54 65 4b 00 68 4b 10 90 55 05 ..hH..TeK.hK..U.
-    00000010 46 00 01 02 00 ff 00 00 ff 00 ff ff 00 ff 01 14 F...............
-    00000020 00 00 00 00 00 00 ff 21 35 a8 48 2a 85 e9 53 ce .......!5.H*..S.
-    00000030 88 e4 e9 ac 4e 87 1c 00 -- -- -- -- -- -- -- -- ....N...        
----------------
-place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+  0232:     push           lookup( 1 )
+  0237:     defineLocal    
+  0238:     stop           
+  0239:     end            
+shape3 id=1   Rect bitsize=13 (0,0)-(3439,2340)
+    fill RGBA(255,255,0,255)
+    fill RGBA(255,255,0,0)
+    line-style width=20  RGBA(0,0,0,255)
+    move  3439,2340
+    fill1 = 2
+    line  -3439,0
+    line  0,-2340
+    line  3439,0
+    line  0,2340
+    ---------------
+sprite id=2
+    place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+sprite id=3
+    place-object2 move=false id=2 depth=1 clip=0 ratio=-1 name=dragBtn   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+sprite id=4
+    place-object2 move=false id=3 depth=1 clip=0 ratio=-1 name=skin   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+place-object2 move=false id=4 depth=1 clip=0 ratio=-1 name=states   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,40.0,20.0)  null
 ---------- frame ----------
 end
 ---------------

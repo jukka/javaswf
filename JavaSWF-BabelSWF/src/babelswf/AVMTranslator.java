@@ -23,6 +23,8 @@ public class AVMTranslator {
 	private final File avm2swf;
     private final File runtimeSwf;
 	
+    public static final boolean TRACE = false;
+    
 	/**
 	 * @param avm1swf the avm1 input swf
 	 * @param avm2swf the avm2 output swf

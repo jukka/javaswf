@@ -1,15 +1,74 @@
 signature: FWS
-header: version=9 length=3076 width=200 height=200 rate=31 frame-count=1
+header: version=9 length=5201 width=200 height=200 rate=31 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,255)
 ABC File 'javaswf' lazy-initialization
 abc-file {
+  [1] dynamic class dxd_minimal_code_swf.MovieClip_20480 {
+    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
+    protected-namespace ProtectedNamespace(dxd_minimal_code_swf:MovieClip_20480)
+
+    constructor: method[6]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              getlocal 0
+              kill 0
+              kill 0
+              pushshort 20480
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[7]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
   [0] dynamic class dxd_minimal_code_swf.MainTimeline {
     extends Qname:PackageNamespace(babelswf)::AVM1MainTimeline
     protected-namespace ProtectedNamespace(dxd_minimal_code_swf:MainTimeline)
 
-    constructor: method[6]  {
+    constructor: method[8]  {
       flags:
       return-type: *
       parameters (
@@ -39,14 +98,14 @@ abc-file {
               getlocal 0
               kill 0
               pushbyte 0
-              newfunction 2
+              newfunction 4
               callpropvoid avm1_addFrame 2
               returnvoid
 
       }
     }
 
-    static initializer: method[7]  {
+    static initializer: method[9]  {
       flags:
       return-type: *
       parameters (
@@ -72,68 +131,10 @@ abc-file {
 
   }
 
-  [1] dynamic class dxd_minimal_code_swf.MovieClip_20480 {
-    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
-    protected-namespace ProtectedNamespace(dxd_minimal_code_swf:MovieClip_20480)
-
-    constructor: method[8]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 13
-        scope-depth  : 12
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480"
-              callpropvoid trace 1
-              getlocal 0
-              kill 0
-              pushshort 20480
-              constructsuper 1
-              returnvoid
-
-      }
-    }
-
-    static initializer: method[3]  {
-      flags:
-      return-type: *
-      parameters (
-      )
-      body {
-        max-stack    : 2
-        max-registers: 1
-        max-scope    : 12
-        scope-depth  : 11
-
-              getlocal 0
-              dup
-              pushwith
-              dup
-              setproperty this
-              findpropstrict trace
-              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480"
-              callpropvoid trace 1
-              returnvoid
-
-      }
-    }
-
-  }
-
   script {
     Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480 [0] class = Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480
 
-    script method[4]  {
+    script method[10]  {
       flags:
       return-type: *
       parameters (
@@ -146,7 +147,7 @@ abc-file {
 
               getlocal 0
               pushscope
-              getscopeobject 0
+              findpropstrict Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480
               findpropstrict trace
               pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_code_swf)::MovieClip_20480"
               callpropvoid trace 1
@@ -202,7 +203,7 @@ abc-file {
 
               getlocal 0
               pushscope
-              getscopeobject 0
+              findpropstrict Qname:PackageNamespace(dxd_minimal_code_swf)::MainTimeline
               findpropstrict trace
               pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_code_swf)::MainTimeline"
               callpropvoid trace 1
@@ -248,559 +249,706 @@ abc-file {
     parameters (
     )
     body {
-      max-stack    : 5
-      max-registers: 4
-      max-scope    : 13
+      max-stack    : 7
+      max-registers: 5
+      max-scope    : 14
       scope-depth  : 13
 
-            pushstring "com"
             getlocal 0
+            pushwith
+            findpropstrict trace
+            pushstring "** Init Actions for sprite 20480 **"
+            callpropvoid trace 1
+            pushstring "com"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "generic"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "dxd_minimal"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             not
+            coerce_a
             not
-            iftrue 1019
+            coerce_a
+            iftrue 1196
             pushstring "com"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             not
+            coerce_a
             not
-            iftrue 153
+            coerce_a
+            iftrue 187
             pushstring "_global"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "com"
+            coerce_a
             pushbyte 0
+            coerce_a
             pushstring "Object"
+            coerce_a
             coerce_a
             setlocal 1
             pop
             newarray 0
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
-            kill 1
-            callproperty avm1_newObject 2
-            coerce_a
-            setlocal 2
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
             getlocal 1
             kill 1
-            getlocal 2
-            kill 2
-            callpropvoid avm1_setMember 3
-      153 : label
-            pushstring "com"
-            getlocal 0
-            swap
-            callproperty avm1_getVar 1
-            pushstring "disney"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            not
-            not
-            iftrue 248
-            pushstring "_global"
-            getlocal 0
-            swap
-            callproperty avm1_getVar 1
-            pushstring "com"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            pushstring "disney"
-            pushbyte 0
-            pushstring "Object"
-            coerce_a
-            setlocal 1
-            pop
-            newarray 0
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_newObject 2
-            coerce_a
-            setlocal 2
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            getlocal 2
-            kill 2
-            callpropvoid avm1_setMember 3
-      248 : label
-            pushstring "com"
-            getlocal 0
-            swap
-            callproperty avm1_getVar 1
-            pushstring "disney"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            pushstring "gem"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            not
-            not
-            iftrue 373
-            pushstring "_global"
-            getlocal 0
-            swap
-            callproperty avm1_getVar 1
-            pushstring "com"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            pushstring "disney"
-            coerce_a
-            setlocal 1
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_getMember 2
-            pushstring "gem"
-            pushbyte 0
-            pushstring "Object"
-            coerce_a
-            setlocal 1
-            pop
-            newarray 0
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_newObject 2
+            callproperty avm1_newObject 4
             coerce_a
             setlocal 1
             coerce_a
             setlocal 2
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 2
             kill 2
             getlocal 1
             kill 1
             callpropvoid avm1_setMember 3
-      373 : label
+      187 : label
             pushstring "com"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            not
+            coerce_a
+            not
+            coerce_a
+            iftrue 300
+            pushstring "_global"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "com"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            pushstring "disney"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            pushstring "Object"
+            coerce_a
+            coerce_a
+            setlocal 1
+            pop
+            newarray 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
+            getlocal 1
+            kill 1
+            callproperty avm1_newObject 4
+            coerce_a
+            setlocal 2
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            getlocal 2
+            kill 2
+            callpropvoid avm1_setMember 3
+      300 : label
+            pushstring "com"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "disney"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            not
+            coerce_a
+            not
+            coerce_a
+            iftrue 445
+            pushstring "_global"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "com"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            pushstring "disney"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            pushstring "gem"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            pushstring "Object"
+            coerce_a
+            coerce_a
+            setlocal 1
+            pop
+            newarray 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
+            getlocal 1
+            kill 1
+            callproperty avm1_newObject 4
+            coerce_a
+            setlocal 1
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            getlocal 1
+            kill 1
+            callpropvoid avm1_setMember 3
+      445 : label
+            pushstring "com"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "disney"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            callproperty avm1_getMember 2
+            pushstring "gem"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             not
+            coerce_a
             not
-            iftrue 528
+            coerce_a
+            iftrue 622
             pushstring "_global"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "com"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
+            coerce_a
             pushbyte 0
+            coerce_a
             pushstring "Object"
+            coerce_a
             coerce_a
             setlocal 1
             pop
             newarray 0
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
+            getlocal 1
             kill 1
-            callproperty avm1_newObject 2
+            callproperty avm1_newObject 4
+            coerce_a
+            setlocal 1
             coerce_a
             setlocal 2
-            coerce_a
-            setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
-            getlocal 1
-            kill 1
             getlocal 2
             kill 2
+            getlocal 1
+            kill 1
             callpropvoid avm1_setMember 3
-      528 : label
+      622 : label
             pushstring "com"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "generic"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             not
+            coerce_a
             not
-            iftrue 713
+            coerce_a
+            iftrue 831
             pushstring "_global"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "com"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "generic"
+            coerce_a
             pushbyte 0
+            coerce_a
             pushstring "Object"
+            coerce_a
             coerce_a
             setlocal 1
             pop
             newarray 0
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
+            getlocal 1
             kill 1
-            callproperty avm1_newObject 2
-            coerce_a
-            setlocal 1
+            callproperty avm1_newObject 4
             coerce_a
             setlocal 2
-            getlocal 0
-            swap
-            getlocal 2
-            kill 2
-            getlocal 1
-            kill 1
-            callpropvoid avm1_setMember 3
-      713 : label
-            pushstring "_global"
-            getlocal 0
-            swap
-            callproperty avm1_getVar 1
-            pushstring "com"
             coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            getlocal 2
+            kill 2
+            callpropvoid avm1_setMember 3
+      831 : label
+            pushstring "_global"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "com"
+            coerce_a
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "generic"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "dxd_minimal"
-            getlocal 0
+            coerce_a
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             newfunction 1
             callproperty avm1_newFunction 1
             dup
             coerce_a
-            setlocal 2
-            coerce_a
             setlocal 3
             coerce_a
             setlocal 1
-            getlocal 0
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
+            getlocal 2
+            kill 2
             getlocal 1
             kill 1
-            getlocal 3
-            kill 3
             callpropvoid avm1_setMember 3
-            getlocal 2
+            getlocal 3
             pushstring "com"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "panels"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             pushstring "ContentBase"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callpropvoid avm1_extends 2
-            getlocal 2
+            getlocal 3
             pushstring "prototype"
             coerce_a
+            coerce_a
             setlocal 1
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 1
             kill 1
             callproperty avm1_getMember 2
             dup
             coerce_a
-            setlocal 1
+            setlocal 4
             pop
-            pushbyte 1
-            pushnull
-            getlocal 1
-            kill 1
-            pushbyte 3
-            pushstring "ASSetPropFlags"
+            getlocal 4
+            pushstring "square"
             coerce_a
-            setlocal 1
-            pop
-            newarray 3
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            pushstring "CLASS_PACKAGE"
-            pushstring "com.disney.gem.sites.generic"
-            coerce_a
-            setlocal 1
-            coerce_a
-            setlocal 3
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            getlocal 1
-            kill 1
-            callpropvoid avm1_setMember 3
-            getlocal 2
-            kill 2
-            pushstring "CLASS_NAME"
-            pushstring "dxd_minimal"
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            newfunction 3
+            callproperty avm1_newFunction 1
             coerce_a
             setlocal 1
             coerce_a
             setlocal 2
-            getlocal 0
-            kill 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 2
             kill 2
             getlocal 1
             kill 1
             callpropvoid avm1_setMember 3
-      1019: label
+            pushbyte 1
+            coerce_a
+            pushnull
+            getlocal 4
+            kill 4
+            pushbyte 3
+            coerce_a
+            pushstring "ASSetPropFlags"
+            coerce_a
+            coerce_a
+            setlocal 1
+            pop
+            newarray 3
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 1
+            getproperty MultinameL:{ Public }
+            getlocal 1
+            kill 1
+            callproperty avm1_callFunction 4
+            pop
+            getlocal 3
+            pushstring "CLASS_PACKAGE"
+            coerce_a
+            pushstring "com.disney.gem.sites.generic"
+            coerce_a
+            coerce_a
+            setlocal 2
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            getlocal 2
+            kill 2
+            callpropvoid avm1_setMember 3
+            getlocal 3
+            kill 3
+            pushstring "CLASS_NAME"
+            coerce_a
+            pushstring "dxd_minimal"
+            coerce_a
+            coerce_a
+            setlocal 2
+            coerce_a
+            setlocal 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 1
+            kill 1
+            getlocal 2
+            kill 2
+            callpropvoid avm1_setMember 3
+      1196: label
             returnvoid
 
     }
@@ -816,58 +964,319 @@ abc-file {
     )
     body {
       max-stack    : 6
-      max-registers: 6
-      max-scope    : 14
+      max-registers: 7
+      max-scope    : 15
       scope-depth  : 14
 
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             getlocal 0
-            callproperty avm1_getThis 0
+            kill 0
+            callproperty avm1_newActivation 1
+            dup
             coerce_a
-            setlocal 4
-            getlocal 0
-            callproperty avm1_getSuper 0
+            setlocal 0
+            pushwith
+            findproperty this
+            getproperty this
+            coerce_a
+            setlocal 5
+            findproperty super
+            getproperty super
             coerce_a
             setlocal 4
             getlocal 0
             pushstring "timeline"
             getlocal 1
-            callpropvoid avm1_defineVarValue 2
+            kill 1
+            setproperty MultinameL:{ Public }
             getlocal 0
             pushstring "owner"
             getlocal 2
-            callpropvoid avm1_defineVarValue 2
+            setproperty MultinameL:{ Public }
             getlocal 0
             pushstring "config"
             getlocal 3
-            callpropvoid avm1_defineVarValue 2
+            setproperty MultinameL:{ Public }
             getlocal 3
             kill 3
             getlocal 2
             kill 2
-            getlocal 1
-            kill 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
             pushbyte 3
+            coerce_a
             getlocal 4
             kill 4
             pushundefined
             coerce_a
-            setlocal 4
+            setlocal 6
             coerce_a
-            setlocal 5
+            setlocal 4
             pop
             newarray 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
-            getlocal 5
-            kill 5
             getlocal 4
             kill 4
+            getlocal 6
+            kill 6
             callproperty avm1_callMethod 3
             pop
+            pushstring "dxd_minimal is in the house !!"
+            coerce_a
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            callpropvoid avm1_trace 1
+            getlocal 5
+            pushstring "timeline"
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            coerce_a
+            setlocal 4
+            coerce_a
+            setlocal 6
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 4
+            kill 4
+            callpropvoid avm1_setMember 3
+            pushstring "square"
+            coerce_a
+            getlocal 5
+            kill 5
+            pushstring "square"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "c"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "d"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "r"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "g"
+            coerce_a
+            pushshort 160
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "b"
+            coerce_a
+            pushbyte 80
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlocal 0
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "offsetX"
+            coerce_a
+            pushbyte 2
+            coerce_a
+            coerce_a
+            setlocal 4
             getlocal 0
             kill 0
-            pushstring "dxd_minimal is in the house"
+            swap
+            getlocal 4
+            kill 4
+            setproperty MultinameL:{ Public }
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            pushstring "name"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
             callpropvoid avm1_trace 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            pushstring "_width"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            callpropvoid avm1_trace 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            pushstring "_height"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            callpropvoid avm1_trace 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_width"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            callpropvoid avm1_trace 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_height"
+            coerce_a
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            callproperty avm1_getMember 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            callpropvoid avm1_trace 1
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "update"
+            coerce_a
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            newfunction 2
+            callproperty avm1_newFunction 1
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 4
+            kill 4
+            getlocal 5
+            kill 5
+            callpropvoid avm1_setMember 3
             pushundefined
             returnvalue
 
@@ -878,13 +1287,853 @@ abc-file {
     flags:
     return-type: *
     parameters (
+      *
     )
     body {
-      max-stack    : 0
+      max-stack    : 6
+      max-registers: 4
+      max-scope    : 16
+      scope-depth  : 15
+
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            getlocal 0
+            kill 0
+            callproperty avm1_newActivation 1
+            dup
+            coerce_a
+            setlocal 0
+            pushwith
+            findproperty this
+            getproperty this
+            coerce_a
+            setlocal 2
+            getlocal 0
+            pushstring "pElapsed"
+            getlocal 1
+            kill 1
+            setproperty MultinameL:{ Public }
+            pushstring "c"
+            coerce_a
+            pushstring "c"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            convert_d
+            increment
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 60
+            pop
+            getlocal 0
+      60  : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushstring "d"
+            coerce_a
+            pushstring "d"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            convert_d
+            increment
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 97
+            pop
+            getlocal 0
+      97  : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushstring "d"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushshort 250
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 365
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            callproperty avm1_getMember 2
+            pushstring "_x"
+            coerce_a
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            callproperty avm1_getMember 2
+            dup
+            coerce_a
+            setlocal 2
+            pop
+            getlocal 2
+            pushshort 900
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 219
+            pushstring "offsetX"
+            coerce_a
+            pushbyte -2
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 207
+            pop
+            getlocal 0
+      207 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            jump 264
+      219 : label
+            getlocal 2
+            kill 2
+            pushbyte 100
+            coerce_a
+            lessthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 264
+            pushstring "offsetX"
+            coerce_a
+            pushbyte 2
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 256
+            pop
+            getlocal 0
+      256 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+      264 : label
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            callproperty avm1_getMember 2
+            pushstring "_x"
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "_parent"
+            coerce_a
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            callproperty avm1_getMember 2
+            pushstring "_x"
+            coerce_a
+            coerce_a
+            setlocal 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            callproperty avm1_getMember 2
+            pushstring "offsetX"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            add
+            coerce_a
+            coerce_a
+            setlocal 2
+            coerce_a
+            setlocal 3
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 3
+            kill 3
+            getlocal 2
+            kill 2
+            callpropvoid avm1_setMember 3
+      365 : label
+            pushstring "c"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 10
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 926
+            pushstring "c"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 407
+            pop
+            getlocal 0
+      407 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushbyte 0
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushstring "clear"
+            coerce_a
+            coerce_a
+            setlocal 3
+            coerce_a
+            setlocal 2
+            pop
+            newarray 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            kill 2
+            getlocal 3
+            kill 3
+            callproperty avm1_callMethod 3
+            pop
+            pushstring "r"
+            coerce_a
+            pushstring "r"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 20
+            coerce_a
+            add
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 486
+            pop
+            getlocal 0
+      486 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushstring "g"
+            coerce_a
+            pushstring "g"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 20
+            coerce_a
+            add
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 526
+            pop
+            getlocal 0
+      526 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushstring "b"
+            coerce_a
+            pushstring "b"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 20
+            coerce_a
+            add
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 566
+            pop
+            getlocal 0
+      566 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+            pushstring "r"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushshort 255
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 624
+            pushstring "r"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 616
+            pop
+            getlocal 0
+      616 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+      624 : label
+            pushstring "g"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushshort 255
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 675
+            pushstring "g"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 667
+            pop
+            getlocal 0
+      667 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+      675 : label
+            pushstring "b"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushshort 255
+            coerce_a
+            greaterthan
+            coerce_a
+            not
+            coerce_a
+            iftrue 728
+            pushstring "b"
+            coerce_a
+            pushbyte 0
+            coerce_a
+            coerce_a
+            setlocal 2
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 720
+            pop
+            getlocal 0
+            kill 0
+      720 : label
+            swap
+            getlocal 2
+            kill 2
+            setproperty MultinameL:{ Public }
+      728 : label
+            pushint 65536
+            coerce_a
+            pushstring "r"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            multiply
+            coerce_a
+            pushshort 256
+            coerce_a
+            pushstring "g"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            multiply
+            coerce_a
+            add
+            coerce_a
+            pushstring "b"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            add
+            coerce_a
+            dup
+            coerce_a
+            setlocal 3
+            pop
+            getlocal 3
+            pushbyte 10
+            coerce_a
+            pushbyte 10
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 4
+            coerce_a
+            pushstring "square"
+            coerce_a
+            coerce_a
+            setlocal 2
+            pop
+            newarray 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 2
+            getproperty MultinameL:{ Public }
+            getlocal 2
+            kill 2
+            callproperty avm1_callFunction 4
+            pop
+            pushint 16711935
+            coerce_a
+            pushbyte 10
+            coerce_a
+            pushbyte 100
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 4
+            coerce_a
+            pushstring "square"
+            coerce_a
+            coerce_a
+            setlocal 2
+            pop
+            newarray 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 2
+            getproperty MultinameL:{ Public }
+            getlocal 2
+            kill 2
+            callproperty avm1_callFunction 4
+            pop
+            getlocal 3
+            kill 3
+            pushbyte 100
+            coerce_a
+            pushbyte 100
+            coerce_a
+            pushstring "timeline"
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
+            swap
+            getproperty MultinameL:{ Public }
+            pushbyte 4
+            coerce_a
+            pushstring "square"
+            coerce_a
+            coerce_a
+            setlocal 2
+            pop
+            newarray 4
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 2
+            findproperty MultinameL:{ Public }
+            dup
+            getlocal 2
+            getproperty MultinameL:{ Public }
+            getlocal 2
+            kill 2
+            callproperty avm1_callFunction 4
+            pop
+      926 : label
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+  method[3]  {
+    flags:
+    return-type: *
+    parameters (
+      *
+      *
+      *
+      *
+    )
+    body {
+      max-stack    : 5
+      max-registers: 7
+      max-scope    : 15
+      scope-depth  : 14
+
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            getlocal 0
+            kill 0
+            callproperty avm1_newActivation 1
+            dup
+            coerce_a
+            setlocal 0
+            pushwith
+            findproperty this
+            getproperty this
+            coerce_a
+            setlocal 5
+            getlocal 0
+            pushstring "timeline"
+            getlocal 1
+            setproperty MultinameL:{ Public }
+            getlocal 0
+            pushstring "x"
+            getlocal 2
+            setproperty MultinameL:{ Public }
+            getlocal 0
+            pushstring "y"
+            getlocal 3
+            setproperty MultinameL:{ Public }
+            getlocal 0
+            kill 0
+            pushstring "color"
+            getlocal 4
+            setproperty MultinameL:{ Public }
+            pushint 65535
+            coerce_a
+            pushbyte 5
+            coerce_a
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "lineStyle"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 4
+            kill 4
+            pushbyte 1
+            coerce_a
+            getlocal 1
+            pushstring "beginFill"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 1
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 3
+            getlocal 2
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "moveTo"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 3
+            getlocal 2
+            pushbyte 80
+            coerce_a
+            add
+            coerce_a
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "lineTo"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 3
+            pushbyte 80
+            coerce_a
+            add
+            coerce_a
+            getlocal 2
+            pushbyte 80
+            coerce_a
+            add
+            coerce_a
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "lineTo"
+            coerce_a
+            coerce_a
+            setlocal 6
+            coerce_a
+            setlocal 5
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 5
+            kill 5
+            getlocal 6
+            kill 6
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 3
+            pushbyte 80
+            coerce_a
+            add
+            coerce_a
+            getlocal 2
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "lineTo"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            getlocal 3
+            kill 3
+            getlocal 2
+            kill 2
+            pushbyte 2
+            coerce_a
+            getlocal 1
+            pushstring "lineTo"
+            coerce_a
+            coerce_a
+            setlocal 5
+            coerce_a
+            setlocal 6
+            pop
+            newarray 2
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 6
+            kill 6
+            getlocal 5
+            kill 5
+            callproperty avm1_callMethod 3
+            pop
+            pushbyte 0
+            coerce_a
+            getlocal 1
+            kill 1
+            pushstring "endFill"
+            coerce_a
+            coerce_a
+            setlocal 6
+            coerce_a
+            setlocal 5
+            pop
+            newarray 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
+            getlocal 5
+            kill 5
+            getlocal 6
+            kill 6
+            callproperty avm1_callMethod 3
+            pop
+            pushundefined
+            returnvalue
+
+    }
+  }
+
+  method[4]  {
+    flags:
+    return-type: *
+    parameters (
+    )
+    body {
+      max-stack    : 2
       max-registers: 1
-      max-scope    : 13
+      max-scope    : 14
       scope-depth  : 13
 
+            getlocal 0
+            dup
+            pushwith
+            dup
+            setproperty this
             returnvoid
 
     }
@@ -894,6 +2143,9 @@ abc-file {
 symbol classes:
   0 --> dxd_minimal_code_swf.MainTimeline
   20480 --> dxd_minimal_code_swf.MovieClip_20480
+sprite id=20480
+    end
+    ---------------
 export
   id=20480 name=__Packages.com.disney.gem.sites.generic.dxd_minimal
 ---------- frame ----------

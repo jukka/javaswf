@@ -1,5 +1,5 @@
 signature: CWS
-header: version=9 length=1863 width=11000 height=8000 rate=12 frame-count=1
+header: version=9 length=2977 width=11000 height=8000 rate=12 frame-count=1
 file-attributes has-metadata allow-as3 use-network
 script-limits  max-recursion-depth=1000 script-timeout=60 secs
 background-color  RGB(255,255,255)
@@ -9,7 +9,7 @@ abc-file {
     extends Qname:PackageNamespace(babelswf)::AVM1MainTimeline
     protected-namespace ProtectedNamespace(dxd_minimal_swf:MainTimeline)
 
-    constructor: method[3]  {
+    constructor: method[6]  {
       flags:
       return-type: *
       parameters (
@@ -41,7 +41,7 @@ abc-file {
       }
     }
 
-    static initializer: method[4]  {
+    static initializer: method[7]  {
       flags:
       return-type: *
       parameters (
@@ -67,10 +67,187 @@ abc-file {
 
   }
 
-  script {
-    Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
+  [1] dynamic class dxd_minimal_swf.MovieClip_2 {
+    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
+    protected-namespace ProtectedNamespace(dxd_minimal_swf:MovieClip_2)
 
-    script method[5]  {
+    constructor: method[2]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2"
+              callpropvoid trace 1
+              getlocal 0
+              kill 0
+              kill 0
+              pushbyte 2
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[3]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [3] dynamic class dxd_minimal_swf.MovieClip_4 {
+    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
+    protected-namespace ProtectedNamespace(dxd_minimal_swf:MovieClip_4)
+
+    constructor: method[4]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4"
+              callpropvoid trace 1
+              getlocal 0
+              kill 0
+              kill 0
+              pushbyte 4
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[5]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  [2] dynamic class dxd_minimal_swf.MovieClip_3 {
+    extends Qname:PackageNamespace(babelswf)::AVM1Sprite
+    protected-namespace ProtectedNamespace(dxd_minimal_swf:MovieClip_3)
+
+    constructor: method[12]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 13
+        scope-depth  : 12
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering constructor for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3"
+              callpropvoid trace 1
+              getlocal 0
+              kill 0
+              kill 0
+              pushbyte 3
+              constructsuper 1
+              returnvoid
+
+      }
+    }
+
+    static initializer: method[13]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 2
+        max-registers: 1
+        max-scope    : 12
+        scope-depth  : 11
+
+              getlocal 0
+              dup
+              pushwith
+              dup
+              setproperty this
+              findpropstrict trace
+              pushstring "entering static initializer for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3"
+              callpropvoid trace 1
+              returnvoid
+
+      }
+    }
+
+  }
+
+  script {
+    Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4 [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4
+
+    script method[8]  {
       flags:
       return-type: *
       parameters (
@@ -83,7 +260,175 @@ abc-file {
 
               getlocal 0
               pushscope
-              getscopeobject 0
+              findpropstrict Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4
+              findpropstrict trace
+              pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4"
+              callpropvoid trace 1
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              newclass Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_4
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3 [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3
+
+    script method[9]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              findpropstrict Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3
+              findpropstrict trace
+              pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3"
+              callpropvoid trace 1
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              newclass Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_3
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2 [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2
+
+    script method[10]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              findpropstrict Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2
+              findpropstrict trace
+              pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2"
+              callpropvoid trace 1
+              getlex Object
+              pushscope
+              getlex Qname:PackageNamespace(flash.events)::EventDispatcher
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::InteractiveObject
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::DisplayObjectContainer
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::Sprite
+              pushscope
+              getlex Qname:PackageNamespace(flash.display)::MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1MovieClip
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              pushscope
+              getlex Qname:PackageNamespace(babelswf)::AVM1Sprite
+              newclass Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              popscope
+              initproperty Qname:PackageNamespace(dxd_minimal_swf)::MovieClip_2
+              returnvoid
+
+      }
+    }
+  }
+
+  script {
+    Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline [0] class = Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
+
+    script method[11]  {
+      flags:
+      return-type: *
+      parameters (
+      )
+      body {
+        max-stack    : 3
+        max-registers: 1
+        max-scope    : 11
+        scope-depth  : 1
+
+              getlocal 0
+              pushscope
+              findpropstrict Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline
               findpropstrict trace
               pushstring "entering class initialization script for Qname:PackageNamespace(dxd_minimal_swf)::MainTimeline"
               callpropvoid trace 1
@@ -129,67 +474,29 @@ abc-file {
     parameters (
     )
     body {
-      max-stack    : 4
-      max-registers: 2
-      max-scope    : 13
+      max-stack    : 3
+      max-registers: 1
+      max-scope    : 14
       scope-depth  : 13
 
             getlocal 0
-            pushstring "init"
+            dup
+            pushwith
+            dup
+            setproperty this
+            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             newfunction 1
-            callpropvoid avm1_defineFunction 2
-            getlocal 0
-            pushstring "square"
-            newfunction 2
-            callpropvoid avm1_defineFunction 2
+            callproperty avm1_newFunction 1
+            setproperty init
             pushstring "app"
-            getlocal 0
-            swap
-            callpropvoid avm1_defineVar 1
-            pushbyte 10
-            pushbyte 10
-            pushbyte 2
-            pushstring "square"
             coerce_a
-            setlocal 1
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_callFunction 2
-            pop
-            pushbyte 10
-            pushbyte 100
-            pushbyte 2
-            pushstring "square"
-            coerce_a
-            setlocal 1
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_callFunction 2
-            pop
-            pushbyte 100
-            pushbyte 100
-            pushbyte 2
-            pushstring "square"
-            coerce_a
-            setlocal 1
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 1
-            kill 1
-            callproperty avm1_callFunction 2
-            pop
             getlocal 0
             kill 0
+            swap
+            pushundefined
+            setproperty MultinameL:{ Public }
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             callpropvoid avm1_stop 0
             returnvoid
 
@@ -206,25 +513,36 @@ abc-file {
     body {
       max-stack    : 8
       max-registers: 5
-      max-scope    : 14
+      max-scope    : 15
       scope-depth  : 14
 
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             getlocal 0
-            callproperty avm1_getThis 0
+            kill 0
+            callproperty avm1_newActivation 1
+            dup
+            coerce_a
+            setlocal 0
+            pushwith
+            findproperty this
+            getproperty this
             coerce_a
             setlocal 3
             getlocal 0
             pushstring "pOwner"
             getlocal 1
-            callpropvoid avm1_defineVarValue 2
+            setproperty MultinameL:{ Public }
             getlocal 0
             pushstring "pConfig"
             getlocal 2
-            callpropvoid avm1_defineVarValue 2
-            getlocal 0
+            setproperty MultinameL:{ Public }
             pushstring "dxd_minimal fla"
+            coerce_a
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
             callpropvoid avm1_trace 1
             pushstring "app"
+            coerce_a
             getlocal 2
             kill 2
             getlocal 1
@@ -232,50 +550,58 @@ abc-file {
             getlocal 3
             kill 3
             pushbyte 3
+            coerce_a
             pushstring "com"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushstring "disney"
             coerce_a
+            coerce_a
             setlocal 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 3
             kill 3
             callproperty avm1_getMember 2
             pushstring "gem"
             coerce_a
+            coerce_a
             setlocal 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 3
             kill 3
             callproperty avm1_getMember 2
             pushstring "sites"
             coerce_a
+            coerce_a
             setlocal 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 3
             kill 3
             callproperty avm1_getMember 2
             pushstring "generic"
             coerce_a
+            coerce_a
             setlocal 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 3
             kill 3
             callproperty avm1_getMember 2
             pushstring "dxd_minimal"
             coerce_a
+            coerce_a
             setlocal 4
             coerce_a
             setlocal 3
             pop
             newarray 3
-            getlocal 0
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
             swap
             getlocal 3
             kill 3
@@ -284,181 +610,50 @@ abc-file {
             callproperty avm1_newMethod 3
             coerce_a
             setlocal 3
+            dup
+            findproperty MultinameL:{ Public }
+            dup
+            getglobalscope
+            ifstrictne 180
+            pop
             getlocal 0
+            kill 0
+      180 : label
             swap
             getlocal 3
             kill 3
-            callpropvoid avm1_setVar 2
+            setproperty MultinameL:{ Public }
             pushstring "app"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushundefined
             equals
+            coerce_a
             dup
-            iftrue 181
+            iftrue 218
             pop
             pushstring "app"
-            getlocal 0
+            coerce_a
+            dup
+            findproperty MultinameL:{ Public }
             swap
-            callproperty avm1_getVar 1
+            getproperty MultinameL:{ Public }
             pushnull
             equals
-      181 : label
+            coerce_a
+      218 : label
             not
-            iftrue 196
-            getlocal 0
-            kill 0
+            coerce_a
+            iftrue 234
             pushstring "dxd_blank: App could not be created!"
+            coerce_a
+            getlex Qname:PackageNamespace(babelswf)::AVM1Runtime
+            swap
             callpropvoid avm1_trace 1
-      196 : label
-            pushundefined
-            returnvalue
-
-    }
-  }
-
-  method[2]  {
-    flags:
-    return-type: *
-    parameters (
-      *
-      *
-    )
-    body {
-      max-stack    : 4
-      max-registers: 4
-      max-scope    : 14
-      scope-depth  : 14
-
-            getlocal 0
-            pushstring "x"
-            getlocal 1
-            callpropvoid avm1_defineVarValue 2
-            getlocal 0
-            pushstring "y"
-            getlocal 2
-            callpropvoid avm1_defineVarValue 2
-            pushshort 255
-            pushbyte 5
-            pushbyte 2
-            pushstring "lineStyle"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            pushint 16711935
-            pushbyte 1
-            pushstring "beginFill"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 1
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            getlocal 1
-            pushbyte 2
-            pushstring "moveTo"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            getlocal 1
-            pushbyte 80
-            add
-            pushbyte 2
-            pushstring "lineTo"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            pushbyte 80
-            add
-            getlocal 1
-            pushbyte 80
-            add
-            pushbyte 2
-            pushstring "lineTo"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            pushbyte 80
-            add
-            getlocal 1
-            pushbyte 2
-            pushstring "lineTo"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            getlocal 2
-            kill 2
-            getlocal 1
-            kill 1
-            pushbyte 2
-            pushstring "lineTo"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 2
-            getlocal 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
-            pushdouble 0.0
-            pushstring "endFill"
-            coerce_a
-            setlocal 3
-            pop
-            newarray 0
-            getlocal 0
-            kill 0
-            swap
-            getlocal 3
-            kill 3
-            callproperty avm1_callFunction 2
-            pop
+      234 : label
             pushundefined
             returnvalue
 
@@ -468,13 +663,36 @@ abc-file {
 }
 symbol classes:
   0 --> dxd_minimal_swf.MainTimeline
-Tag 83 length=56
-    00000000 01 00 68 48 90 a4 54 65 4b 00 68 4b 10 90 55 05 ..hH..TeK.hK..U.
-    00000010 46 00 01 02 00 ff 00 00 ff 00 ff ff 00 ff 01 14 F...............
-    00000020 00 00 00 00 00 00 ff 21 35 a8 48 2a 85 e9 53 ce .......!5.H*..S.
-    00000030 88 e4 e9 ac 4e 87 1c 00 -- -- -- -- -- -- -- -- ....N...        
----------------
-place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+  2 --> dxd_minimal_swf.MovieClip_2
+  3 --> dxd_minimal_swf.MovieClip_3
+  4 --> dxd_minimal_swf.MovieClip_4
+shape3 id=1   Rect bitsize=13 (0,0)-(3439,2340)
+    fill RGBA(255,255,0,255)
+    fill RGBA(255,255,0,0)
+    line-style width=20  RGBA(0,0,0,255)
+    move  3439,2340
+    fill1 = 2
+    line  -3439,0
+    line  0,-2340
+    line  3439,0
+    line  0,2340
+    ---------------
+sprite id=2
+    place-object2 move=false id=1 depth=1 clip=0 ratio=-1 name=null   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+sprite id=3
+    place-object2 move=false id=2 depth=1 clip=0 ratio=-1 name=dragBtn   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+sprite id=4
+    place-object2 move=false id=3 depth=1 clip=0 ratio=-1 name=skin   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,0.0,0.0)  null
+    ---------- frame ----------
+    end
+    ---------------
+place-object2 move=false id=4 depth=1 clip=0 ratio=-1 name=states   Matrix(sx,sy,s0,s1,tx,ty)=(1.0,1.0,0.0,0.0,40.0,20.0)  null
 ---------- frame ----------
 end
 ---------------

@@ -1,5 +1,5 @@
 signature: FWS
-header: version=8 length=831 width=200 height=200 rate=31 frame-count=1
+header: version=8 length=1879 width=200 height=200 rate=31 frame-count=1
 file-attributes
 background-color  RGB(255,255,255)
 sprite id=20480
@@ -18,194 +18,513 @@ init actions for sprite 20480:
             5:   "dxd_minimal"
             6:   "_global"
             7:   "Object"
-            8:   "dxd_minimal is in the house"
-            9:   "panels"
-            10:  "ContentBase"
-            11:  "prototype"
-            12:  "ASSetPropFlags"
-            13:  "CLASS_PACKAGE"
-            14:  "com.disney.gem.sites.generic"
-            15:  "CLASS_NAME"
-  0187:     push           lookup( 0 )
-  0192:     getVariable    
-  0193:     push           lookup( 1 )
-  0198:     getMember      
-  0199:     push           lookup( 2 )
-  0204:     getMember      
-  0205:     push           lookup( 3 )
-  0210:     getMember      
-  0211:     push           lookup( 4 )
-  0216:     getMember      
-  0217:     push           lookup( 5 )
-  0222:     getMember      
-  0223:     not            
-  0224:     not            
-  0225:     ifJump         "0708"
-  0230:     push           lookup( 0 )
-  0235:     getVariable    
-  0236:     not            
-  0237:     not            
-  0238:     ifJump         "0263"
-  0243:     push           lookup( 6 )
-  0248:     getVariable    
-  0249:     push           lookup( 0 )
+            8:   "timeline"
+            9:   "dxd_minimal is in the house !!"
+            10:  "square"
+            11:  "c"
+            12:  "d"
+            13:  "r"
+            14:  "g"
+            15:  "b"
+            16:  "offsetX"
+            17:  "_parent"
+            18:  "name"
+            19:  "_width"
+            20:  "_height"
+            21:  "update"
+            22:  "_x"
+            23:  "clear"
+            24:  "panels"
+            25:  "ContentBase"
+            26:  "prototype"
+            27:  "lineStyle"
+            28:  "beginFill"
+            29:  "moveTo"
+            30:  "lineTo"
+            31:  "endFill"
+            32:  "ASSetPropFlags"
+            33:  "CLASS_PACKAGE"
+            34:  "com.disney.gem.sites.generic"
+            35:  "CLASS_NAME"
+  0310:     push           lookup( 0 )
+  0315:     getVariable    
+  0316:     push           lookup( 1 )
+  0321:     getMember      
+  0322:     push           lookup( 2 )
+  0327:     getMember      
+  0328:     push           lookup( 3 )
+  0333:     getMember      
+  0334:     push           lookup( 4 )
+  0339:     getMember      
+  0340:     push           lookup( 5 )
+  0345:     getMember      
+  0346:     not            
+  0347:     not            
+  0348:     ifJump         "1756"
+  0353:     push           lookup( 0 )
+  0358:     getVariable    
+  0359:     not            
+  0360:     not            
+  0361:     ifJump         "0386"
+  0366:     push           lookup( 6 )
+  0371:     getVariable    
+  0372:     push           lookup( 0 )
             push           0
             push           lookup( 7 )
-  0261:     newObject      
-  0262:     setMember      
-  0263:     push           lookup( 0 )
-  0268:     getVariable    
-  0269:     push           lookup( 1 )
-  0274:     getMember      
-  0275:     not            
-  0276:     not            
-  0277:     ifJump         "0308"
-  0282:     push           lookup( 6 )
-  0287:     getVariable    
-  0288:     push           lookup( 0 )
-  0293:     getMember      
-  0294:     push           lookup( 1 )
+  0384:     newObject      
+  0385:     setMember      
+  0386:     push           lookup( 0 )
+  0391:     getVariable    
+  0392:     push           lookup( 1 )
+  0397:     getMember      
+  0398:     not            
+  0399:     not            
+  0400:     ifJump         "0431"
+  0405:     push           lookup( 6 )
+  0410:     getVariable    
+  0411:     push           lookup( 0 )
+  0416:     getMember      
+  0417:     push           lookup( 1 )
             push           0
             push           lookup( 7 )
-  0306:     newObject      
-  0307:     setMember      
-  0308:     push           lookup( 0 )
-  0313:     getVariable    
-  0314:     push           lookup( 1 )
-  0319:     getMember      
-  0320:     push           lookup( 2 )
-  0325:     getMember      
-  0326:     not            
-  0327:     not            
-  0328:     ifJump         "0365"
-  0333:     push           lookup( 6 )
-  0338:     getVariable    
-  0339:     push           lookup( 0 )
-  0344:     getMember      
-  0345:     push           lookup( 1 )
-  0350:     getMember      
-  0351:     push           lookup( 2 )
+  0429:     newObject      
+  0430:     setMember      
+  0431:     push           lookup( 0 )
+  0436:     getVariable    
+  0437:     push           lookup( 1 )
+  0442:     getMember      
+  0443:     push           lookup( 2 )
+  0448:     getMember      
+  0449:     not            
+  0450:     not            
+  0451:     ifJump         "0488"
+  0456:     push           lookup( 6 )
+  0461:     getVariable    
+  0462:     push           lookup( 0 )
+  0467:     getMember      
+  0468:     push           lookup( 1 )
+  0473:     getMember      
+  0474:     push           lookup( 2 )
             push           0
             push           lookup( 7 )
-  0363:     newObject      
-  0364:     setMember      
-  0365:     push           lookup( 0 )
-  0370:     getVariable    
-  0371:     push           lookup( 1 )
-  0376:     getMember      
-  0377:     push           lookup( 2 )
-  0382:     getMember      
-  0383:     push           lookup( 3 )
-  0388:     getMember      
-  0389:     not            
-  0390:     not            
-  0391:     ifJump         "0434"
-  0396:     push           lookup( 6 )
-  0401:     getVariable    
-  0402:     push           lookup( 0 )
-  0407:     getMember      
-  0408:     push           lookup( 1 )
-  0413:     getMember      
-  0414:     push           lookup( 2 )
-  0419:     getMember      
-  0420:     push           lookup( 3 )
+  0486:     newObject      
+  0487:     setMember      
+  0488:     push           lookup( 0 )
+  0493:     getVariable    
+  0494:     push           lookup( 1 )
+  0499:     getMember      
+  0500:     push           lookup( 2 )
+  0505:     getMember      
+  0506:     push           lookup( 3 )
+  0511:     getMember      
+  0512:     not            
+  0513:     not            
+  0514:     ifJump         "0557"
+  0519:     push           lookup( 6 )
+  0524:     getVariable    
+  0525:     push           lookup( 0 )
+  0530:     getMember      
+  0531:     push           lookup( 1 )
+  0536:     getMember      
+  0537:     push           lookup( 2 )
+  0542:     getMember      
+  0543:     push           lookup( 3 )
             push           0
             push           lookup( 7 )
-  0432:     newObject      
-  0433:     setMember      
-  0434:     push           lookup( 0 )
-  0439:     getVariable    
-  0440:     push           lookup( 1 )
-  0445:     getMember      
-  0446:     push           lookup( 2 )
-  0451:     getMember      
-  0452:     push           lookup( 3 )
-  0457:     getMember      
-  0458:     push           lookup( 4 )
-  0463:     getMember      
-  0464:     not            
-  0465:     not            
-  0466:     ifJump         "0515"
-  0471:     push           lookup( 6 )
-  0476:     getVariable    
-  0477:     push           lookup( 0 )
-  0482:     getMember      
-  0483:     push           lookup( 1 )
-  0488:     getMember      
-  0489:     push           lookup( 2 )
-  0494:     getMember      
-  0495:     push           lookup( 3 )
-  0500:     getMember      
-  0501:     push           lookup( 4 )
+  0555:     newObject      
+  0556:     setMember      
+  0557:     push           lookup( 0 )
+  0562:     getVariable    
+  0563:     push           lookup( 1 )
+  0568:     getMember      
+  0569:     push           lookup( 2 )
+  0574:     getMember      
+  0575:     push           lookup( 3 )
+  0580:     getMember      
+  0581:     push           lookup( 4 )
+  0586:     getMember      
+  0587:     not            
+  0588:     not            
+  0589:     ifJump         "0638"
+  0594:     push           lookup( 6 )
+  0599:     getVariable    
+  0600:     push           lookup( 0 )
+  0605:     getMember      
+  0606:     push           lookup( 1 )
+  0611:     getMember      
+  0612:     push           lookup( 2 )
+  0617:     getMember      
+  0618:     push           lookup( 3 )
+  0623:     getMember      
+  0624:     push           lookup( 4 )
             push           0
             push           lookup( 7 )
-  0513:     newObject      
-  0514:     setMember      
-  0515:     push           lookup( 6 )
-  0520:     getVariable    
-  0521:     push           lookup( 0 )
-  0526:     getMember      
-  0527:     push           lookup( 1 )
-  0532:     getMember      
-  0533:     push           lookup( 2 )
-  0538:     getMember      
-  0539:     push           lookup( 3 )
-  0544:     getMember      
-  0545:     push           lookup( 4 )
-  0550:     getMember      
-  0551:     push           lookup( 5 )
+  0636:     newObject      
+  0637:     setMember      
+  0638:     push           lookup( 6 )
+  0643:     getVariable    
+  0644:     push           lookup( 0 )
+  0649:     getMember      
+  0650:     push           lookup( 1 )
+  0655:     getMember      
+  0656:     push           lookup( 2 )
+  0661:     getMember      
+  0662:     push           lookup( 3 )
+  0667:     getMember      
+  0668:     push           lookup( 4 )
+  0673:     getMember      
+  0674:     push           lookup( 5 )
 
-  0556:     defineFunction ( timeline [reg 3], owner [reg 4], config [reg 5] ) num registers = 6
+  0679:     defineFunction ( timeline, owner [reg 3], config [reg 4] ) num registers = 5
                 Preload this      [reg 1] 
                 Preload super     [reg 2] 
                 Supress arguments 
             {
-  0592:         push           register( 5 )
-                push           register( 4 )
+  0715:         push           register( 4 )
                 push           register( 3 )
-                push           3
+                push           lookup( 8 )
+  0724:         getVariable    
+  0725:         push           3
                 push           register( 2 )
                 push           undefined
-  0609:         callMethod     
-  0610:         pop            
-  0611:         push           lookup( 8 )
-  0616:         trace          
+  0736:         callMethod     
+  0737:         pop            
+  0738:         push           lookup( 9 )
+  0743:         trace          
+  0744:         push           register( 1 )
+                push           lookup( 8 )
+                push           lookup( 8 )
+  0753:         getVariable    
+  0754:         setMember      
+  0755:         push           lookup( 10 )
+                push           register( 1 )
+                push           lookup( 10 )
+  0764:         getMember      
+  0765:         defineLocalValue 
+  0766:         push           lookup( 11 )
+                push           0
+  0776:         defineLocalValue 
+  0777:         push           lookup( 12 )
+                push           0
+  0787:         defineLocalValue 
+  0788:         push           lookup( 13 )
+                push           0
+  0798:         defineLocalValue 
+  0799:         push           lookup( 14 )
+                push           160
+  0809:         defineLocalValue 
+  0810:         push           lookup( 15 )
+                push           80
+  0820:         defineLocalValue 
+  0821:         push           lookup( 16 )
+                push           2
+  0831:         defineLocalValue 
+  0832:         push           lookup( 8 )
+  0837:         getVariable    
+  0838:         push           lookup( 17 )
+  0843:         getMember      
+  0844:         push           lookup( 18 )
+  0849:         getMember      
+  0850:         trace          
+  0851:         push           lookup( 8 )
+  0856:         getVariable    
+  0857:         push           lookup( 17 )
+  0862:         getMember      
+  0863:         push           lookup( 19 )
+  0868:         getMember      
+  0869:         trace          
+  0870:         push           lookup( 8 )
+  0875:         getVariable    
+  0876:         push           lookup( 17 )
+  0881:         getMember      
+  0882:         push           lookup( 20 )
+  0887:         getMember      
+  0888:         trace          
+  0889:         push           lookup( 8 )
+  0894:         getVariable    
+  0895:         push           lookup( 19 )
+  0900:         getMember      
+  0901:         trace          
+  0902:         push           lookup( 8 )
+  0907:         getVariable    
+  0908:         push           lookup( 20 )
+  0913:         getMember      
+  0914:         trace          
+  0915:         push           lookup( 8 )
+  0920:         getVariable    
+  0921:         push           lookup( 21 )
+
+  0926:         defineFunction ( pElapsed [reg 2] ) num registers = 5
+                    Preload this      [reg 1] 
+                    Supress super 
+                    Supress arguments 
+                {
+  0947:             push           lookup( 11 )
+                    push           lookup( 11 )
+  0954:             getVariable    
+  0955:             increment      
+  0956:             setVariable    
+  0957:             push           lookup( 12 )
+                    push           lookup( 12 )
+  0964:             getVariable    
+  0965:             increment      
+  0966:             setVariable    
+  0967:             push           lookup( 12 )
+  0972:             getVariable    
+  0973:             push           250
+  0981:             greaterThan    
+  0982:             not            
+  0983:             ifJump         "1112"
+  0988:             push           lookup( 8 )
+  0993:             getVariable    
+  0994:             push           lookup( 17 )
+  0999:             getMember      
+  1000:             push           lookup( 22 )
+  1005:             getMember      
+  1006:             register       3
+  1010:             pop            
+  1011:             push           register( 3 )
+                    push           900
+  1021:             greaterThan    
+  1022:             not            
+  1023:             ifJump         "1044"
+  1028:             push           lookup( 16 )
+                    push           -2
+  1038:             setVariable    
+  1039:             jump           "1072"
+  1044:             push           register( 3 )
+                    push           100
+  1054:             typedLessThan  
+  1055:             not            
+  1056:             ifJump         "1072"
+  1061:             push           lookup( 16 )
+                    push           2
+  1071:             setVariable    
+  1072:             push           lookup( 8 )
+  1077:             getVariable    
+  1078:             push           lookup( 17 )
+  1083:             getMember      
+  1084:             push           lookup( 22 )
+                    push           lookup( 8 )
+  1091:             getVariable    
+  1092:             push           lookup( 17 )
+  1097:             getMember      
+  1098:             push           lookup( 22 )
+  1103:             getMember      
+  1104:             push           lookup( 16 )
+  1109:             getVariable    
+  1110:             typedAdd       
+  1111:             setMember      
+  1112:             push           lookup( 11 )
+  1117:             getVariable    
+  1118:             push           10
+  1126:             greaterThan    
+  1127:             not            
+  1128:             ifJump         "1442"
+  1133:             push           lookup( 11 )
+                    push           0
+  1143:             setVariable    
+  1144:             push           0
+                    push           lookup( 8 )
+  1154:             getVariable    
+  1155:             push           lookup( 23 )
+  1160:             callMethod     
+  1161:             pop            
+  1162:             push           lookup( 13 )
+                    push           lookup( 13 )
+  1169:             getVariable    
+  1170:             push           20
+  1178:             typedAdd       
+  1179:             setVariable    
+  1180:             push           lookup( 14 )
+                    push           lookup( 14 )
+  1187:             getVariable    
+  1188:             push           20
+  1196:             typedAdd       
+  1197:             setVariable    
+  1198:             push           lookup( 15 )
+                    push           lookup( 15 )
+  1205:             getVariable    
+  1206:             push           20
+  1214:             typedAdd       
+  1215:             setVariable    
+  1216:             push           lookup( 13 )
+  1221:             getVariable    
+  1222:             push           255
+  1230:             greaterThan    
+  1231:             not            
+  1232:             ifJump         "1248"
+  1237:             push           lookup( 13 )
+                    push           0
+  1247:             setVariable    
+  1248:             push           lookup( 14 )
+  1253:             getVariable    
+  1254:             push           255
+  1262:             greaterThan    
+  1263:             not            
+  1264:             ifJump         "1280"
+  1269:             push           lookup( 14 )
+                    push           0
+  1279:             setVariable    
+  1280:             push           lookup( 15 )
+  1285:             getVariable    
+  1286:             push           255
+  1294:             greaterThan    
+  1295:             not            
+  1296:             ifJump         "1312"
+  1301:             push           lookup( 15 )
+                    push           0
+  1311:             setVariable    
+  1312:             push           65536
+                    push           lookup( 13 )
+  1322:             getVariable    
+  1323:             multiply       
+  1324:             push           256
+                    push           lookup( 14 )
+  1334:             getVariable    
+  1335:             multiply       
+  1336:             typedAdd       
+  1337:             push           lookup( 15 )
+  1342:             getVariable    
+  1343:             typedAdd       
+  1344:             register       4
+  1348:             pop            
+  1349:             push           register( 4 )
+                    push           10
+                    push           10
+                    push           lookup( 8 )
+  1366:             getVariable    
+  1367:             push           4
+                    push           lookup( 10 )
+  1377:             callFunction   
+  1378:             pop            
+  1379:             push           16711935
+                    push           10
+                    push           100
+                    push           lookup( 8 )
+  1399:             getVariable    
+  1400:             push           4
+                    push           lookup( 10 )
+  1410:             callFunction   
+  1411:             pop            
+  1412:             push           register( 4 )
+                    push           100
+                    push           100
+                    push           lookup( 8 )
+  1429:             getVariable    
+  1430:             push           4
+                    push           lookup( 10 )
+  1440:             callFunction   
+  1441:             pop            
+                }
+  1442:         setMember      
             }
-  0617:     register       0
-  0621:     setMember      
-  0622:     push           register( 0 )
+  1443:     register       0
+  1447:     setMember      
+  1448:     push           register( 0 )
             push           lookup( 0 )
-  0629:     getVariable    
-  0630:     push           lookup( 1 )
-  0635:     getMember      
-  0636:     push           lookup( 2 )
-  0641:     getMember      
-  0642:     push           lookup( 9 )
-  0647:     getMember      
-  0648:     push           lookup( 10 )
-  0653:     getMember      
-  0654:     extends        
-  0655:     push           register( 0 )
-            push           lookup( 11 )
-  0662:     getMember      
-  0663:     register       1
-  0667:     pop            
-  0668:     push           1
+  1455:     getVariable    
+  1456:     push           lookup( 1 )
+  1461:     getMember      
+  1462:     push           lookup( 2 )
+  1467:     getMember      
+  1468:     push           lookup( 24 )
+  1473:     getMember      
+  1474:     push           lookup( 25 )
+  1479:     getMember      
+  1480:     extends        
+  1481:     push           register( 0 )
+            push           lookup( 26 )
+  1488:     getMember      
+  1489:     register       1
+  1493:     pop            
+  1494:     push           register( 1 )
+            push           lookup( 10 )
+
+  1501:     defineFunction ( timeline [reg 2], x [reg 3], y [reg 4], color [reg 5] ) num registers = 6
+                Preload this      [reg 1] 
+                Supress super 
+                Supress arguments 
+            {
+  1535:         push           65535
+                push           5
+                push           2
+                push           register( 2 )
+                push           lookup( 27 )
+  1557:         callMethod     
+  1558:         pop            
+  1559:         push           register( 5 )
+                push           1
+                push           register( 2 )
+                push           lookup( 28 )
+  1573:         callMethod     
+  1574:         pop            
+  1575:         push           register( 4 )
+                push           register( 3 )
+                push           2
+                push           register( 2 )
+                push           lookup( 29 )
+  1591:         callMethod     
+  1592:         pop            
+  1593:         push           register( 4 )
+                push           register( 3 )
+                push           80
+  1605:         typedAdd       
+  1606:         push           2
+                push           register( 2 )
+                push           lookup( 30 )
+  1618:         callMethod     
+  1619:         pop            
+  1620:         push           register( 4 )
+                push           80
+  1630:         typedAdd       
+  1631:         push           register( 3 )
+                push           80
+  1641:         typedAdd       
+  1642:         push           2
+                push           register( 2 )
+                push           lookup( 30 )
+  1654:         callMethod     
+  1655:         pop            
+  1656:         push           register( 4 )
+                push           80
+  1666:         typedAdd       
+  1667:         push           register( 3 )
+                push           2
+                push           register( 2 )
+                push           lookup( 30 )
+  1681:         callMethod     
+  1682:         pop            
+  1683:         push           register( 4 )
+                push           register( 3 )
+                push           2
+                push           register( 2 )
+                push           lookup( 30 )
+  1699:         callMethod     
+  1700:         pop            
+  1701:         push           0
+                push           register( 2 )
+                push           lookup( 31 )
+  1713:         callMethod     
+  1714:         pop            
+            }
+  1715:     setMember      
+  1716:     push           1
             push           null
             push           register( 1 )
             push           3
-            push           lookup( 12 )
-  0686:     callFunction   
-  0687:     pop            
-  0688:     push           register( 0 )
-            push           lookup( 13 )
-            push           lookup( 14 )
-  0697:     setMember      
-  0698:     push           register( 0 )
-            push           lookup( 15 )
+            push           lookup( 32 )
+  1734:     callFunction   
+  1735:     pop            
+  1736:     push           register( 0 )
+            push           lookup( 33 )
+            push           lookup( 34 )
+  1745:     setMember      
+  1746:     push           register( 0 )
+            push           lookup( 35 )
             push           lookup( 5 )
-  0707:     setMember      
-  0708:     end            
+  1755:     setMember      
+  1756:     end            
 AVM1 actions:
             conditions     0
   0000:     end            

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
+import org.epistem.io.InStream;
+
 import com.anotherbigidea.flash.avm1.AVM1BlockBuilder;
 import com.anotherbigidea.flash.avm2.ABC;
 import com.anotherbigidea.flash.avm2.model.AVM2ABCFile;
@@ -14,6 +16,7 @@ import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
 import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 import com.anotherbigidea.flash.interfaces.SWFActions;
 import com.anotherbigidea.flash.interfaces.SWFTagTypes;
+import com.anotherbigidea.flash.readers.SWFReader;
 import com.anotherbigidea.flash.readers.TagParser;
 import com.anotherbigidea.flash.structs.AlphaTransform;
 import com.anotherbigidea.flash.structs.ButtonRecord;
@@ -33,7 +36,7 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	
 	private final String context;
 	private final SWFTimeline mainClip;
-    private final Timeline     thisClip;
+    private final Timeline    thisClip;
 		
 	private final AVM2ABCFile abc;
 
@@ -44,17 +47,34 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
     private static class Tag {
         final int    tagType;
         final byte[] data;
+        final AVM1ActionInterceptor sprite;
         
         Tag( int tagType, byte[] data ) {
             this.tagType = tagType;
             this.data    = data;
-        }
+            this.sprite  = null;
+        } 
 
+        Tag( AVM1ActionInterceptor sprite ) {
+            this.tagType = 0;
+            this.data    = null;
+            this.sprite  = sprite;            
+        }
+        
         Tag( int tagType ) {
             this( tagType, new byte[0] );
         }
 
         void write( SWFTagTypes tagTypes ) throws IOException {
+            if( sprite != null ) {
+                SWFTagTypes spriteTags = 
+                    tagTypes.tagDefineSprite( ((SpriteTimeline) sprite.thisClip).id );
+                
+                sprite.flushTags( spriteTags );
+                spriteTags.tagEnd();
+                return;
+            }
+                        
             tagTypes.tag( tagType, false, data );
         }
     }
@@ -78,14 +98,24 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
         this.context  = context;        
         this.mainClip = new SWFTimeline( context, abc );
         
-        thisClip = mainClip;
-        
-        //set up the _global value  -- now done in class init scripts
-//        AVM2Code cons = mainClip.constructor();
-//        cons.getGlobalScope();
-//        cons.dup();
-//        cons.setProperty( "_global" );
+        thisClip = mainClip;        
     }
+
+    /**
+     * @param context a description of the context
+     * @param tags the target to pass tags to
+     * @param runtime the runtime SWF to embed - null for none
+     */
+    private AVM1ActionInterceptor( SWFTimeline mainClip, AVM2ABCFile abc,
+                                   Timeline clip, String context ) throws IOException {
+        super( null );
+        
+        this.abc      = abc;
+        this.mainClip = mainClip;
+        this.context  = context;        
+        thisClip      = clip;        
+    }
+
     
     private void log( String message ) {
     	log.info( context + "[" + thisClip.frameNumber() + "]: " + message );
@@ -100,7 +130,6 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 			case TAG_DOACTION:
 			case TAG_DOINITACTION:
 			case TAG_SHOWFRAME:
-			case TAG_DEFINESPRITE:
 			case TAG_FILE_ATTRIBUTES:
 			//case TAG_PLACEOBJECT2:
 			case TAG_SCRIPTLIMITS:
@@ -118,12 +147,38 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
             case TAG_PLACEOBJECT3:
                 //FIXME
                 throw new RuntimeException( "TAG_PLACEOBJECT3 is not yet implemented" );
+
+		
+            case TAG_DEFINESPRITE:
+                handleSprite( contents );
+                return;
 		}
 		
 		//--save other tags as blobs
 		tags.add( new Tag( tagType, contents ) );
 	}
 
+	/**
+	 * Handle a sprite timeline
+	 */
+	private void handleSprite( byte[] contents ) throws IOException {
+	    InStream  in = new InStream( contents );
+        int id = in.readUI16();
+        in.readUI16(); //frame count
+	    
+        log( "tag DefineSprite - id=" + id );
+        
+        SpriteTimeline spriteTime = mainClip.addSprite( context, id );
+        
+        AVM1ActionInterceptor interceptor =     
+            new AVM1ActionInterceptor( mainClip, abc, spriteTime, context );
+        
+        tags.add( new Tag( interceptor ) );
+	    
+	    SWFReader reader = new SWFReader( interceptor, in );
+	    reader.readTags();
+	}
+	
 	/**
 	 * Finish the SWF
 	 */
@@ -134,15 +189,26 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
     		//--emit the ABC tag
     		ABC abcFile = super.tagDoABC( DO_ABC_LAZY_INITIALIZE_FLAG, "javaswf" );
     		abc.write( abcFile );
-    		
-    		//--set the class for the main timeline and clips    		
-    		super.tagSymbolClass( mainClip.symbolMappings() );
-    		
-    		//--flush all the tags
-    		for( Tag tag : tags ) {
-    			tag.write( super.mTagtypes );
-    		}
+            super.tagSymbolClass( mainClip.symbolMappings() );          
 	    }
+	    
+        //--flush all the tags
+	    if( super.mTagtypes != null ) {
+            flushTags( super.mTagtypes );
+	    }
+
+        if( thisClip == mainClip ) {            
+            //--set the class for the main timeline and clips           
+        }
+
+        super.tagEnd();
+	}
+	
+	private void flushTags( SWFTagTypes tagTypes ) throws IOException {
+        //--flush all the tags
+        for( Tag tag : tags ) {
+            tag.write( tagTypes );
+        }	    
 	}
 	
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#header(int, long, int, int, int, int) */
@@ -161,7 +227,6 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	@Override
 	public void tagEnd() throws IOException {
 		finish();
-		super.tagEnd();
 	}
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagShowFrame() */
@@ -193,18 +258,6 @@ public class AVM1ActionInterceptor extends SWFTagTypesImpl {
 	@Override
 	public void tagFileAttributes( int flags ) throws IOException {
 		//suppress - this is emitted with the header
-	}
-
-
-	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDefineSprite(int) */
-	@Override
-	public SWFTagTypes tagDefineSprite( int id ) throws IOException {
-		log( "tag DefineSprite - id=" + id );
-		
-		mainClip.addSprite( context, id );
-		
-		// TODO intercept sprite actions
-		return null;
 	}
 
 	/** @see com.anotherbigidea.flash.writers.SWFTagTypesImpl#tagDoInitAction(int) */

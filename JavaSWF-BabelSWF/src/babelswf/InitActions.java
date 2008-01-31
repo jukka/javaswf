@@ -2,7 +2,6 @@ package babelswf;
 
 import com.anotherbigidea.flash.avm1.AVM1ActionBlock;
 import com.anotherbigidea.flash.avm2.model.AVM2Code;
-import com.anotherbigidea.flash.avm2.model.AVM2MovieClip;
 
 /**
  * Wrapper around a set of init-clip actions to be translated
@@ -32,13 +31,16 @@ public class InitActions {
                                      spriteId, 
                                      BabelSWFRuntime.ADD_INIT_METHOD );
 
+        code.getLocal( code.thisValue );
+        code.pushWith();
+        code.trace( "** Init Actions for sprite " + spriteId + " **" );
+        
         //place the global object at the foot of the scope stack
-        //code.trace( "BEFORE SETTING UP GLOBAL" );
-        code.getLex( BabelSWFRuntime.AVM1_RUNTIME_CLASS );
-        code.getProperty( BabelSWFRuntime.RT_GLOBAL_PROP );
-        code.coerceToObject();
-        code.pushWith();        
-        //code.trace( "AFTER SETTING UP GLOBAL" );
+//        code.trace( "BEFORE SETTING UP GLOBAL" );
+//        code.getLex( BabelSWFRuntime.AVM1_RUNTIME_CLASS );
+//        code.getProperty( BabelSWFRuntime.RT_GLOBAL_PROP );
+//        code.pushWith();        
+//        code.trace( "AFTER SETTING UP GLOBAL" );
         
         return code;
     }
