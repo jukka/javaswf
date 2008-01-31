@@ -16,7 +16,7 @@ import com.anotherbigidea.flash.interfaces.SWFActionBlock;
 public class InitArray extends AVM1OperationAggregation implements AVM1ValueProducer {
 
     public AVM1Operation length;
-    public AVM1Operation[] elements;
+    public AVM1Operation[] elements; //in reverse order
     
     /** @see com.anotherbigidea.flash.avm1.AVM1OperationAggregation#aggregate() */
     @Override
@@ -44,5 +44,12 @@ public class InitArray extends AVM1OperationAggregation implements AVM1ValueProd
     @Override
     public void accept(AVM1OpVisitor visitor) {
         visitor.visitInitArray( this );        
+    }
+    
+    /** Visit all the aggregated elements */
+    public final void visitElements( AVM1OpVisitor visitor ) {
+        for( AVM1Operation op : elements ) {
+            op.accept( visitor );
+        }                
     }
 }
