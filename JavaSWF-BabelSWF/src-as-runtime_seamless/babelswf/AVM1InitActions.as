@@ -27,6 +27,8 @@ package babelswf
             //TODO
             trace( "AVM1InitActions >> sprite " + spriteId );
             
+            trace( "global com = " + AVM1Runtime.avm1_global["com"] );
+            
             initFunction.call( clip );
         }
 	}

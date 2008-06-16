@@ -4,6 +4,12 @@ package babelswf.prototypes
 	
 	public dynamic class PrototypeMovieClip extends Prototype
 	{
+	    public static var instance:PrototypeMovieClip = new PrototypeMovieClip();
+	    
+		public function PrototypeMovieClip()
+		{
+		    super( PrototypeObject.instance, null ); 
+		}
 		
 		public var lineStyle:Function =  
  		    function( thickness:Number, 
@@ -18,13 +24,13 @@ package babelswf.prototypes
                 trace( "enter #### lineStyle : " + this );
                 
 		        this.graphics.lineStyle( thickness, 
-                                                            color, 
-                                                            alpha, 
-                                                            pixelHinting, 
-                                                            scaleMode, 
-                                                            caps, 
-                                                            joints, 
-                                                            miterLimit );		                                	
+                                         color, 
+                                         alpha, 
+                                         pixelHinting, 
+                                         scaleMode, 
+                                         caps, 
+                                         joints, 
+                                         miterLimit );		                                	
                 trace( "exit  #### lineStyle : " + this );
             }; 
     

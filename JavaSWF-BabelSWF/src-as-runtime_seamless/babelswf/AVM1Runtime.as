@@ -3,6 +3,9 @@
  */
 package babelswf
 {
+    import babelswf.prototypes.PrototypeFunction;
+    import babelswf.prototypes.PrototypeObject;
+    
 	public class AVM1Runtime
 	{
 		private var mainTimelineClass:Class = AVM1MainTimeline;
@@ -14,17 +17,25 @@ package babelswf
          * Stack of movie clips to maintain the current context
          */ 
         private static var movieClipStack:Array = [];
-/*						
-        makeAVM1Constructor( 
-            ["com","disney","gem","panels"], 
-            "ContentBase", 
-            function( a:Object, b:Object, c:Object ) { 
-                trace("ContentBase constructor (" + a + "," + b + "," + c + ")" ); 
-            } );						
-*/						
+					
 		public function AVM1Runtime()
 		{
 			super();
+		}
+		
+        private static function log( msg:String ):void
+        {
+            //trace( msg );
+        }
+		
+		/**
+		 * Make a new generic object
+		 */
+		public static function newObject():AVM1Object
+		{
+		    var obj:AVM1Object = PrototypeObject.instance.avm1_new();
+		    //trace( "AVM1Runtime >>> newObject " + obj );
+		    return obj;
 		}
 		
 		/**
@@ -71,7 +82,7 @@ package babelswf
          */
         public static function avm1_play():void
         {
-            trace( "AVM1Runtime >>> play" );
+            log( "AVM1Runtime >>> play" );
             (movieClipStack[0] as AVM1MovieClip).play();
         }
 
@@ -80,7 +91,7 @@ package babelswf
          */
         public static function avm1_stop():void
         {
-            trace( "AVM1Runtime >>> stop" );
+            log( "AVM1Runtime >>> stop" );
             (movieClipStack[0] as AVM1MovieClip).stop();
         }
 		
@@ -89,7 +100,7 @@ package babelswf
 		 */
 		public static function avm1_setMember( object:*, name:*, value:* ):void
 		{
-            trace( "AVM1Runtime >>> set " + object + "[ " + name + " ] = " + value );
+            log( "AVM1Runtime >>> set " + object + "[ " + name + " ] = " + value );
             if( object == null ) return;
             object[ name ] = value; 
 		}
@@ -99,9 +110,14 @@ package babelswf
          */
         public static function avm1_getMember( object:*, name:* ):*
         {
-            trace( "AVM1Runtime >>> get " + object + "[ " + name + " ]" );
-        	if( object == null ) return undefined;
-        	return object[ name ]; 
+        	if( object == null ) {
+                log( "AVM1Runtime >>> get " + object + "[ " + name + " ] = undefined" );
+        	    return undefined;
+        	}
+
+            var a:* = object[name];
+            log( "AVM1Runtime >>> get " + object + "[ " + name + " ] = " + a );
+        	return a; 
         }
 
         /**
@@ -109,7 +125,7 @@ package babelswf
          */
         public static function avm1_delMember( object:*, name:* ):Boolean
         {
-            trace( "AVM1Runtime >>> delete " + object + "[ " + name + " ]" );
+            log( "AVM1Runtime >>> delete " + object + "[ " + name + " ]" );
             if( object == null ) return false;
             return delete object[ name ]; 
         }
@@ -119,10 +135,10 @@ package babelswf
 		 */
 		public static function avm1_callFunction( args:Array, object:*, func:*, name:* ):*
 		{
-            trace( "AVM1Runtime >>> call function " + object + "." + name + "( " + args.length + " args )" );
+            log( "AVM1Runtime >>> call function " + object + "." + name + "( " + args.length + " args )" );
 			if( func == null ) 
 			{
-			    trace( "*** FUNCTION IS NULL ***" );
+			    log( "*** FUNCTION IS NULL ***" );
 			    return undefined;
 			}
 			
@@ -136,8 +152,11 @@ package babelswf
          */
         public static function avm1_callMethod( args:Array, object:*, name:* ):*
         {
-            trace( "AVM1Runtime >>> call method " + object + "." + name + "( " + args.length + " args )" );
-            if( object == null ) return undefined;
+            log( "AVM1Runtime >>> call method " + object + "." + name + "( " + args.length + " args )" );
+            if( object == null ) {
+                log( "*** FUNCTION Object IS NULL ***" );
+                return undefined;
+            }
             
             var func:Function;
             var thisObj:*;
@@ -166,8 +185,13 @@ package babelswf
 		 */
 		public static function avm1_newActivation( thisObj:Object ):Object
 		{
-            trace( "AVM1Runtime >>> newActivation this=" + thisObj );
-            return new AVM1Object( { "this" : thisObj } );			
+            log( "AVM1Runtime >>> newActivation this=" + thisObj );
+            
+            if( thisObj is AVM1MovieClip ) 
+            {
+                thisObj = (thisObj as AVM1MovieClip).avm1_proxy;
+            } 
+            return new AVM1Object( { "this" : thisObj, "super":thisObj["super"] } );			
 		}
 		
 		/**
@@ -175,7 +199,7 @@ package babelswf
 		 */
 		public static function avm1_endDrag():void 
 		{
-            trace( "AVM1Runtime >>> endDrag" );
+            log( "AVM1Runtime >>> endDrag" );
 			(movieClipStack[0] as AVM1MovieClip).stopDrag();
 		}
 		
@@ -184,7 +208,7 @@ package babelswf
          */
         public static function avm1_startDrag():void 
         {
-            trace( "AVM1Runtime >>> startDrag" );
+            log( "AVM1Runtime >>> startDrag" );
             (movieClipStack[0] as AVM1MovieClip).startDrag();
         }		
 		
@@ -193,11 +217,12 @@ package babelswf
 		 */
 		public static function avm1_newFunction( f:Function ):Function 
 		{
-            trace( "AVM1Runtime >>> newFunction" );
+            log( "AVM1Runtime >>> newFunction" );
 		    
-		    f.prototype = new AVM1Object({});
+		    f.prototype = AVM1Runtime.newObject();
 		    f.prototype["constructor"] = f;
             f.prototype["__constructor__"] = f;
+            f["__proto__"] = PrototypeFunction.instance.constructor.prototype;
 		    
 		    return f;
 		}
@@ -207,8 +232,9 @@ package babelswf
 		 */
 		public static function avm1_extends( clazz:Function, superclass:Function ):void
 		{
-            trace( "AVM1Runtime >>> extends" );
-		    clazz.prototype["__proto__"] = superclass.prototype;		    
+            log( "AVM1Runtime >>> extends" );
+		    clazz.prototype["__proto__"] = superclass.prototype;
+		    clazz.prototype["super"] = superclass;		    
 		}
 		
 		/**
@@ -216,7 +242,7 @@ package babelswf
 		 */
 		public static function avm1_newObject( args:Array, object:*, func:*, name:* ):Object
 		{
-            trace( "AVM1Runtime >>> new(func) " + object + "." + name + "( " + args.length + " args )" );
+            log( "AVM1Runtime >>> new(func) " + object + "." + name + "( " + args.length + " args )" );
             if( func == null ) return undefined;
             
             var f:Function = func;
@@ -232,7 +258,7 @@ package babelswf
          */
         public static function avm1_newMethod( args:Array, object:*, name:* ):*
         {
-            trace( "AVM1Runtime >>> new(method) " + object + "." + name + "( " + args.length + " args )" );
+            log( "AVM1Runtime >>> new(method) " + object + "." + name + "( " + args.length + " args )" );
             if( object == null ) return undefined;
             
             var func:Function;

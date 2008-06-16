@@ -19,13 +19,19 @@ package babelswf
 		 */
 		public function AVM1Object( object:Object )
 		{
+		    //trace( "new AVM1Object" );
 			if( object == null ) object = {};
 			this.object = object;
 		}
 		
+		private function log( msg:String ):void
+		{
+		    //trace( msg );
+		}
+		
 	    override flash_proxy function callProperty(methodName:*, ... args):* 
 	    {
-	    	trace( "AVM1Object callProperty -> " + methodName );
+	    	log( "AVM1Object callProperty -> " + methodName );
 	    	
             var fn:*;
 
@@ -46,6 +52,13 @@ package babelswf
             if((fn != null) && (fn is Function))
             {
                 return (fn as Function).apply( this, args );
+            }
+            else
+            {
+                if( methodName == "toString" )
+                {
+                    return "AVM1Object";
+                }
             } 
             
             return undefined;            
@@ -53,7 +66,7 @@ package babelswf
 
         override flash_proxy function getProperty(name:*):* 
         {
-            trace( "AVM1Object getProperty -> " + name );
+            log( "AVM1Object getProperty -> " + name );
             
             if( object.hasOwnProperty( name ) ) 
             {
@@ -75,14 +88,14 @@ package babelswf
 
         override flash_proxy function setProperty(name:*, value:*):void 
         {
-            trace( "AVM1Object setProperty -> " + name + " = " + value );
+            log( "AVM1Object setProperty -> " + name + " = " + value );
             
             object[ name ] = value;
         }
 	
         override flash_proxy function deleteProperty(name:*):Boolean
         {
-            trace( "AVM1Object deleteProperty -> " + name );
+            log( "AVM1Object deleteProperty -> " + name );
             
             if( object.hasOwnProperty( name ) ) 
             {
@@ -104,7 +117,7 @@ package babelswf
         
         override flash_proxy function hasProperty(name:*):Boolean
         {
-            //trace( "AVM1Object hasProperty -> " + name );
+            log( "AVM1Object hasProperty -> " + name );
             
             if( object.hasOwnProperty( name ) ) return true;
             
@@ -123,14 +136,14 @@ package babelswf
         
         override flash_proxy function nextName(index:int):String
         {
-            trace( "AVM1Object nextName -> " + index );
+            log( "AVM1Object nextName -> " + index );
             
             return names[ index - 1 ];        	
         }
         
         override flash_proxy function nextNameIndex(index:int):int
         {
-            trace( "AVM1Object nextNameIndex -> " + index );
+            log( "AVM1Object nextNameIndex -> " + index );
             
 	        // initial call
 	        if( index == 0 ) {
@@ -166,7 +179,7 @@ package babelswf
         
         override flash_proxy function nextValue( index:int ):*
         {
-            trace( "AVM1Object nextValue -> " + index );
+            log( "AVM1Object nextValue -> " + index );
             
             return flash_proxy::getProperty( names[ index - 1 ]);        	
         }

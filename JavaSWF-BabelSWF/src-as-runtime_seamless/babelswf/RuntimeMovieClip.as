@@ -4,6 +4,8 @@
  */
 package babelswf
 {
+	import babelswf.dxd.DXDRuntime;
+	
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -13,7 +15,7 @@ package babelswf
 	
 	public class RuntimeMovieClip extends MovieClip
 	{
-		private static var runtime:Class = AVM1Runtime;
+		private static var runtime:DXDRuntime = new DXDRuntime();
 		
         private var urls:Array = [ 
             "../generated-as3/dxd_minimal_code_as3.swf",
