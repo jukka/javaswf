@@ -19,7 +19,14 @@ public final class FlagParser<E extends Enum<E>> {
 	private final Class<E> enumClass;
 	private final Map<Integer, E> bits2enums = new HashMap<Integer, E>();
 	
-	public FlagParser( Class<E> enumClass ) {
+	/**
+	 * Make a parser for the given class
+	 */
+	public static <T extends Enum<T>> FlagParser<T> forClass( Class<T> clazz ) {
+	    return new FlagParser<T>( clazz );
+	}
+	
+	private FlagParser( Class<E> enumClass ) {
 		this.enumClass = enumClass;
 		
 		try {
