@@ -1,0 +1,69 @@
+<project basedir="." name="J2AVM" default="all">
+	<property file="build.properties" />
+	
+	<!-- Build everything -->
+	<target name="all" 
+		    depends="clean,compile-all,include-dependencies,jar-all,jar-runtime,clean-classes">	
+	</target>
+	
+    <!-- Clean the build results -->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+    <!-- Clean the compiled classes -->
+    <target name="clean-classes">
+        <delete dir="${build.classes}" />
+    </target>
+	
+    <!-- Make the complete jar -->
+    <target name="jar-all">
+        <jar destfile="${j2avm.all.jar}">
+            <fileset dir="${build.classes.main}" />
+            <fileset dir="${build.classes.runtime}" />
+            <fileset dir="src/generator/resources" />
+        </jar>        
+    </target>
+	
+    <!-- Make the runtime jar -->
+    <target name="jar-runtime">
+        <jar destfile="${j2avm.runtime.jar}">
+            <fileset dir="${build.classes.runtime}" />
+        </jar>
+    </target>
+
+    <!-- Explode the dependency jars into the main classes -->
+    <target name="include-dependencies">
+    	<unjar src="${asm.jar}"        dest="${build.classes.main}" />
+        <unjar src="${freemarker.jar}" dest="${build.classes.main}" />
+    </target>
+	
+    <!-- Compile everything -->
+    <target name="compile-all" depends="compile-runtime">
+    	<mkdir dir="${build.classes.main}" />
+        <javac
+        	classpath="${build.dependencies}:${build.classes.runtime}"
+        	destdir  ="${build.classes.main}"
+        	source   ="1.5"
+        	debug    ="${build.debug}"
+        	>
+        	<src path="src/main/java" />
+            <src path="src/generator/java" />
+            <src path="src/ant/java" />
+        </javac>    
+    </target>
+	
+    <!-- Compile the runtime classes -->
+    <target name="compile-runtime">
+        <mkdir dir="${build.classes.runtime}" />
+        <javac
+            classpath="${build.dependencies}"
+            destdir  ="${build.classes.runtime}"
+            source   ="1.5"
+            debug    ="${build.debug}"
+            >
+            <src path="src/annotations/java" />
+            <src path="src/flash9/java" />        
+        </javac>    
+    </target>   	
+</project>
