@@ -1,0 +1,13 @@
+version= major minor
+intPool= ints
+uintPool= uints
+doublePool= doubles
+stringPool= strings
+namespacePool= count
+namespaceSetPool= count
+namePool= count
+methods= count
+metadata= count
+classes= count
+scripts= count
+methodBodies= count

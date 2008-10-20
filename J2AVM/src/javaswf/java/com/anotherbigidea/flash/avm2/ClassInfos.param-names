@@ -1,0 +1,2 @@
+instanceInfo= nameIndex superIndex flags protectedNS interfaces constructorIndex traitCount
+classInfo= constructorIndex traitCount

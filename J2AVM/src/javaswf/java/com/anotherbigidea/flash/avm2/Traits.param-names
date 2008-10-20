@@ -1,0 +1,7 @@
+slot= nameIndex slotId typeIndex valueIndex valueKind metadataIndices
+constant= nameIndex slotId typeIndex valueIndex valueKind metadataIndices
+method= nameIndex dispId methIndex isFinal isOverride metadataIndices
+getter= nameIndex dispId methIndex isFinal isOverride metadataIndices
+setter= nameIndex dispId methIndex isFinal isOverride metadataIndices
+class_= nameIndex slotId classIndex metadataIndices
+function= nameIndex slotId methIndex metadataIndices
